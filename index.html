@@ -67,23 +67,57 @@
             from {opacity: 0; transform: translateY(30px);}
             to {opacity: 1; transform: translateY(0);}
         }
+     /* Стили скримера */
+        #screamer {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: black;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        #screamer img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
     </style>
-</head>
+</head></
 <body>
     <header>
         <h1>Привет! ХОЛОД УБИЛ НЕГРА</h1>
         <p>Сделан за неделю — BLACK АФГАНО 😎</p>
-        <a class="btn" href="#about">Узнать больше</a>
+        <div class="btn" id="moreBtn">Узнать больше</div>
     </header>
 
     <main id="about">
         <h2>Обо мне</h2>
-        <p>Когда жизнь даёт камни, ставь на них колено и смотри сверху</p>
+        <p>Когда жизнь даёт камни, ставь на них ногу и смотри сверху</p>
         <img src="myphoto.jpg" alt="Моё фото">
     </main>
 
     <footer>
         <p>© 2025 Мой сайт | Сделано с ❤️ и HTML</p>
     </footer>
-</body>
+ <div id="screamer">
+        <img src="screamer.jpg" alt="Скример">
+        <audio id="screamSound" src="scream.mp3"></audio>
+    </div>
+
+    <script>
+        const btn = document.getElementById('moreBtn');
+        const screamer = document.getElementById('screamer');
+        const screamSound = document.getElementById('screamSound');
+
+        btn.addEventListener('click', () => {
+            screamer.style.display = 'flex';
+            screamSound.play();
+            setTimeout(() => {
+                screamer.style.display = 'none';
+            }, 2000);
+        });
+    </script>
+    </body>
 </html>
