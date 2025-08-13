@@ -1,123 +1,106 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мой сайт</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, #6a11cb, #2575fc);
-            color: white;
-            text-align: center;
-            overflow-x: hidden;
-        }
-        header {
-            padding: 50px 20px;
-            animation: fadeInDown 1.2s ease;
-        }
-        h1 {
-            font-size: 2.5rem;
-            margin: 0;
-        }
-        p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-        .btn {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 12px 25px;
-            background: white;
-            color: #2575fc;
-            font-weight: bold;
-            border-radius: 30px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-        .btn:hover {
-            background: #ffdd57;
-            color: #333;
-            transform: scale(1.05);
-        }
-        main {
-            padding: 40px 20px;
-            animation: fadeInUp 1.2s ease;
-        }
-        img {
-            max-width: 300px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            transition: transform 0.3s ease;
-        }
-        img:hover {
-            transform: rotate(2deg) scale(1.05);
-        }
-        footer {
-            background: rgba(0,0,0,0.2);
-            padding: 15px;
-            font-size: 0.9rem;
-        }
-        @keyframes fadeInDown {
-            from {opacity: 0; transform: translateY(-30px);}
-            to {opacity: 1; transform: translateY(0);}
-        }
-        @keyframes fadeInUp {
-            from {opacity: 0; transform: translateY(30px);}
-            to {opacity: 1; transform: translateY(0);}
-        }
-     /* Стили скримера */
-        #screamer {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: black;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-        #screamer img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-    </style>
-</head></
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Мой сайт</title>
+  <style>
+    body{
+      margin:0;font-family:'Segoe UI',Arial,sans-serif;
+      background:linear-gradient(135deg,#6a11cb,#2575fc);
+      color:#fff;text-align:center;overflow-x:hidden;
+    }
+    header{padding:50px 20px;animation:fadeInDown 1.2s ease}
+    h1{font-size:2.5rem;margin:0}
+    p{font-size:1.2rem;opacity:.9}
+    .btn{
+      display:inline-block;margin-top:20px;padding:12px 25px;
+      background:#fff;color:#2575fc;font-weight:bold;border-radius:30px;
+      text-decoration:none;transition:.3s;cursor:pointer
+    }
+    .btn:hover{background:#ffdd57;color:#333;transform:scale(1.05)}
+    main{padding:40px 20px;animation:fadeInUp 1.2s ease}
+    /* обычные картинки на странице */
+    img{
+      max-width:300px;border-radius:15px;box-shadow:0 10px 25px rgba(0,0,0,.3);
+      transition:transform .3s ease
+    }
+    img:hover{transform:rotate(2deg) scale(1.05)}
+    footer{background:rgba(0,0,0,.2);padding:15px;font-size:.9rem}
+    @keyframes fadeInDown{from{opacity:0;transform:translateY(-30px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+
+    /* === ПОЛНОЭКРАННЫЕ СЛОИ === */
+    .overlay{
+      display:none;position:fixed;inset:0;z-index:9999;
+      justify-content:center;align-items:center;background:#000;
+    }
+    /* ВАЖНО: убираем ограничение max-width и растягиваем на экран */
+    .overlay img{
+      max-width:none !important;
+      width:100vw;height:100vh;object-fit:cover;display:block;
+      user-select:none;-webkit-user-drag:none;pointer-events:none;
+      box-shadow:none;border-radius:0; /* перебиваем общие стили */
+      transition:none;
+    }
+
+    /* BSOD поверх скримера */
+    #bsod{z-index:10000;background:#0078d7;cursor:none}
+  </style>
+</head>
 <body>
-    <header>
-        <h1>Привет! ХОЛОД УБИЛ НЕГРА</h1>
-        <p>Сделан за неделю — BLACK АФГАНО 😎</p>
-        <div class="btn" id="moreBtn">Узнать больше</div>
-    </header>
+  <header>
+    <h1>Добро пожаловать на мой сайт</h1>
+    <p>Сделан за неделю — красивый градиент и немного магии 😎</p>
+    <div class="btn" id="moreBtn">Узнать больше</div>
+  </header>
 
-    <main id="about">
-        <h2>Обо мне</h2>
-        <p>Когда жизнь даёт камни, ставь на них ногу и смотри сверху</p>
-        <img src="myphoto.jpg" alt="Моё фото">
-    </main>
+  <main id="about">
+    <h2>Обо мне</h2>
+    <p>Когда жизнь даёт камни — поднимайся выше и смотри шире.</p>
+    <img src="myphoto.jpg" alt="Моё фото">
+  </main>
 
-    <footer>
-        <p>© 2025 Мой сайт | Сделано с ❤️ и HTML</p>
-    </footer>
- <div id="screamer">
-        <img src="screamer.jpg" alt="Скример">
-        <audio id="screamSound" src="scream.mp3"></audio>
-    </div>
+  <footer>
+    <p>© 2025 Мой сайт | Сделано с ❤️ и HTML</p>
+  </footer>
 
-    <script>
-        const btn = document.getElementById('moreBtn');
-        const screamer = document.getElementById('screamer');
-        const screamSound = document.getElementById('screamSound');
+  <!-- Скример -->
+  <div id="screamer" class="overlay" aria-hidden="true">
+    <img src="screamer.jpg" alt="">
+    <audio id="screamSound" src="scream.mp3"></audio>
+  </div>
 
-        btn.addEventListener('click', () => {
-            screamer.style.display = 'flex';
-            screamSound.play();
-            setTimeout(() => {
-                screamer.style.display = 'none';
-            }, 2000);
-        });
-    </script>
-    </body>
+  <!-- BSOD (картинка как у тебя) -->
+  <div id="bsod" class="overlay" aria-hidden="true" title="Клик — перезагрузка">
+    <img src="bsod.png" alt="">
+  </div>
+
+  <script>
+    const btn = document.getElementById('moreBtn');
+    const screamer = document.getElementById('screamer');
+    const bsod = document.getElementById('bsod');
+    const screamSound = document.getElementById('screamSound');
+
+    btn.addEventListener('click', () => {
+      // показываем скример
+      screamer.style.display = 'flex';
+      try { screamSound.currentTime = 0; screamSound.play(); } catch (_) {}
+
+      // через 2 секунды прячем скример и показываем BSOD
+      setTimeout(() => {
+        screamer.style.display = 'none';
+        bsod.style.display = 'flex';
+      }, 2000);
+    });
+
+    // Клик по BSOD — "перезагрузка"
+    bsod.addEventListener('click', () => location.reload());
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'F5' || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'r')) {
+        e.preventDefault(); location.reload();
+      }
+    });
+  </script>
+</body>
 </html>
