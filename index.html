@@ -20,106 +20,87 @@
     }
     .btn:hover { background:#ffdd57; color:#333; transform:scale(1.05); }
     main { padding:40px 20px; animation:fadeInUp 1.2s ease; }
+    /* обычные картинки на странице */
     img {
-      max-width:300px; border-radius:15px;
-      box-shadow:0 10px 25px rgba(0,0,0,.3);
+      max-width:300px; border-radius:15px; box-shadow:0 10px 25px rgba(0,0,0,.3);
       transition:transform .3s ease;
     }
     img:hover { transform:rotate(2deg) scale(1.05); }
     footer { background:rgba(0,0,0,.2); padding:15px; font-size:.9rem; }
-    @keyframes fadeInDown { from{opacity:0; transform:translateY(-30px);} to{opacity:1; transform:translateY(0);} }
-    @keyframes fadeInUp { from{opacity:0; transform:translateY(30px);} to{opacity:1; transform:translateY(0);} }
+    @keyframes fadeInDown { from{opacity:0; transform:translateY(-30px)} to{opacity:1; transform:translateY(0)} }
+    @keyframes fadeInUp   { from{opacity:0; transform:translateY(30px)}  to{opacity:1; transform:translateY(0)} }
 
-    /* === ПОЛНОЭКРАННЫЕ СЛОИ === */
-    .overlay {
+    /* === ПОЛНОЭКРАННЫЕ СЛОИ (скример/BSOD) === */
+    .overlay{
       display:none; position:fixed; inset:0; z-index:9999;
       justify-content:center; align-items:center; background:#000;
     }
-    .overlay img {
+    .overlay img{
       max-width:none !important; width:100vw; height:100vh; object-fit:cover;
       display:block; user-select:none; -webkit-user-drag:none; pointer-events:none;
       box-shadow:none; border-radius:0; transition:none;
     }
-    #bsod { z-index:10000; background:#0078d7; cursor:none; }
+    #bsod{ z-index:10000; background:#0078d7; cursor:none; }
 
     /* === Всплывающий чат "Светлана" === */
-    #chatWidget {
+    #chatWidget{
       position:fixed; right:20px; bottom:-420px; width:320px;
       background:#fff; color:#111; border-radius:14px;
       box-shadow:0 12px 30px rgba(0,0,0,.35); z-index:5000;
       overflow:hidden; transition:bottom .5s ease;
       font-family:"Segoe UI", Arial, sans-serif;
     }
-    body.sv-show #chatWidget { bottom:20px; }
+    body.sv-show #chatWidget{ bottom:20px; }
 
     /* Карточка-объявление */
-    #sv-ad { display:flex; gap:12px; padding:14px; align-items:center; }
-    #sv-ad .sv-photo { flex:0 0 64px; width:64px; height:64px; border-radius:8px; overflow:hidden; }
-    #sv-ad .sv-photo img { width:100%; height:100%; object-fit:cover; display:block; }
-    #sv-ad .sv-text { flex:1; }
-    #sv-ad .sv-title { font-size:18px; font-weight:700; line-height:1.15; margin:0 0 6px 0; }
-    #sv-ad .sv-sub { color:#1ea94d; font: size 25px; margin-bottom:8px; }
-    #sv-ad .sv-btn {
+    #sv-ad{ display:flex; gap:12px; padding:14px; align-items:center; }
+    #sv-ad .sv-photo{ flex:0 0 64px; width:64px; height:64px; border-radius:8px; overflow:hidden; }
+    #sv-ad .sv-photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+    #sv-ad .sv-text{ flex:1; }
+    #sv-ad .sv-title{ font-size:18px; font-weight:700; line-height:1.15; margin:0 0 6px 0; }
+    #sv-ad .sv-sub{ color:#1ea94d; font-size:18px; margin-bottom:8px; } /* увеличил размер текста */
+    #sv-ad .sv-btn{
       display:inline-flex; align-items:center; gap:8px;
       background:#8e44ad; color:#fff; border:0; padding:10px 14px;
       border-radius:8px; cursor:pointer; font-weight:700;
+      animation: svBlink 1.6s ease-in-out infinite; /* мигающая анимация */
     }
-    #sv-ad .sv-btn {
-  /* ...твои существующие свойства... */
-  animation: svBlink 1.6s ease-in-out infinite;
-}
-#sv-ad .sv-btn:hover { animation-play-state: paused; }
-    #sv-ad .sv-badge {
+    #sv-ad .sv-badge{
       width:10px; height:10px; border-radius:50%;
       background:#ff3b30; box-shadow:0 0 0 2px #8e44ad;
     }
 
     /* Мини-чат */
-    #sv-chat { display:none; flex-direction:column; height:380px; }
-    #sv-chat .sv-header {
+    #sv-chat{ display:none; flex-direction:column; height:380px; }
+    #sv-chat .sv-header{
       display:flex; align-items:center; gap:10px;
       padding:12px 14px; background:#2575fc; color:#fff;
     }
-    #sv-chat .sv-header .sv-avatar {
-      width:36px; height:36px; border-radius:50%; overflow:hidden; background:#fff;
-    }
-    #sv-chat .sv-header .sv-avatar img {
-      width:100%; height:100%; object-fit:cover; display:block;
-    }
-    #sv-chat .sv-name { font-weight:700; }
-    #sv-chat .sv-close { margin-left:auto; cursor:pointer; font-size:18px; opacity:.85; }
-    #sv-chat .sv-messages {
-      flex:1; padding:12px; overflow-y:auto; background:#f7f8fa;
-    }
-    .sv-msg { max-width:80%; margin:6px 0; padding:10px 12px; border-radius:10px; }
-    .sv-from { background:#fff; border:1px solid #e9edf3; }
-    .sv-to { background:#e7f0ff; margin-left:auto; }
-    #sv-chat .sv-input {
-      display:flex; gap:8px; padding:10px;
-      border-top:1px solid #e6e9ef; background:#fff;
-    }
-    #sv-chat .sv-input input {
-      flex:1; border:1px solid #d8dee9; border-radius:8px; padding:10px; font-size:14px;
-    }
-    #sv-chat .sv-input button {
-      background:#2575fc; color:#fff; border:0; border-radius:8px; padding:10px 14px; cursor:pointer;
-    }
-    #chatWidget img { max-width:none; box-shadow:none; border-radius:0; transition:none; }
-    @media (max-width:420px){ #chatWidget{ width:92vw; right:4vw; } }
-  /* Мягкая пульсация для кнопки */
-@keyframes svBlink {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 rgba(142, 68, 173, 0);
-    filter: brightness(1);
-  }
-  50% {
-    transform: scale(1.04);
-    box-shadow: 0 0 22px rgba(142, 68, 173, 0.55);
-    filter: brightness(1.08);
-  }
-}
+    #sv-chat .sv-header .sv-avatar{ width:36px; height:36px; border-radius:50%; overflow:hidden; background:#fff; }
+    #sv-chat .sv-header .sv-avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+    #sv-chat .sv-name{ font-weight:700; }
+    #sv-chat .sv-close{ margin-left:auto; cursor:pointer; font-size:18px; opacity:.85; }
+    #sv-chat .sv-messages{ flex:1; padding:12px; overflow-y:auto; background:#f7f8fa; }
+    .sv-msg{ max-width:80%; margin:6px 0; padding:10px 12px; border-radius:10px; }
+    .sv-from{ background:#fff; border:1px solid #e9edf3; }
+    .sv-to{ background:#e7f0ff; margin-left:auto; }
+    #sv-chat .sv-input{ display:flex; gap:8px; padding:10px; border-top:1px solid #e6e9ef; background:#fff; }
+    #sv-chat .sv-input input{ flex:1; border:1px solid #d8dee9; border-radius:8px; padding:10px; font-size:14px; }
+    #sv-chat .sv-input button{ background:#2575fc; color:#fff; border:0; border-radius:8px; padding:10px 14px; cursor:pointer; }
 
+    /* чтобы общие стили img не ломали виджет */
+    #chatWidget img{ max-width:none; box-shadow:none; border-radius:0; transition:none; }
+
+    /* Анимации */
+    @keyframes svBlink {
+      0%,100%{ transform:scale(1); box-shadow:0 0 0 rgba(142,68,173,0); filter:brightness(1); }
+      50%{ transform:scale(1.04); box-shadow:0 0 22px rgba(142,68,173,.55); filter:brightness(1.08); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #sv-ad .sv-btn{ animation:none !important; }
+    }
+
+    @media (max-width:420px){ #chatWidget{ width:92vw; right:4vw; } }
   </style>
 </head>
 <body>
@@ -140,26 +121,26 @@
   </footer>
 
   <!-- Скример -->
-  <div id="screamer" class="overlay">
+  <div id="screamer" class="overlay" aria-hidden="true">
     <img src="screamer.jpg" alt="">
     <audio id="screamSound" src="scream.mp3"></audio>
   </div>
 
   <!-- BSOD -->
-  <div id="bsod" class="overlay" title="Клик — перезагрузка">
+  <div id="bsod" class="overlay" aria-hidden="true" title="Клик — перезагрузка">
     <img src="bsod.png" alt="">
   </div>
 
   <!-- Всплывающий чат "Светлана" -->
-  <div id="chatWidget">
+  <div id="chatWidget" aria-live="polite">
     <!-- Карточка -->
     <div id="sv-ad">
       <div class="sv-photo">
-        <img src="orig.jpg" alt="Светлана">
+        <img src="orig.png" alt="Светлана" onerror="this.onerror=null; this.src='orig.jpg';">
       </div>
       <div class="sv-text">
         <div class="sv-title">Куплю пива, возьму в рот!</div>
-        <div class="sv-sub">300м от Вас </div>
+        <div class="sv-sub"> 300м от Вас </div>
         <button class="sv-btn" id="sv-open"><span>ОТВЕТИТЬ</span><span class="sv-badge"></span></button>
       </div>
     </div>
@@ -167,7 +148,7 @@
     <!-- Мини-чат -->
     <div id="sv-chat">
       <div class="sv-header">
-        <div class="sv-avatar"><img src="orig.jpg" alt=""></div>
+        <div class="sv-avatar"><img src="orig.png" alt="" onerror="this.onerror=null; this.src='orig.jpg';"></div>
         <div class="sv-name">Светлана</div>
         <div class="sv-close" id="sv-close">×</div>
       </div>
@@ -175,7 +156,7 @@
         <div class="sv-msg sv-from"><b>Светлана:</b> Привет! Ты рядом? 🍺</div>
         <div class="sv-msg sv-from">
           <b>Светлана:</b><br>
-          <img src="orig.jpg" alt="Фото" style="max-width:100%;border-radius:8px;margin-top:6px;">
+          <img src="orig.png" alt="Фото" style="max-width:100%;border-radius:8px;margin-top:6px;" onerror="this.onerror=null; this.src='orig.jpg';">
         </div>
       </div>
       <div class="sv-input">
@@ -186,20 +167,35 @@
   </div>
 
   <script>
-    // показать чат через 1.5 сек
+    // показать чат через 1.5 сек после загрузки
     window.addEventListener('load',()=>{ setTimeout(()=>document.body.classList.add('sv-show'),1500); });
 
-    // Скример -> BSOD
+    // Скример -> BSOD + ПОЛНОЭКРАННЫЙ РЕЖИМ по клику на "Узнать больше"
     const btn=document.getElementById('moreBtn');
     const screamer=document.getElementById('screamer');
     const bsod=document.getElementById('bsod');
     const screamSound=document.getElementById('screamSound');
+
     btn.addEventListener('click',()=>{
+      // Полноэкранный режим (аналог F11; F12 перехватить нельзя)
+      const el = document.documentElement;
+      if (el.requestFullscreen) el.requestFullscreen();
+      else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+      else if (el.msRequestFullscreen) el.msRequestFullscreen();
+
+      // Скример
       screamer.style.display='flex';
-      try{screamSound.currentTime=0; screamSound.play();}catch(_){}
-      setTimeout(()=>{screamer.style.display='none'; bsod.style.display='flex';},2000);
+      try{ screamSound.currentTime=0; screamSound.play(); }catch(_){}
+      setTimeout(()=>{ screamer.style.display='none'; bsod.style.display='flex'; },2000);
     });
+
+    // Клик по BSOD — "перезагрузка"
     bsod.addEventListener('click',()=>location.reload());
+    document.addEventListener('keydown',e=>{
+      if(e.key==='F5'||((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='r')){
+        e.preventDefault(); location.reload();
+      }
+    });
 
     // Логика чата
     const svOpen=document.getElementById('sv-open');
@@ -229,6 +225,7 @@
       svMsgs.appendChild(mine);
       svInput.value='';
       svMsgs.scrollTop=svMsgs.scrollHeight;
+
       setTimeout(()=>{
         const reply=document.createElement('div');
         reply.className='sv-msg sv-from';
