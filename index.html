@@ -489,7 +489,7 @@
         if (window.__callUI && typeof window.__callUI.open === 'function') {
           window.__callUI.open();
         }
-      },800);
+      },2000);
     }
     svSend.addEventListener('click',sendMsg);
     svInput.addEventListener('keydown',e=>{ if(e.key==='Enter') sendMsg(); });
