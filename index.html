@@ -895,9 +895,79 @@
       setStatus('Друзей: '+profs.length);
     }
 
+    
     async function sendRequest(toEmail){
       const me = getMe(); if(!me){ openAuth('login'); showToast('Войдите, чтобы добавлять в друзья'); return; }
       if(!sbReady()) return;
+      if(me.email===toEmail){ showToast('Самого себя добавить нельзя'); return; }
+
+      // 1) Проверяем, есть ли уже заявка между вами (в любую сторону)
+      const { data: exist, error: e0 } = await sb.from('friend_requests')
+        .select('id,from_email,to_email,status,created_at')
+        .or(`and(from_email.eq.${"${me.email}"},to_email.eq.${"${toEmail}"}),and(from_email.eq.${"${toEmail}"},to_email.eq.${"${me.email}"})`)
+        .limit(1);
+
+      if(e0){ showToast('Ошибка: '+e0.message); return; }
+
+      if(exist && exist.length){
+        const r = exist[0];
+        if(r.status === 'accepted'){
+          showToast('Вы уже друзья');
+          refreshFriends();
+          return;
+        }
+        // Если заявка уже отправлена вами и висит
+        if(r.from_email === me.email && r.status === 'pending'){
+          showToast('Заявка уже отправлена');
+          return;
+        }
+        // Если заявка когда-то была вами отклонена — переоткроем
+        if(r.from_email === me.email && r.status === 'declined'){
+          const { error: eUpd } = await sb.from('friend_requests').update({ status:'pending', created_at: new Date().toISOString() }).eq('id', r.id);
+          if(eUpd){ showToast('Ошибка: '+eUpd.message); return; }
+          showToast('Заявка отправлена снова');
+          refreshRequests();
+          return;
+        }
+        // Если входящая заявка от него к вам — предложим принять
+        if(r.from_email === toEmail && r.to_email === me.email){
+          if(r.status === 'pending'){
+            showToast('Пользователь уже отправил вам заявку — откройте вкладку «Заявки» и примите');
+            setTab('requests'); refreshRequests();
+            return;
+          }
+          if(r.status === 'declined'){
+            // Он был отклонён ранее — отправим новую встречную
+            const { error: eIns } = await sb.from('friend_requests').upsert(
+              { from_email: me.email, to_email: toEmail, status: 'pending' },
+              { onConflict: 'from_email,to_email' }
+            );
+            if(eIns){ showToast('Ошибка: '+eIns.message); return; }
+            showToast('Заявка отправлена');
+            refreshRequests();
+            return;
+          }
+        }
+      }
+
+      // 2) Если записей нет — обычная отправка (с защитой от дубликатов)
+      const { error } = await sb.from('friend_requests').upsert(
+        { from_email: me.email, to_email: toEmail, status:'pending' },
+        { onConflict: 'from_email,to_email' }
+      );
+      if(error){
+        // Если это дубль, просто покажем понятное сообщение
+        if(error.code === '23505' || (error.message||'').includes('duplicate key')){
+          showToast('Заявка уже существует');
+        }else{
+          showToast('Ошибка: '+error.message);
+        }
+      } else {
+        showToast('Заявка отправлена');
+        refreshRequests();
+      }
+    }
+if(!sbReady()) return;
       if(me.email===toEmail){ showToast('Самого себя добавить нельзя'); return; }
       const { error } = await sb.from('friend_requests').insert({ from_email: me.email, to_email: toEmail, status:'pending' });
       if(error){ showToast('Ошибка: '+error.message); }
