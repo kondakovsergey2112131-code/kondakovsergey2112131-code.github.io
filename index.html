@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Мой сайт</title>
+  <title>Мой сайт — чат с ИИ</title>
   <style>
     body {
       margin:0; font-family:'Segoe UI',Arial,sans-serif;
@@ -11,15 +11,16 @@
       color:#fff; text-align:center; overflow-x:hidden;
     }
     header { padding:50px 20px; animation:fadeInDown 1.2s ease; }
-    h1 { font-size:2.5rem; margin:0; }
-    p { font-size:1.2rem; opacity:.9; }
+    h1 { font-size:2.2rem; margin:0; }
+    p { font-size:1.1rem; opacity:.9; }
     .btn {
       display:inline-block; margin-top:20px; padding:12px 25px;
       background:#fff; color:#2575fc; font-weight:bold; border-radius:30px;
       text-decoration:none; transition:.3s; cursor:pointer;
+      border:0;
     }
     .btn:hover { background:#ffdd57; color:#333; transform:scale(1.05); }
-    main { padding:40px 20px; animation:fadeInUp 1.2s ease; }
+    main { padding:24px 20px 40px; animation:fadeInUp 1.2s ease; }
     img {
       max-width:300px; border-radius:15px; box-shadow:0 10px 25px rgba(0,0,0,.3);
       transition:transform .3s ease;
@@ -41,7 +42,7 @@
     #bsod{ z-index:10000; background:#0078d7; cursor:none; }
 
     #chatWidget{
-      position:fixed; right:20px; bottom:-420px; width:320px;
+      position:fixed; right:20px; bottom:-420px; width:340px;
       background:#fff; color:#111; border-radius:14px;
       box-shadow:0 12px 30px rgba(0,0,0,.35); z-index:5000;
       overflow:hidden; transition:bottom .5s ease;
@@ -66,7 +67,7 @@
       background:#ff3b30; box-shadow:0 0 0 2px #8e44ad;
     }
 
-    #sv-chat{ display:none; flex-direction:column; height:380px; }
+    #sv-chat{ display:none; flex-direction:column; height:400px; }
     #sv-chat .sv-header{
       display:flex; align-items:center; gap:10px;
       padding:12px 14px; background:#2575fc; color:#fff;
@@ -85,6 +86,13 @@
 
     #chatWidget img{ max-width:none; box-shadow:none; border-radius:0; transition:none; }
 
+    /* typing indicator */
+    .typing{ display:inline-flex; align-items:center; gap:4px; padding:8px 10px; background:#fff; border:1px solid #e9edf3; border-radius:10px; }
+    .typing .dot{ width:6px; height:6px; border-radius:50%; background:#9db1cc; animation:jump 1.2s infinite; }
+    .typing .dot:nth-child(2){ animation-delay:.15s }
+    .typing .dot:nth-child(3){ animation-delay:.3s }
+    @keyframes jump{ 0%,100%{ transform:translateY(0); opacity:.6 } 50%{ transform:translateY(-4px); opacity:1 } }
+
     @keyframes svBlink {
       0%,100%{ transform:scale(1); box-shadow:0 0 0 rgba(142,68,173,0); filter:brightness(1); }
       50%{ transform:scale(1.04); box-shadow:0 0 22px rgba(142,68,173,.55); filter:brightness(1.08); }
@@ -92,7 +100,6 @@
     @media (prefers-reduced-motion: reduce) {
       #sv-ad .sv-btn{ animation:none !important; }
     }
-
     @media (max-width:420px){ #chatWidget{ width:92vw; right:4vw; } }
   </style>
 
@@ -157,27 +164,9 @@
 <body>
   <header>
     <h1>Добро пожаловать на мой сайт</h1>
-    <p>Сделан за неделю — красивый градиент и немного магии 😎</p>
+    <p>Теперь Светлана отвечает как «ИИ» прямо в чате.</p>
     <div class="btn" id="moreBtn">Узнать больше</div>
   </header>
-  <main id="about">
-    <h2>Обо мне</h2>
-    <p>Когда жизнь даёт камни — поднимайся выше и смотри шире.</p>
-    <img src="myphoto.jpg" alt="Моё фото">
-  </main>
-
-  <footer>
-    <p>© 2025 Мой сайт | Сделано с ❤️ и HTML</p>
-  </footer>
-
-  <div id="screamer" class="overlay" aria-hidden="true">
-    <img src="screamer.jpg" alt="">
-    <audio id="screamSound" src="scream.mp3"></audio>
-  </div>
-
-  <div id="bsod" class="overlay" aria-hidden="true" title="Клик — перезагрузка">
-    <img src="bsod.png" alt="">
-  </div>
 
   <div id="chatWidget" aria-live="polite">
     <div id="sv-ad">
@@ -185,7 +174,7 @@
         <img src="orig.png" alt="Светлана" onerror="this.onerror=null; this.src='orig.jpg';">
       </div>
       <div class="sv-text">
-        <div class="sv-title">Куплю пива, возьму в рот!</div>
+        <div class="sv-title">Светлана на связи</div>
         <div class="sv-sub"> 300м от Вас </div>
         <button class="sv-btn" id="sv-open"><span>ОТВЕТИТЬ</span><span class="sv-badge"></span></button>
       </div>
@@ -193,15 +182,11 @@
     <div id="sv-chat">
       <div class="sv-header">
         <div class="sv-avatar"><img src="orig.png" alt="" onerror="this.onerror=null; this.src='orig.jpg';"></div>
-        <div class="sv-name">Светлана</div>
+        <div class="sv-name">Светлана • ИИ</div>
         <div class="sv-close" id="sv-close">×</div>
       </div>
       <div class="sv-messages" id="sv-msgs">
-        <div class="sv-msg sv-from"><b>Светлана:</b> Привет! Ты рядом? 🍺</div>
-        <div class="sv-msg sv-from">
-          <b>Светлана:</b><br>
-          <img src="orig.png" alt="Фото" style="max-width:100%;border-radius:8px;margin-top:6px;" onerror="this.onerror=null; this.src='orig.jpg';">
-        </div>
+        <div class="sv-msg sv-from"><b>Светлана:</b> Привет! Я рядом. Чем помочь? 😊</div>
       </div>
       <div class="sv-input">
         <input type="text" id="sv-input" placeholder="Напишите сообщение…">
@@ -215,7 +200,6 @@
     <div class="callui-card" role="dialog" aria-labelledby="calluiTitle" aria-describedby="calluiDesc">
       <div class="callui-status" id="calluiDesc">Входящий звонок</div>
       <div class="callui-phone" aria-hidden="true">
-        <!-- phone glyph -->
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1C11.3 21 3 12.7 3 2a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.58.11.32.03.68-.22.93l-2.23 2.23z" fill="currentColor"/>
         </svg>
@@ -227,7 +211,6 @@
         <div class="callui-grid" style="width: 220px;">
           <div class="callui-col">
             <button class="callui-btn callui-decline" id="calluiDecline" aria-label="Отклонить звонок">
-              <!-- proper call_end icon (no rotation) -->
               <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M21.16 13.87c-.73-.59-3.69-2.87-9.16-2.87s-8.43 2.28-9.16 2.87A1.99 1.99 0 002 15.45V17a2 2 0 002 2h2c.74 0 1.38-.41 1.72-1.02l.74-1.34a1.5 1.5 0 00-.55-2.03 12.47 12.47 0 014.37-.78c1.54 0 3.02.27 4.37.78.73.28 1.03 1.12.55 2.03l.74 1.34c.34.61.98 1.02 1.72 1.02h2a2 2 0 002-2v-1.55c0-.6-.27-1.17-.84-1.58z" fill="currentColor"/>
               </svg>
@@ -236,7 +219,6 @@
           </div>
           <div class="callui-col">
             <button class="callui-btn callui-accept" id="calluiAccept" aria-label="Принять звонок">
-              <!-- phone icon -->
               <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1C11.3 21 3 12.7 3 2a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.58.11.32.03.68-.22.93l-2.23 2.23z" fill="currentColor"/>
               </svg>
@@ -251,50 +233,26 @@
   </div>
 
   <script>
-    // показать чат через 1.5 сек после загрузки
-    window.addEventListener('load',()=>{ setTimeout(()=>document.body.classList.add('sv-show'),1500); });
-
-    // Скример -> BSOD + ПОЛНОЭКРАННЫЙ РЕЖИМ по клику на "Узнать больше"
-    const btn=document.getElementById('moreBtn');
-    const screamer=document.getElementById('screamer');
-    const bsod=document.getElementById('bsod');
-    const screamSound=document.getElementById('screamSound');
-
-    btn.addEventListener('click',()=>{
-      const el = document.documentElement;
-      if (el.requestFullscreen) el.requestFullscreen();
-      else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-      else if (el.msRequestFullscreen) el.msRequestFullscreen();
-
-      screamer.style.display='flex';
-      try{ screamSound.currentTime=0; screamSound.play(); }catch(_){}
-      setTimeout(()=>{ screamer.style.display='none'; bsod.style.display='flex'; },2000);
-    });
-
-    bsod.addEventListener('click',()=>location.reload());
-    document.addEventListener('keydown',e=>{
-      if(e.key==='F5'||((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='r')){
-        e.preventDefault(); location.reload();
-      }
-    });
-
+    // Simple page actions just for demo
+    window.addEventListener('load',()=>{ setTimeout(()=>document.body.classList.add('sv-show'),1200); });
     const svOpen=document.getElementById('sv-open');
     const svAd=document.getElementById('sv-ad');
     const svChat=document.getElementById('sv-chat');
-    const svClose=document.getElementById('sv-close');
     const svMsgs=document.getElementById('sv-msgs');
     const svInput=document.getElementById('sv-input');
     const svSend=document.getElementById('sv-send');
 
-    // ===== Web Audio: рингтон, принятие и сброс =====
+    svOpen.addEventListener('click', (e)=>{
+      e.preventDefault();
+      svAd.style.display='none';
+      svChat.style.display='flex';
+      setTimeout(()=>svInput.focus(),50);
+    });
+
+    /* ====== Call sounds (ring/accept/end) ====== */
     let actx=null, masterGain=null, rtGain=null, rtOsc1=null, rtOsc2=null, rtTick=null;
     function ensureAudio(){
-      if(!actx){
-        actx=new (window.AudioContext||window.webkitAudioContext)();
-        masterGain=actx.createGain();
-        masterGain.gain.value=0.9;
-        masterGain.connect(actx.destination);
-      }
+      if(!actx){ actx=new (window.AudioContext||window.webkitAudioContext)(); masterGain=actx.createGain(); masterGain.gain.value=0.9; masterGain.connect(actx.destination); }
     }
     function stopRingtone(){
       if(rtTick){ clearInterval(rtTick); rtTick=null; }
@@ -306,20 +264,17 @@
     function playRingtone(){
       ensureAudio(); stopRingtone();
       rtGain=actx.createGain(); rtGain.gain.value=0; rtGain.connect(masterGain);
-      rtOsc1=actx.createOscillator(); rtOsc1.type='sine'; rtOsc1.frequency.value=440; // A4
-      rtOsc2=actx.createOscillator(); rtOsc2.type='sine'; rtOsc2.frequency.value=660; // E5
+      rtOsc1=actx.createOscillator(); rtOsc1.type='sine'; rtOsc1.frequency.value=440;
+      rtOsc2=actx.createOscillator(); rtOsc2.type='sine'; rtOsc2.frequency.value=660;
       rtOsc1.connect(rtGain); rtOsc2.connect(rtGain);
       rtOsc1.start(); rtOsc2.start();
       function burst(){
-        const now=actx.currentTime;
-        const g=rtGain.gain;
+        const now=actx.currentTime, g=rtGain.gain;
         g.cancelScheduledValues(now);
-        // beep 1
         g.setValueAtTime(0.0, now);
         g.linearRampToValueAtTime(0.22, now+0.02);
         g.setValueAtTime(0.22, now+0.38);
         g.linearRampToValueAtTime(0.0, now+0.42);
-        // beep 2 (offset 0.62s)
         g.setValueAtTime(0.0, now+0.62);
         g.linearRampToValueAtTime(0.22, now+0.64);
         g.setValueAtTime(0.22, now+1.00);
@@ -330,37 +285,23 @@
     }
     function blip(type='up'){
       ensureAudio();
-      const o=actx.createOscillator();
-      const g=actx.createGain();
-      o.type='sine';
-      g.gain.value=0;
-      o.connect(g).connect(masterGain);
+      const o=actx.createOscillator(), g=actx.createGain(); o.type='sine'; g.gain.value=0; o.connect(g).connect(masterGain);
       const now=actx.currentTime;
-      if(type==='up'){
-        o.frequency.setValueAtTime(660, now);
-        o.frequency.exponentialRampToValueAtTime(1200, now+0.16);
-        g.gain.linearRampToValueAtTime(0.22, now+0.02);
-        g.gain.exponentialRampToValueAtTime(0.0001, now+0.24);
+      if(type==='up'){ o.frequency.setValueAtTime(660, now); o.frequency.exponentialRampToValueAtTime(1200, now+0.16);
+        g.gain.linearRampToValueAtTime(0.22, now+0.02); g.gain.exponentialRampToValueAtTime(0.0001, now+0.24);
         o.start(now); o.stop(now+0.26);
-      }else if(type==='down'){
-        o.frequency.setValueAtTime(900, now);
-        o.frequency.exponentialRampToValueAtTime(360, now+0.22);
-        g.gain.linearRampToValueAtTime(0.22, now+0.02);
-        g.gain.exponentialRampToValueAtTime(0.0001, now+0.24);
-        o.start(now); o.stop(now+0.26);
-      }
+      } else { o.frequency.setValueAtTime(900, now); o.frequency.exponentialRampToValueAtTime(360, now+0.22);
+        g.gain.linearRampToValueAtTime(0.22, now+0.02); g.gain.exponentialRampToValueAtTime(0.0001, now+0.24);
+        o.start(now); o.stop(now+0.26); }
     }
 
-    // ===== Web Speech API: женский голос (ru-RU) =====
-    function pickRussianFemaleVoice(){
+    /* ====== TTS (female ru-RU) ====== */
+    function pickRUVoice(){
       const voices = window.speechSynthesis ? speechSynthesis.getVoices() : [];
       if(!voices || !voices.length) return null;
       const ru = voices.filter(v => (v.lang||'').toLowerCase().startsWith('ru'));
       const prefer = ['milena','irina','tatiana','tatyana','oksana','katya','katia','anna','google русский','microsoft irina'];
-      for(const name of prefer){
-        const v = ru.find(v => v.name && v.name.toLowerCase().includes(name));
-        if(v) return v;
-      }
+      for(const name of prefer){ const v = ru.find(v => v.name && v.name.toLowerCase().includes(name)); if(v) return v; }
       return ru[0] || voices[0] || null;
     }
     function ensureVoicesReady(){
@@ -375,98 +316,104 @@
     function speakRU(text, opts={}){
       if(!('speechSynthesis' in window)) return false;
       const u = new SpeechSynthesisUtterance(text);
-      u.lang = 'ru-RU';
-      u.rate = opts.rate ?? 1;
-      u.pitch = opts.pitch ?? 1.15;
-      u.volume = opts.volume ?? 1;
-      const v = pickRussianFemaleVoice();
-      if(v) u.voice = v;
+      u.lang = 'ru-RU'; u.rate = opts.rate ?? 1; u.pitch = opts.pitch ?? 1.15; u.volume = opts.volume ?? 1;
+      const v = pickRUVoice(); if(v) u.voice = v;
       try{ speechSynthesis.cancel(); }catch(_){}
       try{ speechSynthesis.speak(u); return true; }catch(_){ return false; }
     }
 
-    // ===== CALL UI logic =====
+    /* ====== Call UI control ====== */
     (function(){
       const overlay = document.getElementById('callui');
       const decline = document.getElementById('calluiDecline');
       const accept = document.getElementById('calluiAccept');
-      const live = document.getElementById('calluiLive');
       const status = document.getElementById('calluiDesc');
       const timer = document.getElementById('calluiTimer');
-      let callInterval = null;
-      let callStartTime = null;
+      let callInterval = null, callStartTime = null;
 
-      function formatTimer(sec) {
-        const m = Math.floor(sec / 60).toString().padStart(2, '0');
-        const s = (sec % 60).toString().padStart(2, '0');
-        return `${m}:${s}`;
-      }
-      function openUI() {
-        overlay.style.display = 'flex';
-        status.textContent = 'Входящий звонок';
-        live.textContent = 'Открыто окно звонка';
-        timer.textContent = '';
-        document.documentElement.style.overflow = 'hidden';
-        clearInterval(callInterval);
-        callStartTime = null;
-        playRingtone();
-      }
-      function closeUI(playEnd=true) {
-        overlay.style.display = 'none';
-        live.textContent = 'Звонок закрыт';
-        document.documentElement.style.overflow = '';
-        clearInterval(callInterval);
-        timer.textContent = '';
-        callStartTime = null;
-        stopRingtone();
-        if(playEnd) blip('down');
-      }
-      // Экспортируем наружу, чтобы вызывать из sendMsg()
+      function formatTimer(sec){ const m = String(Math.floor(sec/60)).padStart(2,'0'); const s = String(sec%60).padStart(2,'0'); return `${m}:${s}`; }
+      function openUI(){ overlay.style.display='flex'; status.textContent='Входящий звонок'; timer.textContent=''; document.documentElement.style.overflow='hidden'; clearInterval(callInterval); callStartTime=null; playRingtone(); }
+      function closeUI(playEnd=true){ overlay.style.display='none'; document.documentElement.style.overflow=''; clearInterval(callInterval); timer.textContent=''; callStartTime=null; stopRingtone(); if(playEnd) blip('down'); }
       window.__callUI = { open: openUI, close: closeUI };
 
-      // Больше НЕ открываем звонок по клику на «ОТВЕТИТЬ» — только чат
-      svOpen.addEventListener('click', (e)=>{
-        e.preventDefault();
-        svAd.style.display='none';
-        svChat.style.display='flex';
-        setTimeout(()=>svInput.focus(),50);
-      });
-
-      decline.addEventListener('click', () => { closeUI(true); });
-
+      decline.addEventListener('click', () => closeUI(true));
       accept.addEventListener('click', async () => {
-        stopRingtone();
-        blip('up');
-
-        status.textContent = 'Соединение…';
-        live.textContent = 'Соединение';
-        timer.textContent = '';
-        clearInterval(callInterval);
-        callStartTime = null;
-
-        setTimeout(async () => {
-          status.textContent = 'Звонок идет';
-          live.textContent = 'Звонок начался';
-          callStartTime = Date.now();
-          let seconds = 0;
-          timer.textContent = formatTimer(seconds);
-          callInterval = setInterval(() => {
-            seconds = Math.floor((Date.now() - callStartTime) / 1000);
-            timer.textContent = formatTimer(seconds);
-          }, 1000);
-
-          await ensureVoicesReady();
-          speakRU('Привет, это Светлана. Ты меня слышишь?', { pitch: 1.2, rate: 1.0 });
-
-          svAd.style.display='none';
-          svChat.style.display='flex';
-          setTimeout(()=>svInput.focus(),50);
-        }, 1200);
+        stopRingtone(); blip('up'); status.textContent='Соединение…'; timer.textContent=''; clearInterval(callInterval);
+        setTimeout(async ()=>{
+          status.textContent='Звонок идет'; callStartTime=Date.now(); timer.textContent='00:00';
+          callInterval=setInterval(()=>{ const s=Math.floor((Date.now()-callStartTime)/1000); timer.textContent=formatTimer(s); },1000);
+          await ensureVoicesReady(); speakRU('Привет, это Светлана. Ты меня слышишь?', { pitch:1.2, rate:1.0 });
+        },1200);
       });
-
-      overlay.addEventListener('click', (e) => { if (e.target === overlay) closeUI(true); });
-      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay.style.display === 'flex') closeUI(true); });
+      overlay.addEventListener('click', e=>{ if(e.target===overlay) closeUI(true); });
+      document.addEventListener('keydown', e=>{ if(e.key==='Escape' && overlay.style.display==='flex') closeUI(true); });
     })();
+
+    /* ====== AI-like replies (on-device rules) ====== */
+    const memory = [];
+    function clampLen(s, n){ return s.length>n ? s.slice(0,n)+'…' : s; }
+    function detectIntent(t){
+      const s = t.toLowerCase();
+      if(/[^\w]?(прив|здра|хай|ку|салют)/.test(s)) return 'greet';
+      if(/(как дела|как ты|что делаешь)/.test(s)) return 'smalltalk';
+      if(/(где|рядом|ты где|местоположение|локац)/.test(s)) return 'where';
+      if(/(цена|сколько|прайс)/.test(s)) return 'price';
+      if(/(созвон|позвон|звонок|позвоним|свяжемся)/.test(s)) return 'call';
+      if(/[?]$/.test(s)) return 'question';
+      return 'other';
+    }
+    function genReply(text){
+      const intent = detectIntent(text);
+      const t = text.toLowerCase();
+      const rand = (arr)=>arr[Math.floor(Math.random()*arr.length)];
+      const add = (base, tailArr)=> base + ' ' + rand(tailArr);
+      let reply='';
+      switch(intent){
+        case 'greet':
+          reply = rand(['Привет! Как у тебя дела?','Приветик 😊 Чем могу помочь?','Салют! Что планируем?']); break;
+        case 'smalltalk':
+          reply = rand(['Отлично, на связи!','Всё хорошо, рядом 😉','Пишу код и думаю о кофе ☕']); break;
+        case 'where':
+          reply = rand(['Я поблизости — минут 5 от тебя.','Я тут, недалеко. Могу подойти.','В районе, если что — маякуй.']); break;
+        case 'price':
+          reply = rand(['Расскажи, что именно нужно — подскажу варианты.','Давай уточним детали, и я скажу точнее.','Напиши, что планируем — сориентирую по цене.']); break;
+        case 'call':
+          reply = rand(['Ого, давай созвонимся!','Давай голосом обсудим?','Могу позвонить — удобно сейчас?']); break;
+        case 'question':
+          reply = 'Хороший вопрос! ' + rand(['Скажи чуть подробнее?','Давай уточним детали.','Есть пара вариантов — какой ближе?']); break;
+        default:
+          // лёгкое эхо с перефразом
+          reply = rand(['Поняла тебя.','Окей!','Супер!']) + ' ' + clampLen(text.replace(/\s+/g,' ').trim(), 80);
+      }
+      // иногда добавим смайлик
+      if(Math.random()<0.5) reply += ' ' + rand(['🙂','😉','✨','👍','📞']);
+      return reply.trim();
+    }
+
+    function addTyping(){
+      const wrap=document.createElement('div'); wrap.className='sv-msg sv-from'; wrap.id='typing';
+      wrap.innerHTML='<div class="typing"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>';
+      svMsgs.appendChild(wrap); svMsgs.scrollTop=svMsgs.scrollHeight;
+    }
+    function removeTyping(){
+      const t=document.getElementById('typing'); if(t) t.remove();
+    }
+    function aiRespond(userText){
+      const reply = genReply(userText);
+      // Имитация набора: 300мс + 20мс/символ (до 2.2с макс)
+      const delay = Math.min(2200, 300 + reply.length*20);
+      addTyping();
+      setTimeout(()=>{
+        removeTyping();
+        const m=document.createElement('div'); m.className='sv-msg sv-from'; m.innerHTML='<b>Светлана:</b> ' + reply;
+        svMsgs.appendChild(m); svMsgs.scrollTop=svMsgs.scrollHeight;
+        memory.push({ you:userText, sv:reply, ts:Date.now() });
+        // Если фраза содержит триггер «Ого, давай созвонимся!», через 2с — звонок
+        if (reply.includes('Ого, давай созвонимся!')){
+          setTimeout(()=>{ window.__callUI?.open(); }, 2000);
+        }
+      }, delay);
+    }
 
     function sendMsg(){
       const text=svInput.value.trim();
@@ -477,25 +424,10 @@
       svMsgs.appendChild(mine);
       svInput.value='';
       svMsgs.scrollTop=svMsgs.scrollHeight;
-
-      setTimeout(()=>{
-        const reply=document.createElement('div');
-        reply.className='sv-msg sv-from';
-        reply.innerHTML=`<b>Светлана:</b> Ого, давай созвонимся!`;
-        svMsgs.appendChild(reply);
-        svMsgs.scrollTop=svMsgs.scrollHeight;
-
-        // >>> Здесь запускаем входящий звонок <<<
-        if (window.__callUI && typeof window.__callUI.open === 'function') {
-          window.__callUI.open();
-        }
-      },2000);
+      aiRespond(text);
     }
     svSend.addEventListener('click',sendMsg);
     svInput.addEventListener('keydown',e=>{ if(e.key==='Enter') sendMsg(); });
-
-    // Показ чата через 1.5сек для демонстрации
-    window.addEventListener('load',()=>{ setTimeout(()=>document.body.classList.add('sv-show'),1500); });
   </script>
 </body>
 </html>
