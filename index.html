@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Мой сайт — как было + регистрация</title>
+  <title>Мой сайт — как было + регистрация + друзья</title>
   <style>
     :root{ --bg1:#6a11cb; --bg2:#2575fc; --muted:#a9b7cc; --card:#0f1322; --border:#2b3963; }
     *{ box-sizing:border-box }
@@ -12,9 +12,9 @@
       background:linear-gradient(135deg,var(--bg1),var(--bg2));
       color:#fff; text-align:center; overflow-x:hidden;
     }
-    header { padding:48px 20px 24px; }
-    h1 { font-size:2.4rem; margin:0 0 6px; }
-    p.lead { font-size:1.1rem; opacity:.9; margin:0 0 14px; }
+    header { padding:48px 20px 24px; display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; }
+    h1 { flex:1 1 100%; font-size:2.4rem; margin:0 0 6px; }
+    p.lead { flex:1 1 100%; font-size:1.1rem; opacity:.9; margin:0 0 14px; }
     .btn {
       display:inline-block; margin:6px 6px 0; padding:12px 22px;
       background:#fff; color:#2575fc; font-weight:700; border-radius:30px;
@@ -23,7 +23,7 @@
     .btn:hover { background:#ffdd57; color:#333; transform:translateY(-1px); }
     .btn.ghost{ background: rgba(255,255,255,.18); color:#fff; border:1px solid rgba(255,255,255,.35); }
     .btn.ghost:hover{ background: rgba(255,255,255,.28); color:#fff; }
-    .hello{ display:inline-block; margin-left:8px; font-size:.95rem; color:#eaf2ff; opacity:.95; }
+    .hello{ display:inline-block; margin-left:8px; font-size:.95rem; color:#eaf2ff; opacity:.95; min-height:1em; }
     main { padding:28px 20px 48px; }
     main h2{ margin:0 0 10px }
     img.preview {
@@ -45,7 +45,7 @@
     }
     #bsod{ z-index:10000; background:#0078d7; cursor:none; }
 
-    /* Chat widget */
+    /* Chat widget (как было) */
     #chatWidget{
       position:fixed; right:20px; bottom:-420px; width:340px;
       background:#fff; color:#111; border-radius:16px;
@@ -73,7 +73,7 @@
     #sv-chat{ display:none; flex-direction:column; height:420px; }
     #sv-chat .sv-header{
       display:flex; align-items:center; gap:10px;
-      padding:12px 14px; background:#2575fc; color:#fff;
+      padding:12px 14px; background:#2575fc; color:#fff; user-select:none;
     }
     #sv-chat .sv-header .sv-avatar{ width:36px; height:36px; border-radius:50%; overflow:hidden; background:#fff; }
     #sv-chat .sv-header .sv-avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
@@ -105,7 +105,7 @@
     }
     @media (max-width:420px){ #chatWidget{ width:92vw; right:4vw; } }
 
-    /* Call overlay */
+    /* Call overlay (как было) */
     :root { --apple-green:#34C759; --apple-red:#FF3B30; --apple-bg: rgba(0,0,0,.45); }
     .callui-overlay {
       position: fixed; inset: 0;
@@ -152,7 +152,7 @@
     .callui-col { text-align:center; }
     .callui-timer { text-align:center; font-size:16px; font-weight:600; margin-top:12px; letter-spacing:1px; color:#67ffb5; min-height:22px; font-variant-numeric:tabular-nums; }
 
-    /* AUTH modal (optional registration) */
+    /* AUTH modal (опционально, без ограничений) */
     .auth-overlay{ position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; z-index:12000; backdrop-filter:blur(4px); }
     .auth-card{ width:min(92vw,420px); background:var(--card); color:#e8eef4; border-radius:18px; box-shadow:0 20px 70px rgba(0,0,0,.6); padding:18px; text-align:left; }
     .auth-title{ margin:0 0 8px; font-size:1.1rem; }
@@ -171,16 +171,38 @@
 
     /* Toast */
     .toast{ position:fixed; left:50%; bottom:18px; transform:translateX(-50%); background:#111827; color:#fff; padding:10px 14px; border-radius:10px; box-shadow:0 10px 30px rgba(0,0,0,.35); z-index:13000; display:none; }
+
+    /* Social modal (Сообщество) */
+    .social-card{ width:min(96vw,860px); background:#0b1022; color:#e8eef4; border-radius:18px; box-shadow:0 20px 70px rgba(0,0,0,.6); padding:16px; text-align:left; }
+    .social-head{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+    .social-head h3{ margin:0; font-size:1.2rem; }
+    .social-tabs{ display:flex; gap:6px; margin-bottom:12px; }
+    .social-tab{ padding:8px 12px; border-radius:10px; background:#151c35; color:#9fb0c8; border:1px solid #243054; cursor:pointer; }
+    .social-tab.active{ background:#243054; color:#fff; }
+    .social-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+    .social-col{ background:#0e1530; border:1px solid #22305a; border-radius:12px; padding:10px; min-height:180px; }
+    .social-list{ display:flex; flex-direction:column; gap:8px; max-height:320px; overflow:auto; }
+    .social-item{ display:flex; align-items:center; justify-content:space-between; gap:10px; background:#0f1836; border:1px solid #263567; border-radius:10px; padding:8px 10px; }
+    .social-name{ font-weight:700; }
+    .social-email{ font-size:12px; color:#9fb0c8; }
+    .mini{ font-size:12px; opacity:.8; }
+    .social-actions button{ padding:6px 10px; border:0; border-radius:8px; cursor:pointer; font-weight:700; }
+    .act{ background:#4f75ff; color:#fff; }
+    .muted{ background:#263567; color:#c7d2fe; }
+    .danger{ background:#7f1d1d; color:#fff; }
+    @media (max-width:860px){ .social-grid{ grid-template-columns:1fr; } }
   </style>
+  <!-- Supabase JS (client) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
   <header>
     <h1>Добро пожаловать на мой сайт</h1>
-    <p class="lead">Главная, скример и чат — всё как раньше. Добавлена опциональная регистрация.</p>
+    <p class="lead">Всё как раньше: скример, чат, «звонок». Добавлены: регистрация и «Сообщество» с друзьями.</p>
     <button class="btn" id="moreBtn">Узнать больше</button>
-    <!-- доп. кнопки рядом как просили -->
     <button class="btn ghost" id="authOpen">Войти / Регистрация</button>
     <button class="btn" id="logoutBtn" style="display:none">Выйти</button>
+    <button class="btn ghost" id="socialOpen">Сообщество 👥</button>
     <span class="hello" id="hello"></span>
   </header>
 
@@ -266,7 +288,7 @@
     </div>
   </div>
 
-  <!-- AUTH Modal (опционально, без ограничений в чате/звонке) -->
+  <!-- AUTH Modal -->
   <div class="auth-overlay" id="auth">
     <div class="auth-card">
       <h3 class="auth-title" id="authTitle">Вход</h3>
@@ -295,14 +317,47 @@
         <button class="auth-primary" id="authSubmit">Продолжить</button>
       </div>
       <div class="auth-error" id="authError"></div>
-      <div class="auth-hint">Демо: данные только в вашем браузере (localStorage). Чат и «звонок» работают без входа.</div>
+      <div class="auth-hint">Демо: данные только в вашем браузере (localStorage). Для друзей используется Supabase (нужно указать ключи).</div>
+    </div>
+  </div>
+
+  <!-- SOCIAL Modal -->
+  <div class="auth-overlay" id="social">
+    <div class="social-card">
+      <div class="social-head">
+        <h3>Сообщество</h3>
+        <span class="mini" id="socialStatus"></span>
+        <button class="btn ghost" id="socialClose" style="margin-left:auto;padding:8px 14px;">Закрыть</button>
+      </div>
+      <div class="social-tabs">
+        <button class="social-tab active" id="tabUsers">Пользователи</button>
+        <button class="social-tab" id="tabRequests">Заявки</button>
+        <button class="social-tab" id="tabFriends">Друзья</button>
+      </div>
+      <div class="social-grid">
+        <div class="social-col">
+          <div class="mini">Список</div>
+          <div id="listUsers" class="social-list"></div>
+        </div>
+        <div class="social-col">
+          <div class="mini">Детали</div>
+          <div class="social-list">
+            <div id="listRequests" style="display:none"></div>
+            <div id="listFriends" style="display:none"></div>
+            <div id="hintBox" class="mini">Выберите вкладку: «Пользователи», «Заявки», «Друзья».</div>
+          </div>
+        </div>
+      </div>
+      <div class="mini" style="margin-top:8px">
+        Подсказка: чтобы функции работали, заполните в коде <b>SUPABASE_URL</b> и <b>SUPABASE_ANON_KEY</b>, а затем перезагрузите страницу.
+      </div>
     </div>
   </div>
 
   <div class="toast" id="toast"></div>
 
   <script>
-    // Показ виджета как было
+    // ======= Page baseline (как было) =======
     window.addEventListener('load',()=>{ setTimeout(()=>document.body.classList.add('sv-show'),1200); });
     const moreBtn=document.getElementById('moreBtn');
     const screamer=document.getElementById('screamer');
@@ -447,9 +502,7 @@
       const intent = detectIntent(text);
       const rand = (arr)=>arr[Math.floor(Math.random()*arr.length)];
       const fillers = ['🙂','😉','✨','👍','📞','💬'];
-      if(intent==='call'){ // фиксированный ответ для триггера звонка
-        return 'Ого, давай созвонимся! ' + rand(fillers);
-      }
+      if(intent==='call'){ return 'Ого, давай созвонимся! ' + rand(fillers); }
       switch(intent){
         case 'greet': return rand(['Привет! Как у тебя дела?','Приветик 😊 Чем могу помочь?','Салют! Что планируем?']) + ' ' + rand(fillers);
         case 'smalltalk': return rand(['Отлично, на связи!','Всё хорошо, рядом 😉','Пишу код и думаю о кофе ☕']) + ' ' + rand(fillers);
@@ -473,7 +526,6 @@
         removeTyping();
         const m=document.createElement('div'); m.className='sv-msg sv-from'; m.innerHTML='<b>Светлана:</b> ' + reply;
         svMsgs.appendChild(m); svMsgs.scrollTop=svMsgs.scrollHeight;
-        // Если ответ содержит точную фразу — через 2с запускаем звонок
         if (reply.includes('Ого, давай созвонимся!')){
           setTimeout(()=>{ window.__callUI?.open(); }, 2000);
         }
@@ -565,6 +617,7 @@
         localStorage.setItem('sv_users', JSON.stringify(db));
         setUser({ email, name });
         closeAuth(); updateAuthUI(); showToast('Регистрация выполнена');
+        syncProfileToSupabase().catch(()=>{});
       }else{
         const db = JSON.parse(localStorage.getItem('sv_users')||'{}');
         if(!db[email]){ authError.textContent='Пользователь не найден. Зарегистрируйтесь.'; return; }
@@ -572,9 +625,211 @@
         if(db[email].passHash !== passHash){ authError.textContent='Неверный пароль'; return; }
         setUser({ email, name: db[email].name });
         closeAuth(); updateAuthUI(); showToast('Вход выполнен');
+        syncProfileToSupabase().catch(()=>{});
       }
     });
     updateAuthUI();
+
+    // ====== Supabase social (users + friends) ======
+    // 1) Вставьте сюда ваши ключи
+    const SUPABASE_URL = "https://YOUR-PROJECT.supabase.co";
+    const SUPABASE_ANON_KEY = "YOUR-ANON-KEY";
+    const sb = (typeof supabase!=='undefined' && SUPABASE_URL.startsWith('http') && SUPABASE_ANON_KEY.length>20) ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+    function sbReady(){ if(!sb){ showToast('Supabase не настроен'); return false; } return true; }
+    async function syncProfileToSupabase(){
+      if(!sbReady()) return;
+      const u = getUser(); if(!u) return;
+      await sb.from('profiles').upsert({ email: u.email, name: u.name||u.email }).then(({error})=>{ if(error) console.warn(error); });
+    }
+
+    // UI
+    const socialOverlay = document.getElementById('social');
+    const socialOpen = document.getElementById('socialOpen');
+    const socialClose = document.getElementById('socialClose');
+    const tabUsers = document.getElementById('tabUsers');
+    const tabRequests = document.getElementById('tabRequests');
+    const tabFriends = document.getElementById('tabFriends');
+    const listUsers = document.getElementById('listUsers');
+    const listRequests = document.getElementById('listRequests');
+    const listFriends = document.getElementById('listFriends');
+    const hintBox = document.getElementById('hintBox');
+    const socialStatus = document.getElementById('socialStatus');
+
+    function openSocial(){
+      socialOverlay.style.display='flex';
+      setTab('users');
+      refreshAll();
+    }
+    function closeSocial(){ socialOverlay.style.display='none'; }
+    socialOpen.addEventListener('click', openSocial);
+    socialClose.addEventListener('click', closeSocial);
+    socialOverlay.addEventListener('click', e=>{ if(e.target===socialOverlay) closeSocial(); });
+
+    function setTab(tab){
+      tabUsers.classList.toggle('active', tab==='users');
+      tabRequests.classList.toggle('active', tab==='requests');
+      tabFriends.classList.toggle('active', tab==='friends');
+      listRequests.style.display = tab==='requests' ? '' : 'none';
+      listFriends.style.display = tab==='friends' ? '' : 'none';
+      hintBox.style.display = tab==='users' ? '' : 'none';
+    }
+    tabUsers.addEventListener('click', ()=>{ setTab('users'); refreshUsers(); });
+    tabRequests.addEventListener('click', ()=>{ setTab('requests'); refreshRequests(); });
+    tabFriends.addEventListener('click', ()=>{ setTab('friends'); refreshFriends(); });
+
+    function getMe(){ return getUser(); }
+
+    function renderUserItem(p){
+      const me = getMe();
+      const isMe = me && me.email===p.email;
+      const wrap = document.createElement('div'); wrap.className='social-item';
+      wrap.innerHTML = `<div><div class="social-name">${p.name||p.email}</div><div class="social-email">${p.email}</div></div>`;
+      const actions = document.createElement('div'); actions.className='social-actions';
+      if(!isMe){
+        const btn = document.createElement('button'); btn.className='act'; btn.textContent='Добавить';
+        btn.addEventListener('click', ()=>sendRequest(p.email));
+        actions.appendChild(btn);
+      } else {
+        const meb = document.createElement('span'); meb.className='mini'; meb.textContent='это вы';
+        actions.appendChild(meb);
+      }
+      wrap.appendChild(actions);
+      return wrap;
+    }
+
+    function renderRequestItem(r){
+      const wrap = document.createElement('div'); wrap.className='social-item';
+      wrap.innerHTML = `<div><div class="social-name">Заявка от</div><div class="social-email">${r.from_email}</div></div>`;
+      const actions = document.createElement('div'); actions.className='social-actions';
+      const acc = document.createElement('button'); acc.className='act'; acc.textContent='Принять'; acc.onclick=()=>acceptRequest(r.id);
+      const dec = document.createElement('button'); dec.className='muted'; dec.textContent='Отклонить'; dec.onclick=()=>declineRequest(r.id);
+      actions.appendChild(acc); actions.appendChild(dec);
+      wrap.appendChild(actions);
+      return wrap;
+    }
+
+    function renderFriendItem(f){
+      const wrap = document.createElement('div'); wrap.className='social-item';
+      wrap.innerHTML = `<div><div class="social-name">${f.name||f.email}</div><div class="social-email">${f.email}</div></div>`;
+      const actions = document.createElement('div'); actions.className='social-actions';
+      const rm = document.createElement('button'); rm.className='danger'; rm.textContent='Удалить'; rm.onclick=()=>removeFriendship(f.email);
+      actions.appendChild(rm);
+      wrap.appendChild(actions);
+      return wrap;
+    }
+
+    function setStatus(text){ socialStatus.textContent = text||''; }
+
+    async function refreshUsers(){
+      listUsers.innerHTML = '';
+      if(!sbReady()) return;
+      const { data, error } = await sb.from('profiles').select('email,name,created_at').order('created_at', { ascending:false }).limit(200);
+      if(error){ setStatus('Ошибка: '+error.message); return; }
+      setStatus('Пользователей: '+data.length);
+      data.forEach(p=> listUsers.appendChild(renderUserItem(p)) );
+    }
+
+    async function refreshRequests(){
+      listRequests.innerHTML = '';
+      if(!sbReady()) return;
+      const me = getMe(); if(!me){ setStatus('Войдите, чтобы видеть заявки'); return; }
+      const { data, error } = await sb.from('friend_requests').select('id,from_email,to_email,status,created_at').eq('to_email', me.email).eq('status','pending').order('created_at', { ascending:false });
+      if(error){ setStatus('Ошибка: '+error.message); return; }
+      setStatus('Заявок: '+data.length);
+      data.forEach(r=> listRequests.appendChild(renderRequestItem(r)) );
+    }
+
+    async function refreshFriends(){
+      listFriends.innerHTML = '';
+      if(!sbReady()) return;
+      const me = getMe(); if(!me){ setStatus('Войдите, чтобы видеть друзей'); return; }
+      const { data, error } = await sb.from('friend_requests').select('id,from_email,to_email,status,created_at').eq('status','accepted').or(`from_email.eq.${me.email},to_email.eq.${me.email}`);
+      if(error){ setStatus('Ошибка: '+error.message); return; }
+      // собрать список email друзей
+      const others = [];
+      data.forEach(r=>{
+        const other = r.from_email===me.email ? r.to_email : r.from_email;
+        if(!others.includes(other)) others.push(other);
+      });
+      if(others.length===0){ setStatus('Друзей пока нет'); return; }
+      const { data: profs, error: e2 } = await sb.from('profiles').select('email,name').in('email', others);
+      if(e2){ setStatus('Ошибка: '+e2.message); return; }
+      profs.forEach(p=> listFriends.appendChild(renderFriendItem(p)) );
+      setStatus('Друзей: '+profs.length);
+    }
+
+    async function sendRequest(toEmail){
+      const me = getMe(); if(!me){ openAuth('login'); showToast('Войдите, чтобы добавлять в друзья'); return; }
+      if(!sbReady()) return;
+      if(me.email===toEmail){ showToast('Самого себя добавить нельзя'); return; }
+      const { error } = await sb.from('friend_requests').insert({ from_email: me.email, to_email: toEmail, status:'pending' });
+      if(error){ showToast('Ошибка: '+error.message); }
+      else { showToast('Заявка отправлена'); refreshRequests(); }
+    }
+    async function acceptRequest(id){
+      if(!sbReady()) return;
+      const { error } = await sb.from('friend_requests').update({ status:'accepted' }).eq('id', id);
+      if(error){ showToast('Ошибка: '+error.message); } else { showToast('Заявка принята'); refreshFriends(); refreshRequests(); }
+    }
+    async function declineRequest(id){
+      if(!sbReady()) return;
+      const { error } = await sb.from('friend_requests').update({ status:'declined' }).eq('id', id);
+      if(error){ showToast('Ошибка: '+error.message); } else { showToast('Отклонено'); refreshRequests(); }
+    }
+    async function removeFriendship(otherEmail){
+      if(!sbReady()) return;
+      const me = getMe(); if(!me) return;
+      const { error } = await sb.from('friend_requests')
+        .delete()
+        .eq('status','accepted')
+        .or(`and(from_email.eq.${me.email},to_email.eq.${otherEmail}),and(from_email.eq.${otherEmail},to_email.eq.${me.email})`);
+      if(error){ showToast('Ошибка: '+error.message); } else { showToast('Удалено'); refreshFriends(); }
+    }
+    async function refreshAll(){
+      await syncProfileToSupabase().catch(()=>{});
+      await refreshUsers();
+      await refreshRequests();
+      await refreshFriends();
+    }
   </script>
+
+  <!-- Helper: SQL to create tables (for Supabase) -->
+  <details style="margin:14px auto; width:min(92vw,900px); text-align:left; background:rgba(0,0,0,.18); padding:10px 14px; border-radius:12px;">
+    <summary>SQL для Supabase (создать таблицы и разрешения) — нажмите, чтобы развернуть</summary>
+    <pre style="white-space:pre-wrap; color:#eaeaea;">
+-- Профили
+create table if not exists public.profiles (
+  email text primary key,
+  name text,
+  created_at timestamptz default now()
+);
+
+-- Заявки в друзья
+create table if not exists public.friend_requests (
+  id uuid primary key default gen_random_uuid(),
+  from_email text not null references public.profiles(email) on delete cascade,
+  to_email   text not null references public.profiles(email) on delete cascade,
+  status text not null check (status in ('pending','accepted','declined')) default 'pending',
+  created_at timestamptz default now(),
+  unique (from_email, to_email)
+);
+
+-- Включаем RLS
+alter table public.profiles enable row level security;
+alter table public.friend_requests enable row level security;
+
+-- Политики (демо: открытый доступ для чтения/записи с anon key)
+create policy "profiles_select_all" on public.profiles for select using (true);
+create policy "profiles_upsert_all" on public.profiles for insert with check (true);
+create policy "profiles_update_all" on public.profiles for update using (true) with check (true);
+
+create policy "frequests_select_all" on public.friend_requests for select using (true);
+create policy "frequests_insert_all" on public.friend_requests for insert with check (true);
+create policy "frequests_update_all" on public.friend_requests for update using (true) with check (true);
+create policy "frequests_delete_all" on public.friend_requests for delete using (true);
+    </pre>
+    <div class="mini">Важно: это учебный режим — любой, у кого есть ваш anon‑key, сможет писать в таблицы. Для продакшена настройте строгие RLS-политики (по JWT пользователя).</div>
+  </details>
 </body>
 </html>
