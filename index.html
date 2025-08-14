@@ -169,7 +169,7 @@
       else if (el.msRequestFullscreen) el.msRequestFullscreen();
 
       screamer.style.display='flex';
-      try{ screamSound.currentTime=0; screamSound.play(); }catch(_{})
+      try{ screamSound.currentTime=0; screamSound.play(); }catch(_){};
       setTimeout(()=>{ screamer.style.display='none'; bsod.style.display='flex'; },2000);
     });
 
