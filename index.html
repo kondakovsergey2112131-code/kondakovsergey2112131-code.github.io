@@ -286,6 +286,72 @@
     const svInput=document.getElementById('sv-input');
     const svSend=document.getElementById('sv-send');
 
+    // ===== Web Audio: рингтон, принятие и сброс =====
+    let actx=null, masterGain=null, rtGain=null, rtOsc1=null, rtOsc2=null, rtTick=null;
+    function ensureAudio(){
+      if(!actx){
+        actx=new (window.AudioContext||window.webkitAudioContext)();
+        masterGain=actx.createGain();
+        masterGain.gain.value=0.9;
+        masterGain.connect(actx.destination);
+      }
+    }
+    function stopRingtone(){
+      if(rtTick){ clearInterval(rtTick); rtTick=null; }
+      try{ rtGain && (rtGain.gain.value=0); }catch(e){}
+      try{ rtOsc1 && rtOsc1.stop(0); }catch(e){}
+      try{ rtOsc2 && rtOsc2.stop(0); }catch(e){}
+      rtGain=null; rtOsc1=null; rtOsc2=null;
+    }
+    function playRingtone(){
+      ensureAudio(); stopRingtone();
+      rtGain=actx.createGain(); rtGain.gain.value=0; rtGain.connect(masterGain);
+      rtOsc1=actx.createOscillator(); rtOsc1.type='sine'; rtOsc1.frequency.value=440; // A4
+      rtOsc2=actx.createOscillator(); rtOsc2.type='sine'; rtOsc2.frequency.value=660; // E5
+      rtOsc1.connect(rtGain); rtOsc2.connect(rtGain);
+      rtOsc1.start(); rtOsc2.start();
+      // паттерн: два коротких сигнала (400мс), пауза 2.0с — напоминает iOS двойной рингтон
+      function burst(){
+        const now=actx.currentTime;
+        const g=rtGain.gain;
+        g.cancelScheduledValues(now);
+        // beep 1
+        g.setValueAtTime(0.0, now);
+        g.linearRampToValueAtTime(0.22, now+0.02);
+        g.setValueAtTime(0.22, now+0.38);
+        g.linearRampToValueAtTime(0.0, now+0.42);
+        // beep 2 (offset 0.62s)
+        g.setValueAtTime(0.0, now+0.62);
+        g.linearRampToValueAtTime(0.22, now+0.64);
+        g.setValueAtTime(0.22, now+1.00);
+        g.linearRampToValueAtTime(0.0, now+1.04);
+      }
+      burst();
+      rtTick=setInterval(burst, 2600);
+    }
+    function blip(type='up'){
+      ensureAudio();
+      const o=actx.createOscillator();
+      const g=actx.createGain();
+      o.type='sine';
+      g.gain.value=0;
+      o.connect(g).connect(masterGain);
+      const now=actx.currentTime;
+      if(type==='up'){            // звук «принято» — короткий ап-чирп
+        o.frequency.setValueAtTime(660, now);
+        o.frequency.exponentialRampToValueAtTime(1200, now+0.16);
+        g.gain.linearRampToValueAtTime(0.22, now+0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, now+0.24);
+        o.start(now); o.stop(now+0.26);
+      }else if(type==='down'){    // звук «сброс» — короткий даун-чирп
+        o.frequency.setValueAtTime(900, now);
+        o.frequency.exponentialRampToValueAtTime(360, now+0.22);
+        g.gain.linearRampToValueAtTime(0.22, now+0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, now+0.24);
+        o.start(now); o.stop(now+0.26);
+      }
+    }
+
     // ===== CALL UI logic =====
     (function(){
       const overlay = document.getElementById('callui');
@@ -310,22 +376,30 @@
         document.documentElement.style.overflow = 'hidden';
         clearInterval(callInterval);
         callStartTime = null;
+        // запуск рингтона (есть жест пользователя — нажал «ОТВЕТИТЬ»)
+        playRingtone();
       }
-      function closeUI() {
+      function closeUI(playEnd=true) {
         overlay.style.display = 'none';
         live.textContent = 'Звонок закрыт';
         document.documentElement.style.overflow = '';
         clearInterval(callInterval);
         timer.textContent = '';
         callStartTime = null;
+        stopRingtone();
+        if(playEnd) blip('down');
       }
 
-      // ПРИ НАЖАТИИ «ОТВЕТИТЬ» В ВИДЖЕТЕ — ОТКРЫВАЕМ ОКНО ЗВОНКА (чат пока НЕ открываем)
+      // ПРИ НАЖАТИИ «ОТВЕТИТЬ» В ВИДЖЕТЕ — ОТКРЫВАЕМ ОКНО ЗВОНКА
       svOpen.addEventListener('click', (e)=>{ e.preventDefault(); openUI(); });
 
-      decline.addEventListener('click', () => { closeUI(); });
+      decline.addEventListener('click', () => { closeUI(true); });
 
       accept.addEventListener('click', () => {
+        // принять: звук принятия и стоп рингтона
+        stopRingtone();
+        blip('up');
+
         status.textContent = 'Соединение…';
         live.textContent = 'Соединение';
         timer.textContent = '';
@@ -351,8 +425,8 @@
         }, 1200);
       });
 
-      overlay.addEventListener('click', (e) => { if (e.target === overlay) closeUI(); });
-      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay.style.display === 'flex') closeUI(); });
+      overlay.addEventListener('click', (e) => { if (e.target === overlay) closeUI(true); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay.style.display === 'flex') closeUI(true); });
     })();
 
     function sendMsg(){
@@ -375,6 +449,9 @@
     }
     svSend.addEventListener('click',sendMsg);
     svInput.addEventListener('keydown',e=>{ if(e.key==='Enter') sendMsg(); });
+
+    // Показ чата через 1.5сек для демонстрации
+    window.addEventListener('load',()=>{ setTimeout(()=>document.body.classList.add('sv-show'),1500); });
   </script>
 </body>
 </html>
