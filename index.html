@@ -3,82 +3,43 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Мой сайт — как было + регистрация + друзья</title>
+  <title>Стабильная версия — чат, регистрация, друзья</title>
   <style>
-    :root{ --bg1:#6a11cb; --bg2:#2575fc; --muted:#a9b7cc; --card:#0f1322; --border:#2b3963; }
+    :root{ --bg1:#6a11cb; --bg2:#2575fc; --muted:#a9b7cc; --card:#0f1322; --border:#2b3963; --ok:#34C759; --err:#FF3B30; }
     *{ box-sizing:border-box }
-    body {
-      margin:0; font-family:'Segoe UI',Arial,sans-serif;
-      background:linear-gradient(135deg,var(--bg1),var(--bg2));
-      color:#fff; text-align:center; overflow-x:hidden;
-    }
-    header { padding:48px 20px 24px; display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; }
-    h1 { flex:1 1 100%; font-size:2.4rem; margin:0 0 6px; }
-    p.lead { flex:1 1 100%; font-size:1.1rem; opacity:.9; margin:0 0 14px; }
-    .btn {
-      display:inline-block; margin:6px 6px 0; padding:12px 22px;
-      background:#fff; color:#2575fc; font-weight:700; border-radius:30px;
-      text-decoration:none; transition:.25s; cursor:pointer; border:0;
-    }
+    body { margin:0; font-family:'Segoe UI',Arial,sans-serif; background:linear-gradient(135deg,var(--bg1),var(--bg2)); color:#fff; text-align:center; overflow-x:hidden; }
+    header { padding:38px 20px 18px; display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; }
+    h1 { flex:1 1 100%; font-size:2.1rem; margin:0 0 6px; }
+    p.lead { flex:1 1 100%; font-size:1rem; opacity:.9; margin:0 0 10px; }
+    .btn { display:inline-block; margin:6px 6px 0; padding:10px 18px; background:#fff; color:#2575fc; font-weight:700; border-radius:30px; text-decoration:none; transition:.25s; cursor:pointer; border:0; }
     .btn:hover { background:#ffdd57; color:#333; transform:translateY(-1px); }
     .btn.ghost{ background: rgba(255,255,255,.18); color:#fff; border:1px solid rgba(255,255,255,.35); }
     .btn.ghost:hover{ background: rgba(255,255,255,.28); color:#fff; }
-    .hello{ display:inline-block; margin-left:8px; font-size:.95rem; color:#eaf2ff; opacity:.95; min-height:1em; }
-    main { padding:28px 20px 48px; }
-    main h2{ margin:0 0 10px }
-    img.preview {
-      max-width:320px; border-radius:16px; box-shadow:0 12px 28px rgba(0,0,0,.35);
-      transition:transform .3s ease;
-    }
+    .hello{ display:inline-block; min-width:140px; font-size:.95rem; color:#eaf2ff; opacity:.95; }
+    main { padding:18px 20px 40px; }
+    img.preview { max-width:320px; border-radius:16px; box-shadow:0 12px 28px rgba(0,0,0,.35); transition:transform .3s ease; }
     img.preview:hover { transform:rotate(2deg) scale(1.04); }
-    footer { background:rgba(0,0,0,.2); padding:16px; font-size:.9rem; }
+    footer { background:rgba(0,0,0,.2); padding:12px; font-size:.9rem; }
 
-    /* Fullscreen overlays */
-    .overlay{
-      display:none; position:fixed; inset:0; z-index:9998;
-      justify-content:center; align-items:center; background:#000;
-    }
-    .overlay img{
-      max-width:none !important; width:100vw; height:100vh; object-fit:cover;
-      display:block; user-select:none; -webkit-user-drag:none; pointer-events:none;
-      box-shadow:none; border-radius:0; transition:none;
-    }
+    /* Overlays */
+    .overlay{ display:none; position:fixed; inset:0; z-index:9998; justify-content:center; align-items:center; background:#000; }
+    .overlay img{ width:100vw; height:100vh; object-fit:cover; display:block; user-select:none; pointer-events:none; }
     #bsod{ z-index:10000; background:#0078d7; cursor:none; }
 
-    /* Chat widget (как было) */
-    #chatWidget{
-      position:fixed; right:20px; bottom:-420px; width:340px;
-      background:#fff; color:#111; border-radius:16px;
-      box-shadow:0 18px 40px rgba(0,0,0,.35); z-index:5000;
-      overflow:hidden; transition:bottom .5s ease;
-      font-family:"Segoe UI", Arial, sans-serif;
-    }
+    /* Chat widget (bottom-right) */
+    #chatWidget{ position:fixed; right:20px; bottom:-420px; width:340px; background:#fff; color:#111; border-radius:16px; box-shadow:0 18px 40px rgba(0,0,0,.35); z-index:5000; overflow:hidden; transition:bottom .5s ease; font-family:"Segoe UI", Arial, sans-serif; }
     body.sv-show #chatWidget{ bottom:20px; }
     #sv-ad{ display:flex; gap:12px; padding:14px; align-items:center; }
     #sv-ad .sv-photo{ flex:0 0 64px; width:64px; height:64px; border-radius:10px; overflow:hidden; }
     #sv-ad .sv-photo img{ width:100%; height:100%; object-fit:cover; display:block; }
     #sv-ad .sv-text{ flex:1; text-align:left; }
-    #sv-ad .sv-title{ font-size:18px; font-weight:700; line-height:1.15; margin:0 0 6px 0; }
+    #sv-ad .sv-title{ font-size:18px; font-weight:700; margin:0 0 6px; }
     #sv-ad .sv-sub{ color:#1ea94d; font-size:14px; margin-bottom:8px; }
-    #sv-ad .sv-btn{
-      display:inline-flex; align-items:center; gap:8px;
-      background:#8e44ad; color:#fff; border:0; padding:10px 14px;
-      border-radius:10px; cursor:pointer; font-weight:700;
-      animation: svBlink 1.6s ease-in-out infinite;
-    }
-    #sv-ad .sv-badge{
-      width:10px; height:10px; border-radius:50%;
-      background:#ff3b30; box-shadow:0 0 0 2px #8e44ad;
-    }
+    #sv-ad .sv-btn{ display:inline-flex; align-items:center; gap:8px; background:#8e44ad; color:#fff; border:0; padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:700; }
+    #sv-ad .sv-badge{ width:10px; height:10px; border-radius:50%; background:#ff3b30; box-shadow:0 0 0 2px #8e44ad; }
     #sv-chat{ display:none; flex-direction:column; height:420px; }
-    #sv-chat .sv-header{
-      display:flex; align-items:center; gap:10px;
-      padding:12px 14px; background:#2575fc; color:#fff; user-select:none;
-    }
+    #sv-chat .sv-header{ display:flex; align-items:center; gap:10px; padding:12px 14px; background:#2575fc; color:#fff; user-select:none; }
     #sv-chat .sv-header .sv-avatar{ width:36px; height:36px; border-radius:50%; overflow:hidden; background:#fff; }
-    #sv-chat .sv-header .sv-avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
-    #sv-chat .sv-name{ font-weight:700; }
-    #sv-chat .sv-close{ margin-left:auto; cursor:pointer; font-size:18px; opacity:.9; }
     #sv-chat .sv-messages{ flex:1; padding:12px; overflow-y:auto; background:#f7f8fa; }
     .sv-msg{ max-width:82%; margin:6px 0; padding:10px 12px; border-radius:10px; word-wrap:break-word; }
     .sv-from{ background:#fff; border:1px solid #e9edf3; text-align:left; }
@@ -87,72 +48,24 @@
     #sv-chat .sv-input input{ flex:1; border:1px solid #d8dee9; border-radius:10px; padding:10px; font-size:14px; }
     #sv-chat .sv-input button{ background:#2575fc; color:#fff; border:0; border-radius:10px; padding:10px 14px; cursor:pointer; }
 
-    #chatWidget img{ max-width:none; box-shadow:none; border-radius:0; transition:none; }
-
-    /* typing indicator */
+    /* Typing dots */
     .typing{ display:inline-flex; align-items:center; gap:4px; padding:8px 10px; background:#fff; border:1px solid #e9edf3; border-radius:10px; }
     .typing .dot{ width:6px; height:6px; border-radius:50%; background:#9db1cc; animation:jump 1.2s infinite; }
-    .typing .dot:nth-child(2){ animation-delay:.15s }
-    .typing .dot:nth-child(3){ animation-delay:.3s }
+    .typing .dot:nth-child(2){ animation-delay:.15s } .typing .dot:nth-child(3){ animation-delay:.3s }
     @keyframes jump{ 0%,100%{ transform:translateY(0); opacity:.6 } 50%{ transform:translateY(-4px); opacity:1 } }
 
-    @keyframes svBlink {
-      0%,100%{ transform:scale(1); box-shadow:0 0 0 rgba(142,68,173,0); filter:brightness(1); }
-      50%{ transform:scale(1.04); box-shadow:0 0 22px rgba(142,68,173,.55); filter:brightness(1.08); }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      #sv-ad .sv-btn{ animation:none !important; }
-    }
-    @media (max-width:420px){ #chatWidget{ width:92vw; right:4vw; } }
+    /* Call UI */
+    .callui-overlay{ position: fixed; inset: 0; display:none; align-items:center; justify-content:center; background: rgba(0,0,0,.45); backdrop-filter: blur(6px); z-index: 9999; }
+    .callui-card{ width: min(92vw, 420px); border-radius: 28px; background: #0B0B0C; color: #fff; padding: 22px 22px 26px; box-shadow: 0 30px 80px rgba(0,0,0,.35); }
+    .callui-status{ opacity:.7; font-size:14px; margin-bottom:6px; text-align:center; }
+    .callui-title{ text-align:center; font-weight:600; font-size:20px; margin:6px 0 2px; }
+    .callui-sub{ text-align:center; opacity:.6; font-size:13px; margin-bottom: 12px; }
+    .callui-actions{ display:flex; gap:16px; justify-content:center; }
+    .callui-btn{ width:68px; height:68px; border-radius:50%; display:grid; place-items:center; cursor:pointer; border:none; }
+    .callui-accept{ background:var(--ok); } .callui-decline{ background:var(--err); }
+    .callui-timer{ text-align:center; font-size:16px; font-weight:600; margin-top:10px; color:#67ffb5; min-height:22px; }
 
-    /* Call overlay (как было) */
-    :root { --apple-green:#34C759; --apple-red:#FF3B30; --apple-bg: rgba(0,0,0,.45); }
-    .callui-overlay {
-      position: fixed; inset: 0;
-      display: none;
-      align-items: center; justify-content: center;
-      background: var(--apple-bg);
-      backdrop-filter: blur(6px);
-      z-index: 9999;
-    }
-    .callui-card {
-      width: min(92vw, 420px);
-      border-radius: 28px;
-      background: #0B0B0C;
-      color: #fff;
-      padding: 22px 22px 26px;
-      box-shadow: 0 30px 80px rgba(0,0,0,.35);
-      font-family: ui-sans-serif, system-ui, -apple-system, "SF Pro Text", "Segoe UI", Roboto, Arial;
-      animation: callui-pop .22s ease-out;
-    }
-    @keyframes callui-pop { from {opacity:0; transform: translateY(8px) scale(.98);} to {opacity:1; transform:none;} }
-    .callui-status { opacity: .7; font-size: 14px; margin-bottom: 6px; text-align: center; }
-    .callui-title { text-align: center; font-weight: 600; font-size: 20px; margin: 6px 0 2px; }
-    .callui-sub { text-align:center; opacity:.6; font-size:13px; margin-bottom: 16px; }
-    .callui-phone {
-      width: 54px; height: 54px; margin: 8px auto 14px;
-      display: grid; place-items: center; border-radius: 16px;
-      background: linear-gradient(180deg, #1a1a1a, #0f0f10);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 8px 20px rgba(0,0,0,.45);
-      animation: callui-pulse 1.2s ease-in-out infinite;
-    }
-    @keyframes callui-pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
-    .callui-actions { display:flex; gap:16px; justify-content: center; margin-top: 12px; }
-    .callui-btn {
-      width: 68px; height: 68px; border-radius: 50%;
-      display:grid; place-items:center; cursor:pointer; user-select:none; border:none;
-      background: #1c1c1d;
-      transition: transform .06s ease, filter .2s ease;
-    }
-    .callui-btn:active { transform: scale(.97); }
-    .callui-accept { background: var(--apple-green); }
-    .callui-decline { background: var(--apple-red); }
-    .callui-caption { text-align:center; font-size:12px; margin-top:6px; opacity:.85; }
-    .callui-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px;}
-    .callui-col { text-align:center; }
-    .callui-timer { text-align:center; font-size:16px; font-weight:600; margin-top:12px; letter-spacing:1px; color:#67ffb5; min-height:22px; font-variant-numeric:tabular-nums; }
-
-    /* AUTH modal (опционально, без ограничений) */
+    /* AUTH modal */
     .auth-overlay{ position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; z-index:12000; backdrop-filter:blur(4px); }
     .auth-card{ width:min(92vw,420px); background:var(--card); color:#e8eef4; border-radius:18px; box-shadow:0 20px 70px rgba(0,0,0,.6); padding:18px; text-align:left; }
     .auth-title{ margin:0 0 8px; font-size:1.1rem; }
@@ -164,189 +77,47 @@
     .auth-field input{ width:100%; padding:10px; border-radius:10px; border:1px solid var(--border); background:#131a2d; color:#e8eef4; }
     .auth-actions{ display:flex; gap:8px; margin-top:10px; }
     .auth-actions button{ flex:1; padding:10px; border-radius:10px; border:0; cursor:pointer; font-weight:700; }
-    .auth-primary{ background:#4f75ff; color:#fff; }
-    .auth-secondary{ background:#29314a; color:#fff; }
+    .auth-primary{ background:#4f75ff; color:#fff; } .auth-secondary{ background:#29314a; color:#fff; }
     .auth-error{ color:#ff7676; font-size:12px; min-height:16px; margin-top:6px; }
-    .auth-hint{ font-size:12px; color:#9fb0c8; margin-top:6px; }
 
     /* Toast */
     .toast{ position:fixed; left:50%; bottom:18px; transform:translateX(-50%); background:#111827; color:#fff; padding:10px 14px; border-radius:10px; box-shadow:0 10px 30px rgba(0,0,0,.35); z-index:13000; display:none; }
 
-    /* Social modal (Сообщество) */
+    /* Social (community) */
     .social-card{ width:min(96vw,860px); background:#0b1022; color:#e8eef4; border-radius:18px; box-shadow:0 20px 70px rgba(0,0,0,.6); padding:16px; text-align:left; }
-    .social-head{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
-    .social-head h3{ margin:0; font-size:1.2rem; }
-    .social-tabs{ display:flex; gap:6px; margin-bottom:12px; }
+    .social-tabs{ display:flex; gap:6px; margin:6px 0 12px; }
     .social-tab{ padding:8px 12px; border-radius:10px; background:#151c35; color:#9fb0c8; border:1px solid #243054; cursor:pointer; }
     .social-tab.active{ background:#243054; color:#fff; }
     .social-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
     .social-col{ background:#0e1530; border:1px solid #22305a; border-radius:12px; padding:10px; min-height:180px; }
     .social-list{ display:flex; flex-direction:column; gap:8px; max-height:320px; overflow:auto; }
     .social-item{ display:flex; align-items:center; justify-content:space-between; gap:10px; background:#0f1836; border:1px solid #263567; border-radius:10px; padding:8px 10px; }
-    .social-name{ font-weight:700; }
-    .social-email{ font-size:12px; color:#9fb0c8; }
-    .mini{ font-size:12px; opacity:.8; }
+    .social-name{ font-weight:700; } .social-email{ font-size:12px; color:#9fb0c8; } .mini{ font-size:12px; opacity:.8; }
     .social-actions button{ padding:6px 10px; border:0; border-radius:8px; cursor:pointer; font-weight:700; }
-    .act{ background:#4f75ff; color:#fff; }
-    .muted{ background:#263567; color:#c7d2fe; }
-    .danger{ background:#7f1d1d; color:#fff; }
+    .act{ background:#4f75ff; color:#fff; } .muted{ background:#263567; color:#c7d2fe; } .danger{ background:#7f1d1d; color:#fff; }
     @media (max-width:860px){ .social-grid{ grid-template-columns:1fr; } }
-  
-    /* DM (личные сообщения с друзьями) */
+
+    /* DM */
     .dm-panel{ display:none; background:#0e1530; border:1px solid #22305a; border-radius:12px; padding:10px; min-height:260px; }
     .dm-head{ display:flex; align-items:center; gap:8px; margin-bottom:6px; }
-    .dm-title{ font-weight:800; }
-    .dm-back{ margin-left:auto; background:#263567; color:#c7d2fe; border:0; border-radius:8px; padding:6px 10px; cursor:pointer; font-weight:700; }
+    .dm-title{ font-weight:800; } .dm-back{ margin-left:auto; background:#263567; color:#c7d2fe; border:0; border-radius:8px; padding:6px 10px; cursor:pointer; font-weight:700; }
     .dm-list{ background:#0f1836; border:1px solid #263567; border-radius:10px; padding:8px; max-height:240px; overflow:auto; display:flex; flex-direction:column; gap:6px; }
     .dm-msg{ display:inline-block; max-width:80%; padding:8px 10px; border-radius:10px; font-size:14px; }
-    .dm-me{ align-self:flex-end; background:#263a6b; color:#e7f0ff; }
-    .dm-other{ align-self:flex-start; background:#152246; color:#e0e7ff; }
+    .dm-me{ align-self:flex-end; background:#263a6b; color:#e7f0ff; } .dm-other{ align-self:flex-start; background:#152246; color:#e0e7ff; }
     .dm-time{ display:block; font-size:11px; opacity:.65; margin-top:2px; }
     .dm-input{ display:flex; gap:8px; margin-top:8px; }
     .dm-input input{ flex:1; padding:10px; border-radius:10px; border:1px solid #263567; background:#0b1029; color:#e8eef4; }
     .dm-input button{ padding:10px 14px; border-radius:10px; border:0; background:#4f75ff; color:#fff; font-weight:700; cursor:pointer; }
 
+    /* Error banner */
+    .errban{ position:fixed; left:10px; bottom:10px; z-index:99999; background:#7f1d1d; color:#fff; padding:8px 10px; border-radius:8px; font:12px/1.3 monospace; max-width:80vw; display:none; }
   </style>
-  <!-- Supabase JS (client) -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-    // ====== Direct Messages (чат с друзьями) ======
-    let dmOtherEmail = null;
-    let dmOtherName = null;
-    let dmTimer = null;
-    let dmSub = null; // realtime subscription (если включено в Supabase)
-    const dmPanel = document.getElementById('dmPanel');
-    const dmWith = document.getElementById('dmWith');
-    const dmList = document.getElementById('dmList');
-    const dmInput = document.getElementById('dmInput');
-    const dmSend = document.getElementById('dmSend');
-    const dmBack = document.getElementById('dmBack');
-
-    function openDM(email, name){
-      const me = getMe();
-      if(!me){ openAuth('login'); showToast('Войдите, чтобы писать сообщения'); return; }
-      dmOtherEmail = email;
-      dmOtherName = name || email;
-      dmWith.textContent = 'с ' + dmOtherName + ' (' + dmOtherEmail + ')';
-      dmPanel.style.display = 'block';
-      dmList.innerHTML = '';
-      stopDM();
-      fetchMessages();
-      // Пытаемся подписаться на realtime, если настроено
-      try{
-        if(sb && sb.channel){
-          dmSub = sb.channel('room-messages')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, payload => {
-              const r = payload.new || payload.old || payload;
-              if(!r) return;
-              if(!dmOtherEmail) return;
-              const me = getMe(); if(!me) return;
-              const participants = [r.from_email, r.to_email];
-              if(participants.includes(me.email) && participants.includes(dmOtherEmail)){
-                // Если это наша беседа — обновим список
-                fetchMessages();
-              }
-            })
-            .subscribe((status)=>{
-              // если статус 'SUBSCRIBED' — всё ок; если нет — просто молча используем поллинг
-            });
-        }
-      }catch(e){ /* noop */ }
-      // Поллинг на всякий случай (каждые 2 сек)
-      dmTimer = setInterval(fetchMessages, 2000);
-    }
-
-    function stopDM(){
-      if(dmTimer){ clearInterval(dmTimer); dmTimer = null; }
-      if(dmSub && dmSub.unsubscribe){ try{ dmSub.unsubscribe(); }catch(e){} dmSub = null; }
-    }
-
-    dmBack.addEventListener('click', ()=>{
-      stopDM();
-      dmPanel.style.display = 'none';
-      dmOtherEmail = null;
-      dmOtherName = null;
-    });
-
-    function renderDMItem(msg){
-      const me = getMe();
-      const mine = me && msg.from_email===me.email;
-      const div = document.createElement('div');
-      div.className = 'dm-msg ' + (mine ? 'dm-me' : 'dm-other');
-      const time = new Date(msg.created_at);
-      const t = time.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-      div.innerHTML = (mine ? '' : ('<b>' + (dmOtherName||msg.from_email) + ':</b> ')) + 
-                      escapeHtml(msg.body) + '<span class="dm-time">' + t + '</span>';
-      return div;
-    }
-
-    function escapeHtml(s){ return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
-
-    
-    async function fetchMessages(){
-      if(!sbReady()) return;
-      const me = getMe(); if(!me || !dmOtherEmail) return;
-      const q1 = sb.from('messages').select('id,from_email,to_email,body,created_at')
-                  .eq('from_email', me.email).eq('to_email', dmOtherEmail);
-      const q2 = sb.from('messages').select('id,from_email,to_email,body,created_at')
-                  .eq('from_email', dmOtherEmail).eq('to_email', me.email);
-      const [r1, r2] = await Promise.all([q1, q2]);
-      const err = r1.error || r2.error;
-      if(err){ setStatus('Ошибка загрузки сообщений: ' + err.message); return; }
-      const data = (r1.data||[]).concat(r2.data||[]).sort((a,b)=> new Date(a.created_at)-new Date(b.created_at));
-      dmList.innerHTML = '';
-      data.forEach(m => dmList.appendChild(renderDMItem(m)));
-      dmList.scrollTop = dmList.scrollHeight;
-    }
-,to_email.eq.${dmOtherEmail}),and(from_email.eq.${dmOtherEmail},to_email.eq.${me.email}))`;
-      const { data, error } = await sb.from('messages')
-        .select('id,from_email,to_email,body,created_at')
-        .or(filter)
-        .order('created_at', { ascending: true })
-        .limit(500);
-      if(error){ setStatus('Ошибка загрузки сообщений: ' + error.message); return; }
-      dmList.innerHTML = '';
-      data.forEach(m => dmList.appendChild(renderDMItem(m)));
-      dmList.scrollTop = dmList.scrollHeight;
-    }
-
-    async function sendDM(){
-      const text = dmInput.value.trim();
-      if(!text || !dmOtherEmail) return;
-      const me = getMe(); if(!me){ openAuth('login'); return; }
-      if(!sbReady()) return;
-      dmSend.disabled = true;
-      const { error } = await sb.from('messages').insert({
-        from_email: me.email,
-        to_email: dmOtherEmail,
-        body: text
-      });
-      dmSend.disabled = false;
-      if(error){ showToast('Ошибка отправки: ' + error.message); return; }
-      dmInput.value='';
-      fetchMessages();
-    }
-    dmSend.addEventListener('click', sendDM);
-    dmInput.addEventListener('keydown', e=>{ if(e.key==='Enter'){ sendDM(); } });
-
-  
-    window.addEventListener('error', function(e){
-      try{
-        const box = document.createElement('div');
-        box.style.position='fixed'; box.style.left='10px'; box.style.bottom='10px'; box.style.zIndex='99999';
-        box.style.background='#7f1d1d'; box.style.color='#fff'; box.style.padding='8px 10px'; box.style.borderRadius='8px';
-        box.style.fontFamily='monospace'; box.style.maxWidth='80vw';
-        box.textContent = 'JS error: ' + (e.error && e.error.message ? e.error.message : e.message);
-        document.body.appendChild(box);
-        setTimeout(()=>box.remove(), 6000);
-      }catch(_){}
-    });
-    
-  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
   <header>
-    <h1>Добро пожаловать на мой сайт</h1>
-    <p class="lead">Всё как раньше: скример, чат, «звонок». Добавлены: регистрация и «Сообщество» с друзьями.</p>
+    <h1>Стабильная версия</h1>
+    <p class="lead">Чат, звонок, регистрация. Сообщество и сообщения — включаются при настройке Supabase.</p>
     <button class="btn" id="moreBtn">Узнать больше</button>
     <button class="btn ghost" id="authOpen">Войти / Регистрация</button>
     <button class="btn" id="logoutBtn" style="display:none">Выйти</button>
@@ -355,30 +126,23 @@
   </header>
 
   <main>
-    <h2>Обо мне</h2>
-    <p>Когда жизнь даёт камни — поднимайся выше и смотри шире.</p>
     <img class="preview" src="myphoto.jpg" alt="Моё фото" onerror="this.style.display='none'">
   </main>
 
-  <footer>
-    <p>© 2025 Мой сайт | Сделано с ❤️ и HTML</p>
-  </footer>
+  <footer><p>© 2025</p></footer>
 
-  <!-- Screamer & BSOD -->
+  <!-- Screamer/BSOD -->
   <div id="screamer" class="overlay" aria-hidden="true">
-    <img src="screamer.jpg" alt="">
-    <audio id="screamSound" src="scream.mp3"></audio>
+    <img src="screamer.jpg" alt=""><audio id="screamSound" src="scream.mp3"></audio>
   </div>
   <div id="bsod" class="overlay" aria-hidden="true" title="Клик — перезагрузка">
     <img src="bsod.png" alt="">
   </div>
 
-  <!-- Chat widget (как было) -->
+  <!-- Chat widget -->
   <div id="chatWidget" aria-live="polite">
     <div id="sv-ad">
-      <div class="sv-photo">
-        <img src="orig.png" alt="Светлана" onerror="this.onerror=null; this.src='orig.jpg';">
-      </div>
+      <div class="sv-photo"><img src="orig.png" alt="Светлана" onerror="this.onerror=null; this.src='orig.jpg';"></div>
       <div class="sv-text">
         <div class="sv-title">Светлана на связи</div>
         <div class="sv-sub"> 300м от Вас </div>
@@ -391,46 +155,20 @@
         <div class="sv-name">Светлана • ИИ</div>
         <div class="sv-close" id="sv-close" title="Свернуть">×</div>
       </div>
-      <div class="sv-messages" id="sv-msgs">
-        <div class="sv-msg sv-from"><b>Светлана:</b> Привет! Я рядом. Чем помочь? 😊</div>
-      </div>
-      <div class="sv-input">
-        <input type="text" id="sv-input" placeholder="Напишите сообщение…">
-        <button id="sv-send">➤</button>
-      </div>
+      <div class="sv-messages" id="sv-msgs"><div class="sv-msg sv-from"><b>Светлана:</b> Привет! Я рядом. Чем помочь? 😊</div></div>
+      <div class="sv-input"><input type="text" id="sv-input" placeholder="Напишите сообщение…"><button id="sv-send">➤</button></div>
     </div>
   </div>
 
-  <!-- Call overlay (как было) -->
+  <!-- Call overlay -->
   <div class="callui-overlay" id="callui">
-    <div class="callui-card" role="dialog" aria-labelledby="calluiTitle" aria-describedby="calluiDesc">
+    <div class="callui-card">
       <div class="callui-status" id="calluiDesc">Входящий звонок</div>
-      <div class="callui-phone" aria-hidden="true">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1C11.3 21 3 12.7 3 2a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.58.11.32.03.68-.22.93l-2.23 2.23z" fill="currentColor"/>
-        </svg>
-      </div>
-      <div class="callui-title" id="calluiTitle">Светлана</div>
+      <div class="callui-title">Светлана</div>
       <div class="callui-sub">мессенджер чата</div>
       <div class="callui-actions">
-        <div class="callui-grid" style="width: 220px;">
-          <div class="callui-col">
-            <button class="callui-btn callui-decline" id="calluiDecline" aria-label="Отклонить звонок">
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M21.16 13.87c-.73-.59-3.69-2.87-9.16-2.87s-8.43 2.28-9.16 2.87A1.99 1.99 0 002 15.45V17a2 2 0 002 2h2c.74 0 1.38-.41 1.72-1.02l.74-1.34a1.5 1.5 0 00-.55-2.03 12.47 12.47 0 014.37-.78c1.54 0 3.02.27 4.37.78.73.28 1.03 1.12.55 2.03l.74 1.34c.34.61.98 1.02 1.72 1.02h2a2 2 0 002-2v-1.55c0-.6-.27-1.17-.84-1.58z" fill="currentColor"/>
-              </svg>
-            </button>
-            <div class="callui-caption">Отклонить</div>
-          </div>
-          <div class="callui-col">
-            <button class="callui-btn callui-accept" id="calluiAccept" aria-label="Принять звонок">
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1C11.3 21 3 12.7 3 2a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.58.11.32.03.68-.22.93l-2.23 2.23z" fill="currentColor"/>
-              </svg>
-            </button>
-            <div class="callui-caption">Ответить</div>
-          </div>
-        </div>
+        <button class="callui-btn callui-decline" id="calluiDecline" aria-label="Отклонить">⛔</button>
+        <button class="callui-btn callui-accept" id="calluiAccept" aria-label="Принять">📞</button>
       </div>
       <div class="callui-timer" id="calluiTimer"></div>
     </div>
@@ -445,37 +183,26 @@
         <button class="auth-tab" id="tabRegister">Регистрация</button>
       </div>
       <div id="regNameWrap" class="auth-field" style="display:none">
-        <label>Имя</label>
-        <input type="text" id="regName" placeholder="Как к вам обращаться">
+        <label>Имя</label><input type="text" id="regName" placeholder="Как к вам обращаться">
       </div>
-      <div class="auth-field">
-        <label>Email</label>
-        <input type="email" id="authEmail" placeholder="you@example.com" autocomplete="email">
-      </div>
-      <div class="auth-field">
-        <label>Пароль</label>
-        <input type="password" id="authPass" placeholder="Минимум 6 символов" autocomplete="current-password">
-      </div>
+      <div class="auth-field"><label>Email</label><input type="email" id="authEmail" placeholder="you@example.com" autocomplete="email"></div>
+      <div class="auth-field"><label>Пароль</label><input type="password" id="authPass" placeholder="Минимум 6 символов" autocomplete="current-password"></div>
       <div id="regConfirmWrap" class="auth-field" style="display:none">
-        <label>Повторите пароль</label>
-        <input type="password" id="authPass2" placeholder="Ещё раз пароль" autocomplete="new-password">
+        <label>Повторите пароль</label><input type="password" id="authPass2" placeholder="Ещё раз пароль" autocomplete="new-password">
       </div>
-      <div class="auth-actions">
-        <button class="auth-secondary" id="authCancel">Отмена</button>
-        <button class="auth-primary" id="authSubmit">Продолжить</button>
-      </div>
+      <div class="auth-actions"><button class="auth-secondary" id="authCancel">Отмена</button><button class="auth-primary" id="authSubmit">Продолжить</button></div>
       <div class="auth-error" id="authError"></div>
-      <div class="auth-hint">Демо: данные только в вашем браузере (localStorage). Для друзей используется Supabase (нужно указать ключи).</div>
+      <div class="mini">Демо: данные только в вашем браузере (localStorage).</div>
     </div>
   </div>
 
   <!-- SOCIAL Modal -->
   <div class="auth-overlay" id="social">
     <div class="social-card">
-      <div class="social-head">
-        <h3>Сообщество</h3>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <h3 style="margin:0">Сообщество</h3>
         <span class="mini" id="socialStatus"></span>
-        <button class="btn ghost" id="socialClose" style="margin-left:auto;padding:8px 14px;">Закрыть</button>
+        <button class="btn ghost" id="socialClose" style="margin-left:auto;padding:6px 12px;">Закрыть</button>
       </div>
       <div class="social-tabs">
         <button class="social-tab active" id="tabUsers">Пользователи</button>
@@ -492,34 +219,38 @@
           <div class="social-list">
             <div id="listRequests" style="display:none"></div>
             <div id="listFriends" style="display:none"></div>
-            <div id="hintBox" class="mini">Выберите вкладку: «Пользователи», «Заявки», «Друзья».</div>
+            <div id="hintBox" class="mini">Выберите вкладку. Если Supabase не настроен — просто увидите подсказки.</div>
           </div>
-            <div class="dm-panel" id="dmPanel">
-              <div class="dm-head">
-                <div class="dm-title">Чат</div>
-                <span class="mini" id="dmWith"></span>
-                <button class="dm-back" id="dmBack">Назад</button>
-              </div>
-              <div class="dm-list" id="dmList" aria-live="polite"></div>
-              <div class="dm-input">
-                <input type="text" id="dmInput" placeholder="Напишите сообщение другу…">
-                <button id="dmSend">Отправить</button>
-              </div>
+          <div class="dm-panel" id="dmPanel">
+            <div class="dm-head">
+              <div class="dm-title">Чат</div><span class="mini" id="dmWith"></span><button class="dm-back" id="dmBack">Назад</button>
             </div>
-
+            <div class="dm-list" id="dmList" aria-live="polite"></div>
+            <div class="dm-input"><input type="text" id="dmInput" placeholder="Напишите сообщение другу…"><button id="dmSend">Отправить</button></div>
+          </div>
         </div>
       </div>
-      <div class="mini" style="margin-top:8px">
-        Подсказка: добавляйтесь в друзья и начинайте общение!
-      </div>
+      <div class="mini">Чтобы «Пользователи/Друзья/Чат» заработали между разными людьми, вставьте в код ваш <b>SUPABASE_URL</b> и <b>SUPABASE_ANON_KEY</b> (настройки проекта Supabase) и создайте таблицы.</div>
     </div>
   </div>
 
   <div class="toast" id="toast"></div>
+  <div class="errban" id="errban"></div>
 
   <script>
-    // ======= Page baseline (как было) =======
-    window.addEventListener('load',()=>{ setTimeout(()=>document.body.classList.add('sv-show'),1200); });
+  "use strict";
+  (function(){
+    /* Error banner */
+    const errban = document.getElementById('errban');
+    window.addEventListener('error', function(e){
+      try{
+        errban.textContent = 'JS error: ' + (e.error && e.error.message ? e.error.message : e.message);
+        errban.style.display = 'block';
+        setTimeout(()=>{ errban.style.display='none'; }, 7000);
+      }catch(_){}
+    });
+
+    /* Screamer/BSOD */
     const moreBtn=document.getElementById('moreBtn');
     const screamer=document.getElementById('screamer');
     const bsod=document.getElementById('bsod');
@@ -533,7 +264,10 @@
     });
     bsod.addEventListener('click',()=>location.reload());
 
-    // Chat controls как было
+    /* Show chat widget after load */
+    window.addEventListener('load',()=>{ setTimeout(()=>document.body.classList.add('sv-show'), 800); });
+
+    /* Chat widget */
     const svOpen=document.getElementById('sv-open');
     const svAd=document.getElementById('sv-ad');
     const svChat=document.getElementById('sv-chat');
@@ -543,243 +277,59 @@
     const svSend=document.getElementById('sv-send');
     svOpen.addEventListener('click',(e)=>{ e.preventDefault(); svAd.style.display='none'; svChat.style.display='flex'; setTimeout(()=>svInput.focus(),50); });
     svClose.addEventListener('click',()=>{ svChat.style.display='none'; svAd.style.display='flex'; });
-
-    /* ====== Audio (ring/accept/end) ====== */
-    let actx=null, masterGain=null, rtGain=null, rtOsc1=null, rtOsc2=null, rtTick=null;
-    function ensureAudio(){
-      if(!actx){
-        actx=new (window.AudioContext||window.webkitAudioContext)();
-        masterGain=actx.createGain(); masterGain.gain.value=0.9; masterGain.connect(actx.destination);
-      }
-      if(actx.state==='suspended'){ actx.resume?.(); }
-    }
-    function stopRingtone(){
-      if(rtTick){ clearInterval(rtTick); rtTick=null; }
-      try{ rtGain && (rtGain.gain.value=0); }catch(e){}
-      try{ rtOsc1 && rtOsc1.stop(0); }catch(e){}
-      try{ rtOsc2 && rtOsc2.stop(0); }catch(e){}
-      rtGain=null; rtOsc1=null; rtOsc2=null;
-    }
-    function playRingtone(){
-      ensureAudio(); stopRingtone();
-      rtGain=actx.createGain(); rtGain.gain.value=0; rtGain.connect(masterGain);
-      rtOsc1=actx.createOscillator(); rtOsc1.type='sine'; rtOsc1.frequency.value=440;
-      rtOsc2=actx.createOscillator(); rtOsc2.type='sine'; rtOsc2.frequency.value=660;
-      rtOsc1.connect(rtGain); rtOsc2.connect(rtGain);
-      rtOsc1.start(); rtOsc2.start();
-      function burst(){
-        const now=actx.currentTime, g=rtGain.gain;
-        g.cancelScheduledValues(now);
-        g.setValueAtTime(0.0, now);
-        g.linearRampToValueAtTime(0.22, now+0.02);
-        g.setValueAtTime(0.22, now+0.38);
-        g.linearRampToValueAtTime(0.0, now+0.42);
-        g.setValueAtTime(0.0, now+0.62);
-        g.linearRampToValueAtTime(0.22, now+0.64);
-        g.setValueAtTime(0.22, now+1.00);
-        g.linearRampToValueAtTime(0.0, now+1.04);
-      }
-      burst();
-      rtTick=setInterval(burst, 2600);
-    }
-    function blip(type='up'){
-      ensureAudio();
-      const o=actx.createOscillator(), g=actx.createGain(); o.type='sine'; g.gain.value=0; o.connect(g).connect(masterGain);
-      const now=actx.currentTime;
-      if(type==='up'){ o.frequency.setValueAtTime(660, now); o.frequency.exponentialRampToValueAtTime(1200, now+0.16);
-        g.gain.linearRampToValueAtTime(0.22, now+0.02); g.gain.exponentialRampToValueAtTime(0.0001, now+0.24);
-        o.start(now); o.stop(now+0.26);
-      } else { o.frequency.setValueAtTime(900, now); o.frequency.exponentialRampToValueAtTime(360, now+0.22);
-        g.gain.linearRampToValueAtTime(0.22, now+0.02); g.gain.exponentialRampToValueAtTime(0.0001, now+0.24);
-        o.start(now); o.stop(now+0.26); }
-    }
-
-    /* ====== TTS (female ru-RU) ====== */
-    function pickRUVoice(){
-      const voices = window.speechSynthesis ? speechSynthesis.getVoices() : [];
-      if(!voices || !voices.length) return null;
-      const ru = voices.filter(v => (v.lang||'').toLowerCase().startsWith('ru'));
-      const prefer = ['milena','irina','tatiana','tatyana','oksana','katya','katia','anna','google русский','microsoft irina'];
-      for(const name of prefer){ const v = ru.find(v => v.name && v.name.toLowerCase().includes(name)); if(v) return v; }
-      return ru[0] || voices[0] || null;
-    }
-    function ensureVoicesReady(){
-      return new Promise(resolve=>{
-        if(!('speechSynthesis' in window)) return resolve(false);
-        const voices = speechSynthesis.getVoices();
-        if(voices && voices.length) return resolve(true);
-        const t = setTimeout(()=>resolve(true), 700);
-        speechSynthesis.onvoiceschanged = () => { clearTimeout(t); resolve(true); };
-      });
-    }
-    function speakRU(text, opts={}){
-      if(!('speechSynthesis' in window)) return false;
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = 'ru-RU'; u.rate = opts.rate ?? 1; u.pitch = opts.pitch ?? 1.15; u.volume = opts.volume ?? 1;
-      const v = pickRUVoice(); if(v) u.voice = v;
-      try{ speechSynthesis.cancel(); }catch(_){}
-      try{ speechSynthesis.speak(u); return true; }catch(_){ return false; }
-    }
-
-    /* ====== Call UI control (как было) ====== */
-    (function(){
-      const overlay = document.getElementById('callui');
-      const decline = document.getElementById('calluiDecline');
-      const accept = document.getElementById('calluiAccept');
-      const status = document.getElementById('calluiDesc');
-      const timer = document.getElementById('calluiTimer');
-      let callInterval = null, callStartTime = null;
-
-      function formatTimer(sec){ const m = String(Math.floor(sec/60)).padStart(2,'0'); const s = String(sec%60).padStart(2,'0'); return `${m}:${s}`; }
-      function openUI(){ overlay.style.display='flex'; status.textContent='Входящий звонок'; timer.textContent=''; document.documentElement.style.overflow='hidden'; clearInterval(callInterval); callStartTime=null; playRingtone(); }
-      function closeUI(playEnd=true){ overlay.style.display='none'; document.documentElement.style.overflow=''; clearInterval(callInterval); timer.textContent=''; callStartTime=null; stopRingtone(); if(playEnd) blip('down'); }
-      window.__callUI = { open: openUI, close: closeUI };
-
-      decline.addEventListener('click', () => closeUI(true));
-      accept.addEventListener('click', async () => {
-        stopRingtone(); blip('up'); status.textContent='Соединение…'; timer.textContent=''; clearInterval(callInterval);
-        setTimeout(async ()=>{
-          status.textContent='Звонок идет'; callStartTime=Date.now(); timer.textContent='00:00';
-          callInterval=setInterval(()=>{ const s=Math.floor((Date.now()-callStartTime)/1000); timer.textContent=formatTimer(s); },1000);
-          await ensureVoicesReady(); speakRU('Привет, это Светлана. Ты меня слышишь?', { pitch:1.2, rate:1.0 });
-        },1200);
-      });
-      overlay.addEventListener('click', e=>{ if(e.target===overlay) closeUI(true); });
-      document.addEventListener('keydown', e=>{ if(e.key==='Escape' && overlay.style.display==='flex') closeUI(true); });
-    })();
-
-    /* ====== AI-like replies (как было) ====== */
-    function detectIntent(t){
-      const s = (t||'').toLowerCase();
-      if(/[^\w]?(прив|здра|хай|ку|салют)/.test(s)) return 'greet';
-      if(/(как дела|как ты|что делаешь)/.test(s)) return 'smalltalk';
-      if(/(где|рядом|ты где|местоположение|локац)/.test(s)) return 'where';
-      if(/(цена|сколько|прайс)/.test(s)) return 'price';
-      if(/(созвон|позвон|звонок|позвоним|свяжемся)/.test(s)) return 'call';
-      if(/[?]$/.test(s)) return 'question';
-      return 'other';
-    }
-    function genReply(text){
-      const intent = detectIntent(text);
-      const rand = (arr)=>arr[Math.floor(Math.random()*arr.length)];
-      const fillers = ['🙂','😉','✨','👍','📞','💬'];
-      if(intent==='call'){ return 'Ого, давай созвонимся! ' + rand(fillers); }
-      switch(intent){
-        case 'greet': return rand(['Привет! Как у тебя дела?','Приветик 😊 Чем могу помочь?','Салют! Что планируем?']) + ' ' + rand(fillers);
-        case 'smalltalk': return rand(['Отлично, на связи!','Всё хорошо, рядом 😉','Пишу код и думаю о кофе ☕']) + ' ' + rand(fillers);
-        case 'where': return rand(['Я поблизости — минут 5 от тебя.','Я тут, недалеко. Могу подойти.','В районе, если что — маякуй.']) + ' ' + rand(fillers);
-        case 'price': return rand(['Расскажи, что именно нужно — подскажу варианты.','Давай уточним детали, и я скажу точнее.','Напиши, что планируем — сориентирую по цене.']) + ' ' + rand(fillers);
-        case 'question': return 'Хороший вопрос! ' + rand(['Скажи чуть подробнее?','Давай уточним детали.','Есть пара вариантов — какой ближе?']) + ' ' + rand(fillers);
-        default: return rand(['Поняла тебя.','Окей!','Супер!']) + ' ' + (text||'').trim();
-      }
-    }
-    function addTyping(){
-      const wrap=document.createElement('div'); wrap.className='sv-msg sv-from'; wrap.id='typing';
-      wrap.innerHTML='<div class="typing"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>';
-      svMsgs.appendChild(wrap); svMsgs.scrollTop=svMsgs.scrollHeight;
-    }
+    function addTyping(){ const w=document.createElement('div'); w.className='sv-msg sv-from'; w.id='typing'; w.innerHTML='<div class="typing"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>'; svMsgs.appendChild(w); svMsgs.scrollTop=svMsgs.scrollHeight; }
     function removeTyping(){ const t=document.getElementById('typing'); if(t) t.remove(); }
-    function aiRespond(userText){
-      const reply = genReply(userText);
-      const delay = Math.min(2200, 300 + reply.length*20);
-      addTyping();
-      setTimeout(()=>{
-        removeTyping();
-        const m=document.createElement('div'); m.className='sv-msg sv-from'; m.innerHTML='<b>Светлана:</b> ' + reply;
-        svMsgs.appendChild(m); svMsgs.scrollTop=svMsgs.scrollHeight;
-        if (reply.includes('Ого, давай созвонимся!')){
-          setTimeout(()=>{ window.__callUI?.open(); }, 2000);
-        }
-      }, delay);
-    }
-    function sendMsg(){
-      const text=svInput.value.trim();
-      if(!text) return;
-      const mine=document.createElement('div');
-      mine.className='sv-msg sv-to';
-      mine.innerHTML=`<b>Вы:</b> ${text}`;
-      svMsgs.appendChild(mine);
-      svInput.value='';
-      svMsgs.scrollTop=svMsgs.scrollHeight;
-      aiRespond(text);
-    }
-    svSend.addEventListener('click',sendMsg);
-    svInput.addEventListener('keydown',e=>{ if(e.key==='Enter') sendMsg(); });
+    function detectIntent(t){ const s=(t||'').toLowerCase(); if(/[^\w]?(прив|здра|хай|ку|салют)/.test(s)) return 'greet'; if(/(созвон|позвон|звонок|позвоним|свяжемся)/.test(s)) return 'call'; if(/[?]$/.test(s)) return 'question'; return 'other'; }
+    function genReply(text){ const i=detectIntent(text); const r=a=>a[Math.floor(Math.random()*a.length)]; const f=['🙂','😉','✨','👍','📞','💬']; if(i==='call') return 'Ого, давай созвонимся! '+r(f); if(i==='greet') return r(['Привет! Как у тебя дела?','Приветик 😊 Чем могу помочь?','Салют! Что планируем?'])+' '+r(f); if(i==='question') return 'Хороший вопрос! '+r(['Скажи чуть подробнее?','Давай уточним детали.'])+' '+r(f); return r(['Поняла тебя.','Окей!','Супер!'])+' '+(text||'').trim(); }
+    function aiRespond(userText){ const reply=genReply(userText); const delay=Math.min(2200,300+reply.length*20); addTyping(); setTimeout(()=>{ removeTyping(); const m=document.createElement('div'); m.className='sv-msg sv-from'; m.innerHTML='<b>Светлана:</b> '+reply; svMsgs.appendChild(m); svMsgs.scrollTop=svMsgs.scrollHeight; if(reply.includes('Ого, давай созвонимся!')){ setTimeout(()=>{ window.__callUI?.open(); }, 2000); } }, delay); }
+    function sendMsg(){ const text=svInput.value.trim(); if(!text) return; const mine=document.createElement('div'); mine.className='sv-msg sv-to'; mine.innerHTML=`<b>Вы:</b> ${text}`; svMsgs.appendChild(mine); svInput.value=''; svMsgs.scrollTop=svMsgs.scrollHeight; aiRespond(text); }
+    svSend.addEventListener('click',sendMsg); svInput.addEventListener('keydown',e=>{ if(e.key==='Enter') sendMsg(); });
 
-    // ===== Optional registration (no gating) =====
+    /* Call UI with sounds + TTS */
+    let actx=null, masterGain=null, rtGain=null, rtOsc1=null, rtOsc2=null, rtTick=null;
+    function ensureAudio(){ if(!actx){ actx=new (window.AudioContext||window.webkitAudioContext)(); masterGain=actx.createGain(); masterGain.gain.value=0.9; masterGain.connect(actx.destination); } if(actx.state==='suspended'){ actx.resume?.(); } }
+    function stopRingtone(){ if(rtTick){ clearInterval(rtTick); rtTick=null; } try{ rtGain && (rtGain.gain.value=0); }catch(e){} try{ rtOsc1 && rtOsc1.stop(0); }catch(e){} try{ rtOsc2 && rtOsc2.stop(0); }catch(e){} rtGain=null; rtOsc1=null; rtOsc2=null; }
+    function playRingtone(){ ensureAudio(); stopRingtone(); rtGain=actx.createGain(); rtGain.gain.value=0; rtGain.connect(masterGain); rtOsc1=actx.createOscillator(); rtOsc1.type='sine'; rtOsc1.frequency.value=440; rtOsc2=actx.createOscillator(); rtOsc2.type='sine'; rtOsc2.frequency.value=660; rtOsc1.connect(rtGain); rtOsc2.connect(rtGain); rtOsc1.start(); rtOsc2.start(); function burst(){ const now=actx.currentTime, g=rtGain.gain; g.cancelScheduledValues(now); g.setValueAtTime(0.0, now); g.linearRampToValueAtTime(0.22, now+0.02); g.setValueAtTime(0.22, now+0.38); g.linearRampToValueAtTime(0.0, now+0.42); g.setValueAtTime(0.0, now+0.62); g.linearRampToValueAtTime(0.22, now+0.64); g.setValueAtTime(0.22, now+1.00); g.linearRampToValueAtTime(0.0, now+1.04);} burst(); rtTick=setInterval(burst, 2600); }
+    function blip(type){ ensureAudio(); const o=actx.createOscillator(), g=actx.createGain(); o.type='sine'; g.gain.value=0; o.connect(g).connect(masterGain); const now=actx.currentTime; if(type==='up'){ o.frequency.setValueAtTime(660, now); o.frequency.exponentialRampToValueAtTime(1200, now+0.16); g.gain.linearRampToValueAtTime(0.22, now+0.02); g.gain.exponentialRampToValueAtTime(0.0001, now+0.24); o.start(now); o.stop(now+0.26);} else { o.frequency.setValueAtTime(900, now); o.frequency.exponentialRampToValueAtTime(360, now+0.22); g.gain.linearRampToValueAtTime(0.22, now+0.02); g.gain.exponentialRampToValueAtTime(0.0001, now+0.24); o.start(now); o.stop(now+0.26);} }
+    function pickRUVoice(){ const voices=window.speechSynthesis?speechSynthesis.getVoices():[]; if(!voices||!voices.length) return null; const ru=voices.filter(v=>(v.lang||'').toLowerCase().startsWith('ru')); const prefer=['milena','irina','tatiana','tatyana','oksana','katya','katia','anna','google русский','microsoft irina']; for(const name of prefer){ const v=ru.find(v=>v.name && v.name.toLowerCase().includes(name)); if(v) return v; } return ru[0]||voices[0]||null; }
+    function ensureVoicesReady(){ return new Promise(res=>{ if(!('speechSynthesis' in window)) return res(false); const v=speechSynthesis.getVoices(); if(v && v.length) return res(true); const t=setTimeout(()=>res(true), 700); speechSynthesis.onvoiceschanged=()=>{ clearTimeout(t); res(true); }; }); }
+    function speakRU(text,opts){ if(!('speechSynthesis' in window)) return false; const u=new SpeechSynthesisUtterance(text); u.lang='ru-RU'; u.rate=(opts&&opts.rate)||1; u.pitch=(opts&&opts.pitch)||1.15; u.volume=(opts&&opts.volume)||1; const v=pickRUVoice(); if(v) u.voice=v; try{ speechSynthesis.cancel(); }catch(_){ } try{ speechSynthesis.speak(u); return true; }catch(_){ return false; } }
+    (function(){ const overlay=document.getElementById('callui'); const decline=document.getElementById('calluiDecline'); const accept=document.getElementById('calluiAccept'); const status=document.getElementById('calluiDesc'); const timer=document.getElementById('calluiTimer'); let callInterval=null, callStartTime=null; function fmt(sec){ const m=String(Math.floor(sec/60)).padStart(2,'0'); const s=String(sec%60).padStart(2,'0'); return m+':'+s; } function openUI(){ overlay.style.display='flex'; status.textContent='Входящий звонок'; timer.textContent=''; document.documentElement.style.overflow='hidden'; clearInterval(callInterval); callStartTime=null; playRingtone(); } function closeUI(playEnd){ overlay.style.display='none'; document.documentElement.style.overflow=''; clearInterval(callInterval); timer.textContent=''; callStartTime=null; stopRingtone(); if(playEnd!==false) blip('down'); } window.__callUI={open:openUI,close:closeUI}; decline.addEventListener('click',()=>closeUI(true)); accept.addEventListener('click',async ()=>{ stopRingtone(); blip('up'); status.textContent='Соединение…'; timer.textContent=''; clearInterval(callInterval); setTimeout(async ()=>{ status.textContent='Звонок идет'; callStartTime=Date.now(); timer.textContent='00:00'; callInterval=setInterval(()=>{ const s=Math.floor((Date.now()-callStartTime)/1000); timer.textContent=fmt(s); },1000); await ensureVoicesReady(); speakRU('Привет, это Светлана. Ты меня слышишь?', { pitch:1.2, rate:1.0 }); }, 1200); }); overlay.addEventListener('click',e=>{ if(e.target===overlay) closeUI(true); }); document.addEventListener('keydown',e=>{ if(e.key==='Escape' && overlay.style.display==='flex') closeUI(true); }); })();
+
+    /* Toast helper */
     const toast = document.getElementById('toast');
-    function showToast(msg, ms=2200){ toast.textContent=msg; toast.style.display='block'; clearTimeout(showToast._t); showToast._t=setTimeout(()=>{ toast.style.display='none'; }, ms); }
-    const authOverlay = document.getElementById('auth');
-    const authOpen = document.getElementById('authOpen');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const hello = document.getElementById('hello');
-    const tabLogin = document.getElementById('tabLogin');
-    const tabRegister = document.getElementById('tabRegister');
-    const regNameWrap = document.getElementById('regNameWrap');
-    const regConfirmWrap = document.getElementById('regConfirmWrap');
-    const regName = document.getElementById('regName');
-    const authEmail = document.getElementById('authEmail');
-    const authPass = document.getElementById('authPass');
-    const authPass2 = document.getElementById('authPass2');
-    const authSubmit = document.getElementById('authSubmit');
-    const authCancel = document.getElementById('authCancel');
-    const authError = document.getElementById('authError');
-    const authTitle = document.getElementById('authTitle');
-    let mode = 'login';
-    function openAuth(wanted='login'){
-      mode = wanted;
-      authTitle.textContent = wanted==='login' ? 'Вход' : 'Регистрация';
-      tabLogin.classList.toggle('active', wanted==='login');
-      tabRegister.classList.toggle('active', wanted==='register');
-      regNameWrap.style.display = wanted==='register' ? '' : 'none';
-      regConfirmWrap.style.display = wanted==='register' ? '' : 'none';
-      authEmail.value=''; authPass.value=''; authPass2.value=''; regName.value='';
-      authError.textContent='';
-      authOverlay.style.display='flex';
-      setTimeout(()=>authEmail.focus(), 30);
-    }
-    function closeAuth(){ authOverlay.style.display='none'; }
-    tabLogin.addEventListener('click',()=>openAuth('login'));
-    tabRegister.addEventListener('click',()=>openAuth('register'));
-    authOpen.addEventListener('click',()=>openAuth('login'));
-    authCancel.addEventListener('click',closeAuth);
-    authOverlay.addEventListener('click',e=>{ if(e.target===authOverlay) closeAuth(); });
+    function showToast(msg, ms){ toast.textContent=msg; toast.style.display='block'; clearTimeout(showToast._t); showToast._t=setTimeout(()=>{ toast.style.display='none'; }, ms||2200); }
 
+    /* Auth (localStorage) */
+    const authOverlay=document.getElementById('auth'); const authOpen=document.getElementById('authOpen'); const logoutBtn=document.getElementById('logoutBtn'); const hello=document.getElementById('hello'); const tabLogin=document.getElementById('tabLogin'); const tabRegister=document.getElementById('tabRegister'); const regNameWrap=document.getElementById('regNameWrap'); const regConfirmWrap=document.getElementById('regConfirmWrap'); const regName=document.getElementById('regName'); const authEmail=document.getElementById('authEmail'); const authPass=document.getElementById('authPass'); const authPass2=document.getElementById('authPass2'); const authSubmit=document.getElementById('authSubmit'); const authCancel=document.getElementById('authCancel'); const authError=document.getElementById('authError'); const authTitle=document.getElementById('authTitle'); let mode='login';
+    function openAuth(wanted){ mode=wanted||'login'; authTitle.textContent=mode==='login'?'Вход':'Регистрация'; tabLogin.classList.toggle('active',mode==='login'); tabRegister.classList.toggle('active',mode==='register'); regNameWrap.style.display=mode==='register'?'':'none'; regConfirmWrap.style.display=mode==='register'?'':'none'; authEmail.value=''; authPass.value=''; authPass2.value=''; regName.value=''; authError.textContent=''; authOverlay.style.display='flex'; setTimeout(()=>authEmail.focus(),30); }
+    function closeAuth(){ authOverlay.style.display='none'; }
+    tabLogin.addEventListener('click',()=>openAuth('login')); tabRegister.addEventListener('click',()=>openAuth('register')); authOpen.addEventListener('click',()=>openAuth('login')); authCancel.addEventListener('click',closeAuth); authOverlay.addEventListener('click',e=>{ if(e.target===authOverlay) closeAuth(); });
     function isValidEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
-    function sha256(str){
-      const enc = new TextEncoder().encode(str);
-      return crypto.subtle.digest('SHA-256', enc).then(buf => {
-        const b = new Uint8Array(buf);
-        let s=''; for(let i=0;i<b.length;i++){ s+=String.fromCharCode(b[i]); }
-        return btoa(s);
-      });
-    }
+    function sha256(str){ const enc=new TextEncoder().encode(str); return crypto.subtle.digest('SHA-256', enc).then(buf=>{ const b=new Uint8Array(buf); let s=''; for(let i=0;i<b.length;i++){ s+=String.fromCharCode(b[i]); } return btoa(s); }); }
     function getUser(){ try{ return JSON.parse(localStorage.getItem('sv_user')||'null'); }catch(e){ return null; } }
     function setUser(u){ localStorage.setItem('sv_user', JSON.stringify(u)); }
     function clearUser(){ localStorage.removeItem('sv_user'); }
-    function updateAuthUI(){
-      const u = getUser();
-      if(u){ hello.textContent = 'Привет, ' + (u.name||u.email); authOpen.style.display='none'; logoutBtn.style.display='inline-block'; }
-      else { hello.textContent = ''; authOpen.style.display='inline-block'; logoutBtn.style.display='none'; }
-    }
+    function updateAuthUI(){ const u=getUser(); if(u){ hello.textContent='Привет, '+(u.name||u.email); authOpen.style.display='inline-block'; authOpen.textContent='Аккаунт'; logoutBtn.style.display='inline-block'; } else { hello.textContent=''; authOpen.style.display='inline-block'; authOpen.textContent='Войти / Регистрация'; logoutBtn.style.display='none'; } }
     logoutBtn.addEventListener('click',()=>{ clearUser(); updateAuthUI(); showToast('Вы вышли из аккаунта'); });
+
     authSubmit.addEventListener('click', async ()=>{
-      const email = authEmail.value.trim().toLowerCase();
-      const pass = authPass.value;
-      const name = regName.value.trim();
+      const email = (authEmail.value||'').trim().toLowerCase();
+      const pass  = (authPass.value||'');
+      const name  = (regName.value||'').trim();
       if(!isValidEmail(email)){ authError.textContent='Введите корректный email'; return; }
-      if(pass.length < 6){ authError.textContent='Пароль должен быть не короче 6 символов'; return; }
+      if(pass.length<6){ authError.textContent='Пароль от 6 символов'; return; }
       if(mode==='register'){
         if(pass !== authPass2.value){ authError.textContent='Пароли не совпадают'; return; }
         const passHash = await sha256(pass);
         const db = JSON.parse(localStorage.getItem('sv_users')||'{}');
-        if(db[email]){ authError.textContent='Такой email уже зарегистрирован'; return; }
+        if(db[email]){ authError.textContent='Email уже зарегистрирован'; return; }
         db[email] = { passHash, name, createdAt: Date.now() };
         localStorage.setItem('sv_users', JSON.stringify(db));
         setUser({ email, name });
         closeAuth(); updateAuthUI(); showToast('Регистрация выполнена');
         syncProfileToSupabase().catch(()=>{});
-      }else{
+      } else {
         const db = JSON.parse(localStorage.getItem('sv_users')||'{}');
         if(!db[email]){ authError.textContent='Пользователь не найден. Зарегистрируйтесь.'; return; }
         const passHash = await sha256(pass);
@@ -791,408 +341,67 @@
     });
     updateAuthUI();
 
-    // ====== Supabase social (users + friends) ======
-    // 1) Вставьте сюда ваши ключи
-    const SUPABASE_URL = "https://dreiofxdxmrlrnceguwi.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRyZWlvZnhkeG1ybHJuY2VndXdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxNzEyMTksImV4cCI6MjA3MDc0NzIxOX0.PtpqL3YbWoxwbaV3Z93LvnF_R-LlBtzBBePAKVFEw8c";
-    const sb = (typeof supabase!=='undefined' && SUPABASE_URL.startsWith('http') && SUPABASE_ANON_KEY.length>20) ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
-
-    function sbReady(){ if(!sb){ showToast('Supabase не настроен'); return false; } return true; }
-    async function syncProfileToSupabase(){
-      if(!sbReady()) return;
-      const u = getUser(); if(!u) return;
-      await sb.from('profiles').upsert({ email: u.email, name: u.name||u.email }).then(({error})=>{ if(error) console.warn(error); });
+    /* Social / Supabase (safe guards) */
+    const SUPABASE_URL = "https://YOUR-PROJECT.supabase.co"; // вставьте свои при необходимости
+    const SUPABASE_ANON_KEY = "YOUR-ANON-KEY";
+    let sb = null;
+    try{
+      if(typeof supabase!=='undefined' && SUPABASE_URL.startsWith('http') && SUPABASE_ANON_KEY.length>20){
+        sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      }
+    }catch(e){
+      console.warn('Supabase init failed', e);
     }
+    function sbReady(){ return !!sb; }
 
-    // UI
-    const socialOverlay = document.getElementById('social');
-    const socialOpen = document.getElementById('socialOpen');
-    const socialClose = document.getElementById('socialClose');
-    const tabUsers = document.getElementById('tabUsers');
-    const tabRequests = document.getElementById('tabRequests');
-    const tabFriends = document.getElementById('tabFriends');
-    const listUsers = document.getElementById('listUsers');
-    const listRequests = document.getElementById('listRequests');
-    const listFriends = document.getElementById('listFriends');
-    const hintBox = document.getElementById('hintBox');
-    const socialStatus = document.getElementById('socialStatus');
-
-    function openSocial(){
-      socialOverlay.style.display='flex';
-      setTab('users');
-      refreshAll();
-    }
-    function closeSocial(){ socialOverlay.style.display='none'; }
-    socialOpen.addEventListener('click', openSocial);
-    socialClose.addEventListener('click', closeSocial);
-    socialOverlay.addEventListener('click', e=>{ if(e.target===socialOverlay) closeSocial(); });
-
-    function setTab(tab){
-      tabUsers.classList.toggle('active', tab==='users');
-      tabRequests.classList.toggle('active', tab==='requests');
-      tabFriends.classList.toggle('active', tab==='friends');
-      listRequests.style.display = tab==='requests' ? '' : 'none';
-      listFriends.style.display = tab==='friends' ? '' : 'none';
-      hintBox.style.display = tab==='users' ? '' : 'none';
-    }
+    const socialOverlay=document.getElementById('social'); const socialOpen=document.getElementById('socialOpen'); const socialClose=document.getElementById('socialClose');
+    const tabUsers=document.getElementById('tabUsers'); const tabRequests=document.getElementById('tabRequests'); const tabFriends=document.getElementById('tabFriends');
+    const listUsers=document.getElementById('listUsers'); const listRequests=document.getElementById('listRequests'); const listFriends=document.getElementById('listFriends');
+    const hintBox=document.getElementById('hintBox'); const socialStatus=document.getElementById('socialStatus');
+    const dmPanel=document.getElementById('dmPanel'); const dmWith=document.getElementById('dmWith'); const dmList=document.getElementById('dmList'); const dmInput=document.getElementById('dmInput'); const dmSend=document.getElementById('dmSend'); const dmBack=document.getElementById('dmBack');
+    socialOpen.addEventListener('click', ()=>{ socialOverlay.style.display='flex'; setTab('users'); refreshAll(); });
+    socialClose.addEventListener('click', ()=>{ socialOverlay.style.display='none'; });
+    socialOverlay.addEventListener('click', e=>{ if(e.target===socialOverlay) socialOverlay.style.display='none'; });
+    function setTab(tab){ tabUsers.classList.toggle('active', tab==='users'); tabRequests.classList.toggle('active', tab==='requests'); tabFriends.classList.toggle('active', tab==='friends'); listRequests.style.display = tab==='requests' ? '' : 'none'; listFriends.style.display = tab==='friends' ? '' : 'none'; hintBox.style.display = tab==='users' ? '' : 'none'; }
     tabUsers.addEventListener('click', ()=>{ setTab('users'); refreshUsers(); });
     tabRequests.addEventListener('click', ()=>{ setTab('requests'); refreshRequests(); });
     tabFriends.addEventListener('click', ()=>{ setTab('friends'); refreshFriends(); });
 
+    function setStatus(t){ socialStatus.textContent=t||''; }
     function getMe(){ return getUser(); }
 
-    function renderUserItem(p){
-      const me = getMe();
-      const isMe = me && me.email===p.email;
-      const wrap = document.createElement('div'); wrap.className='social-item';
-      wrap.innerHTML = `<div><div class="social-name">${p.name||p.email}</div><div class="social-email">${p.email}</div></div>`;
-      const actions = document.createElement('div'); actions.className='social-actions';
-      if(!isMe){
-        const btn = document.createElement('button'); btn.className='act'; btn.textContent='Добавить';
-        btn.addEventListener('click', ()=>sendRequest(p.email));
-        actions.appendChild(btn);
-      } else {
-        const meb = document.createElement('span'); meb.className='mini'; meb.textContent='это вы';
-        actions.appendChild(meb);
-      }
-      wrap.appendChild(actions);
-      return wrap;
-    }
+    function renderUserItem(p){ const me=getMe(); const isMe=me&&me.email===p.email; const wrap=document.createElement('div'); wrap.className='social-item'; wrap.innerHTML = `<div><div class="social-name">${p.name||p.email}</div><div class="social-email">${p.email}</div></div>`; const actions=document.createElement('div'); actions.className='social-actions'; if(!isMe){ const btn=document.createElement('button'); btn.className='act'; btn.textContent='Добавить'; btn.addEventListener('click', ()=>sendRequest(p.email)); actions.appendChild(btn);} else { const meb=document.createElement('span'); meb.className='mini'; meb.textContent='это вы'; actions.appendChild(meb);} wrap.appendChild(actions); return wrap; }
+    function renderRequestItem(r){ const wrap=document.createElement('div'); wrap.className='social-item'; wrap.innerHTML = `<div><div class="social-name">Заявка от</div><div class="social-email">${r.from_email}</div></div>`; const actions=document.createElement('div'); actions.className='social-actions'; const acc=document.createElement('button'); acc.className='act'; acc.textContent='Принять'; acc.onclick=()=>acceptRequest(r.id); const dec=document.createElement('button'); dec.className='muted'; dec.textContent='Отклонить'; dec.onclick=()=>declineRequest(r.id); actions.appendChild(acc); actions.appendChild(dec); wrap.appendChild(actions); return wrap; }
+    function renderFriendItem(f){ const wrap=document.createElement('div'); wrap.className='social-item'; wrap.innerHTML = `<div><div class="social-name">${f.name||f.email}</div><div class="social-email">${f.email}</div></div>`; const actions=document.createElement('div'); actions.className='social-actions'; const chat=document.createElement('button'); chat.className='act'; chat.textContent='Открыть чат'; chat.onclick=()=>openDM(f.email, f.name||f.email); const rm=document.createElement('button'); rm.className='danger'; rm.textContent='Удалить'; rm.onclick=()=>removeFriendship(f.email); actions.appendChild(chat); actions.appendChild(rm); wrap.appendChild(actions); return wrap; }
 
-    function renderRequestItem(r){
-      const wrap = document.createElement('div'); wrap.className='social-item';
-      wrap.innerHTML = `<div><div class="social-name">Заявка от</div><div class="social-email">${r.from_email}</div></div>`;
-      const actions = document.createElement('div'); actions.className='social-actions';
-      const acc = document.createElement('button'); acc.className='act'; acc.textContent='Принять'; acc.onclick=()=>acceptRequest(r.id);
-      const dec = document.createElement('button'); dec.className='muted'; dec.textContent='Отклонить'; dec.onclick=()=>declineRequest(r.id);
-      actions.appendChild(acc); actions.appendChild(dec);
-      wrap.appendChild(actions);
-      return wrap;
-    }
+    async function refreshUsers(){ listUsers.innerHTML=''; if(!sbReady()){ setStatus('Supabase не настроен'); listUsers.innerHTML='<div class="mini">Вставьте ключи Supabase, чтобы видеть других пользователей</div>'; return; } const q=await sb.from('profiles').select('email,name,created_at').order('created_at',{ascending:false}).limit(200); if(q.error){ setStatus('Ошибка: '+q.error.message); return; } setStatus('Пользователей: '+q.data.length); q.data.forEach(p=> listUsers.appendChild(renderUserItem(p))); }
+    async function refreshRequests(){ listRequests.innerHTML=''; if(!sbReady()){ setStatus('Supabase не настроен'); listRequests.innerHTML='<div class="mini">Подключите Supabase</div>'; return; } const me=getMe(); if(!me){ setStatus('Войдите, чтобы видеть заявки'); return; } const q=await sb.from('friend_requests').select('id,from_email,to_email,status,created_at').eq('to_email',me.email).eq('status','pending').order('created_at',{ascending:false}); if(q.error){ setStatus('Ошибка: '+q.error.message); return; } setStatus('Заявок: '+q.data.length); q.data.forEach(r=> listRequests.appendChild(renderRequestItem(r))); }
+    async function refreshFriends(){ listFriends.innerHTML=''; if(!sbReady()){ setStatus('Supabase не настроен'); listFriends.innerHTML='<div class="mini">Подключите Supabase</div>'; return; } const me=getMe(); if(!me){ setStatus('Войдите, чтобы видеть друзей'); return; } const a=await sb.from('friend_requests').select('id,from_email,to_email,status,created_at').eq('status','accepted').eq('from_email',me.email); const b=await sb.from('friend_requests').select('id,from_email,to_email,status,created_at').eq('status','accepted').eq('to_email',me.email); if(a.error||b.error){ setStatus('Ошибка: '+(a.error||b.error).message); return; } const rows=[...(a.data||[]),...(b.data||[])]; const emails=[]; rows.forEach(r=>{ const other=r.from_email===me.email ? r.to_email : r.from_email; if(!emails.includes(other)) emails.push(other); }); if(!emails.length){ setStatus('Друзей пока нет'); return; } const prof=await sb.from('profiles').select('email,name').in('email', emails); if(prof.error){ setStatus('Ошибка: '+prof.error.message); return; } prof.data.forEach(p=> listFriends.appendChild(renderFriendItem(p))); setStatus('Друзей: '+prof.data.length); }
 
-    function renderFriendItem(f){
-      const wrap = document.createElement('div'); wrap.className='social-item';
-      wrap.innerHTML = `<div><div class="social-name">${f.name||f.email}</div><div class="social-email">${f.email}</div></div>`;
-      const actions = document.createElement('div'); actions.className='social-actions';
-      const rm = document.createElement('button'); rm.className='danger'; rm.textContent='Удалить'; rm.onclick=()=>removeFriendship(f.email);
-      actions.appendChild(rm);
-      wrap.appendChild(actions);
-      return wrap;
-    }
+    async function sendRequest(toEmail){ const me=getMe(); if(!me){ openAuth('login'); showToast('Войдите, чтобы добавлять в друзья'); return; } if(!sbReady()){ showToast('Supabase не настроен'); return; } if(me.email===toEmail){ showToast('Самого себя нельзя'); return; } const r1=await sb.from('friend_requests').select('id,from_email,to_email,status').eq('from_email',me.email).eq('to_email',toEmail).limit(1); const r2=await sb.from('friend_requests').select('id,from_email,to_email,status').eq('from_email',toEmail).eq('to_email',me.email).limit(1); if(r1.error||r2.error){ showToast('Ошибка: '+(r1.error||r2.error).message); return; } const ex=[...(r1.data||[]),...(r2.data||[])]; if(ex.length){ const r=ex[0]; if(r.status==='accepted'){ showToast('Вы уже друзья'); return; } if(r.from_email===me.email && r.status==='pending'){ showToast('Заявка уже отправлена'); return; } if(r.from_email===toEmail && r.status==='pending'){ setTab('requests'); showToast('У вас есть входящая заявка'); refreshRequests(); return; } }
+      const ins=await sb.from('friend_requests').upsert({from_email:me.email,to_email:toEmail,status:'pending'},{onConflict:'from_email,to_email'});
+      if(ins.error){ showToast('Ошибка: '+ins.error.message); } else { showToast('Заявка отправлена'); refreshRequests(); } }
 
-    function setStatus(text){ socialStatus.textContent = text||''; }
+    async function acceptRequest(id){ if(!sbReady()) return; const q=await sb.from('friend_requests').update({status:'accepted'}).eq('id',id); if(q.error){ showToast('Ошибка: '+q.error.message); } else { showToast('Заявка принята'); refreshFriends(); refreshRequests(); } }
+    async function declineRequest(id){ if(!sbReady()) return; const q=await sb.from('friend_requests').update({status:'declined'}).eq('id',id); if(q.error){ showToast('Ошибка: '+q.error.message); } else { showToast('Отклонено'); refreshRequests(); } }
+    async function removeFriendship(otherEmail){ if(!sbReady()) return; const me=getMe(); if(!me) return; const d1=await sb.from('friend_requests').delete().eq('status','accepted').eq('from_email',me.email).eq('to_email',otherEmail); const d2=await sb.from('friend_requests').delete().eq('status','accepted').eq('from_email',otherEmail).eq('to_email',me.email); if(d1.error||d2.error){ showToast('Ошибка: '+(d1.error||d2.error).message); } else { showToast('Удалено'); refreshFriends(); } }
 
-    async function refreshUsers(){
-      listUsers.innerHTML = '';
-      if(!sbReady()) return;
-      const { data, error } = await sb.from('profiles').select('email,name,created_at').order('created_at', { ascending:false }).limit(200);
-      if(error){ setStatus('Ошибка: '+error.message); return; }
-      setStatus('Пользователей: '+data.length);
-      data.forEach(p=> listUsers.appendChild(renderUserItem(p)) );
-    }
+    /* DM (messages) */
+    let dmOtherEmail=null, dmOtherName=null, dmTimer=null;
+    function openDM(email,name){ const me=getMe(); if(!me){ openAuth('login'); showToast('Войдите, чтобы писать'); return; } if(!sbReady()){ showToast('Supabase не настроен'); return; } dmOtherEmail=email; dmOtherName=name||email; dmWith.textContent='с '+dmOtherName+' ('+dmOtherEmail+')'; dmPanel.style.display='block'; dmList.innerHTML=''; stopDM(); fetchMessages(); dmTimer=setInterval(fetchMessages,2000); }
+    function stopDM(){ if(dmTimer){ clearInterval(dmTimer); dmTimer=null; } }
+    dmBack.addEventListener('click', ()=>{ stopDM(); dmPanel.style.display='none'; dmOtherEmail=null; dmOtherName=null; });
+    function renderDMItem(msg){ const me=getMe(); const mine=me && msg.from_email===me.email; const div=document.createElement('div'); div.className='dm-msg '+(mine?'dm-me':'dm-other'); const t=new Date(msg.created_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}); div.innerHTML=(mine?'':('<b>'+(dmOtherName||msg.from_email)+':</b> '))+escapeHtml(msg.body)+'<span class="dm-time">'+t+'</span>'; return div; }
+    function escapeHtml(s){ return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+    async function fetchMessages(){ if(!sbReady()) return; const me=getMe(); if(!me||!dmOtherEmail) return; const a=await sb.from('messages').select('id,from_email,to_email,body,created_at').eq('from_email',me.email).eq('to_email',dmOtherEmail); const b=await sb.from('messages').select('id,from_email,to_email,body,created_at').eq('from_email',dmOtherEmail).eq('to_email',me.email); if(a.error||b.error){ setStatus('Ошибка сообщений: '+(a.error||b.error).message); return; } const data=[...(a.data||[]),...(b.data||[])].sort((x,y)=>new Date(x.created_at)-new Date(y.created_at)); dmList.innerHTML=''; data.forEach(m=> dmList.appendChild(renderDMItem(m))); dmList.scrollTop=dmList.scrollHeight; }
+    async function sendDM(){ const text=(dmInput.value||'').trim(); if(!text||!dmOtherEmail) return; const me=getMe(); if(!me){ openAuth('login'); return; } if(!sbReady()){ showToast('Supabase не настроен'); return; } dmSend.disabled=true; const ins=await sb.from('messages').insert({from_email:me.email,to_email:dmOtherEmail,body:text}); dmSend.disabled=false; if(ins.error){ showToast('Ошибка отправки: '+ins.error.message); return; } dmInput.value=''; fetchMessages(); }
+    dmSend.addEventListener('click', sendDM); dmInput.addEventListener('keydown', e=>{ if(e.key==='Enter'){ sendDM(); } });
 
-    async function refreshRequests(){
-      listRequests.innerHTML = '';
-      if(!sbReady()) return;
-      const me = getMe(); if(!me){ setStatus('Войдите, чтобы видеть заявки'); return; }
-      const { data, error } = await sb.from('friend_requests').select('id,from_email,to_email,status,created_at').eq('to_email', me.email).eq('status','pending').order('created_at', { ascending:false });
-      if(error){ setStatus('Ошибка: '+error.message); return; }
-      setStatus('Заявок: '+data.length);
-      data.forEach(r=> listRequests.appendChild(renderRequestItem(r)) );
-    }
+    async function refreshAll(){ await syncProfileToSupabase().catch(()=>{}); await refreshUsers(); await refreshRequests(); await refreshFriends(); }
 
-    
-    async function refreshFriends(){
-      listFriends.innerHTML = '';
-      if(!sbReady()) return;
-      const me = getMe(); if(!me){ setStatus('Войдите, чтобы видеть друзей'); return; }
-      const q1 = sb.from('friend_requests').select('id,from_email,to_email,status,created_at')
-                  .eq('status','accepted').eq('from_email', me.email);
-      const q2 = sb.from('friend_requests').select('id,from_email,to_email,status,created_at')
-                  .eq('status','accepted').eq('to_email', me.email);
-      const [r1, r2] = await Promise.all([q1, q2]);
-      const err = r1.error || r2.error;
-      if(err){ setStatus('Ошибка: ' + err.message); return; }
-      const rows = (r1.data||[]).concat(r2.data||[]);
-      const others = [];
-      rows.forEach(r=>{
-        const other = r.from_email===me.email ? r.to_email : r.from_email;
-        if(!others.includes(other)) others.push(other);
-      });
-      if(others.length===0){ setStatus('Друзей пока нет'); return; }
-      const { data: profs, error: e2 } = await sb.from('profiles').select('email,name').in('email', others);
-      if(e2){ setStatus('Ошибка: ' + e2.message); return; }
-      profs.forEach(p=> listFriends.appendChild(renderFriendItem(p)) );
-      setStatus('Друзей: '+profs.length);
-    }
-const { data, error } = await sb.from('friend_requests').select('id,from_email,to_email,status,created_at').eq('status','accepted').or(`from_email.eq.${me.email},to_email.eq.${me.email}`);
-      if(error){ setStatus('Ошибка: '+error.message); return; }
-      // собрать список email друзей
-      const others = [];
-      data.forEach(r=>{
-        const other = r.from_email===me.email ? r.to_email : r.from_email;
-        if(!others.includes(other)) others.push(other);
-      });
-      if(others.length===0){ setStatus('Друзей пока нет'); return; }
-      const { data: profs, error: e2 } = await sb.from('profiles').select('email,name').in('email', others);
-      if(e2){ setStatus('Ошибка: '+e2.message); return; }
-      profs.forEach(p=> listFriends.appendChild(renderFriendItem(p)) );
-      setStatus('Друзей: '+profs.length);
-    }
-
-    
-    
-    
-    async function sendRequest(toEmail){
-      const me = getMe(); if(!me){ openAuth('login'); showToast('Войдите, чтобы добавлять в друзья'); return; }
-      if(!sbReady()) return;
-      if(me.email===toEmail){ showToast('Самого себя добавить нельзя'); return; }
-
-      // Проверяем существующую заявку в обе стороны (двумя запросами)
-      const q1 = sb.from('friend_requests').select('id,from_email,to_email,status,created_at')
-                  .eq('from_email', me.email).eq('to_email', toEmail).limit(1);
-      const q2 = sb.from('friend_requests').select('id,from_email,to_email,status,created_at')
-                  .eq('from_email', toEmail).eq('to_email', me.email).limit(1);
-      const [r1, r2] = await Promise.all([q1, q2]);
-      const err = r1.error || r2.error;
-      if(err){ showToast('Ошибка: ' + err.message); return; }
-      const existing = (r1.data||[]).concat(r2.data||[]);
-      if(existing.length){
-        const r = existing[0];
-        if(r.status === 'accepted'){ showToast('Вы уже друзья'); refreshFriends(); return; }
-        if(r.from_email === me.email){
-          if(r.status === 'pending'){ showToast('Заявка уже отправлена'); return; }
-          if(r.status === 'declined'){
-            const { error: eUpd } = await sb.from('friend_requests')
-              .update({ status:'pending', created_at: new Date().toISOString() })
-              .eq('id', r.id);
-            if(eUpd){ showToast('Ошибка: ' + eUpd.message); return; }
-            showToast('Заявка отправлена снова'); refreshRequests(); return;
-          }
-        } else { // входящая
-          if(r.status === 'pending'){ showToast('У вас уже есть входящая заявка — вкладка «Заявки»'); setTab('requests'); refreshRequests(); return; }
-          if(r.status === 'declined'){
-            const { error: eIns } = await sb.from('friend_requests').upsert(
-              { from_email: me.email, to_email: toEmail, status: 'pending' },
-              { onConflict: 'from_email,to_email' }
-            );
-            if(eIns){ showToast('Ошибка: ' + eIns.message); return; }
-            showToast('Заявка отправлена'); refreshRequests(); return;
-          }
-        }
-      }
-
-      // Создать новую (upsert защищает от дублей)
-      const { error } = await sb.from('friend_requests').upsert(
-        { from_email: me.email, to_email: toEmail, status:'pending' },
-        { onConflict: 'from_email,to_email' }
-      );
-      if(error){
-        showToast('Ошибка: ' + error.message);
-      } else {
-        showToast('Заявка отправлена');
-        refreshRequests();
-      }
-    }
-if(!sbReady()) return;
-      if(me.email===toEmail){ showToast('Самого себя добавить нельзя'); return; }
-
-      // Проверяем существующую заявку в любую сторону
-      const filter = 'and(from_email.eq.' + me.email + ',to_email.eq.' + toEmail + '),and(from_email.eq.' + toEmail + ',to_email.eq.' + me.email + ')';
-      const { data: exist, error: e0 } = await sb.from('friend_requests')
-        .select('id,from_email,to_email,status,created_at')
-        .or(filter)
-        .limit(1);
-
-      if(e0){ showToast('Ошибка: ' + e0.message); return; }
-
-      if(exist && exist.length){
-        const r = exist[0];
-        if(r.status === 'accepted'){
-          showToast('Вы уже друзья'); refreshFriends(); return;
-        }
-        if(r.from_email === me.email){
-          if(r.status === 'pending'){ showToast('Заявка уже отправлена'); return; }
-          if(r.status === 'declined'){
-            const { error: eUpd } = await sb.from('friend_requests').update({ status:'pending', created_at: new Date().toISOString() }).eq('id', r.id);
-            if(eUpd){ showToast('Ошибка: ' + eUpd.message); return; }
-            showToast('Заявка отправлена снова'); refreshRequests(); return;
-          }
-        } else { // входящая от собеседника
-          if(r.status === 'pending'){ showToast('У вас уже есть входящая заявка — вкладка «Заявки»'); setTab('requests'); refreshRequests(); return; }
-          if(r.status === 'declined'){
-            const { error: eIns } = await sb.from('friend_requests').upsert(
-              { from_email: me.email, to_email: toEmail, status: 'pending' },
-              { onConflict: 'from_email,to_email' }
-            );
-            if(eIns){ showToast('Ошибка: ' + eIns.message); return; }
-            showToast('Заявка отправлена'); refreshRequests(); return;
-          }
-        }
-      }
-
-      // Создаём новую (защита от дублей через upsert)
-      const { error } = await sb.from('friend_requests').upsert(
-        { from_email: me.email, to_email: toEmail, status:'pending' },
-        { onConflict: 'from_email,to_email' }
-      );
-      if(error){
-        if((error.code === '23505') || String(error.message||'').includes('duplicate key')){
-          showToast('Заявка уже существует');
-        }else{
-          showToast('Ошибка: ' + error.message);
-        }
-      } else {
-        showToast('Заявка отправлена');
-        refreshRequests();
-      }
-    }
-if(!sbReady()) return;
-      if(me.email===toEmail){ showToast('Самого себя добавить нельзя'); return; }
-
-      // 1) Проверяем, есть ли уже заявка между вами (в любую сторону)
-      const { data: exist, error: e0 } = await sb.from('friend_requests')
-        .select('id,from_email,to_email,status,created_at')
-        .or(`and(from_email.eq.${"${me.email}"},to_email.eq.${"${toEmail}"}),and(from_email.eq.${"${toEmail}"},to_email.eq.${"${me.email}"})`)
-        .limit(1);
-
-      if(e0){ showToast('Ошибка: '+e0.message); return; }
-
-      if(exist && exist.length){
-        const r = exist[0];
-        if(r.status === 'accepted'){
-          showToast('Вы уже друзья');
-          refreshFriends();
-          return;
-        }
-        // Если заявка уже отправлена вами и висит
-        if(r.from_email === me.email && r.status === 'pending'){
-          showToast('Заявка уже отправлена');
-          return;
-        }
-        // Если заявка когда-то была вами отклонена — переоткроем
-        if(r.from_email === me.email && r.status === 'declined'){
-          const { error: eUpd } = await sb.from('friend_requests').update({ status:'pending', created_at: new Date().toISOString() }).eq('id', r.id);
-          if(eUpd){ showToast('Ошибка: '+eUpd.message); return; }
-          showToast('Заявка отправлена снова');
-          refreshRequests();
-          return;
-        }
-        // Если входящая заявка от него к вам — предложим принять
-        if(r.from_email === toEmail && r.to_email === me.email){
-          if(r.status === 'pending'){
-            showToast('Пользователь уже отправил вам заявку — откройте вкладку «Заявки» и примите');
-            setTab('requests'); refreshRequests();
-            return;
-          }
-          if(r.status === 'declined'){
-            // Он был отклонён ранее — отправим новую встречную
-            const { error: eIns } = await sb.from('friend_requests').upsert(
-              { from_email: me.email, to_email: toEmail, status: 'pending' },
-              { onConflict: 'from_email,to_email' }
-            );
-            if(eIns){ showToast('Ошибка: '+eIns.message); return; }
-            showToast('Заявка отправлена');
-            refreshRequests();
-            return;
-          }
-        }
-      }
-
-      // 2) Если записей нет — обычная отправка (с защитой от дубликатов)
-      const { error } = await sb.from('friend_requests').upsert(
-        { from_email: me.email, to_email: toEmail, status:'pending' },
-        { onConflict: 'from_email,to_email' }
-      );
-      if(error){
-        // Если это дубль, просто покажем понятное сообщение
-        if(error.code === '23505' || (error.message||'').includes('duplicate key')){
-          showToast('Заявка уже существует');
-        }else{
-          showToast('Ошибка: '+error.message);
-        }
-      } else {
-        showToast('Заявка отправлена');
-        refreshRequests();
-      }
-    }
-if(!sbReady()) return;
-      if(me.email===toEmail){ showToast('Самого себя добавить нельзя'); return; }
-      const { error } = await sb.from('friend_requests').insert({ from_email: me.email, to_email: toEmail, status:'pending' });
-      if(error){ showToast('Ошибка: '+error.message); }
-      else { showToast('Заявка отправлена'); refreshRequests(); }
-    }
-    async function acceptRequest(id){
-      if(!sbReady()) return;
-      const { error } = await sb.from('friend_requests').update({ status:'accepted' }).eq('id', id);
-      if(error){ showToast('Ошибка: '+error.message); } else { showToast('Заявка принята'); refreshFriends(); refreshRequests(); }
-    }
-    async function declineRequest(id){
-      if(!sbReady()) return;
-      const { error } = await sb.from('friend_requests').update({ status:'declined' }).eq('id', id);
-      if(error){ showToast('Ошибка: '+error.message); } else { showToast('Отклонено'); refreshRequests(); }
-    }
-    
-    async function removeFriendship(otherEmail){
-      if(!sbReady()) return;
-      const me = getMe(); if(!me) return;
-      // Удалим обе возможные записи accepted (в обе стороны)
-      const d1 = sb.from('friend_requests').delete().eq('status','accepted').eq('from_email', me.email).eq('to_email', otherEmail);
-      const d2 = sb.from('friend_requests').delete().eq('status','accepted').eq('from_email', otherEmail).eq('to_email', me.email);
-      const [r1, r2] = await Promise.all([d1, d2]);
-      const err = r1.error || r2.error;
-      if(err){ showToast('Ошибка: ' + err.message); } else { showToast('Удалено'); refreshFriends(); }
-    }
-= await sb.from('friend_requests')
-        .delete()
-        .eq('status','accepted')
-        .or(`and(from_email.eq.${me.email},to_email.eq.${otherEmail}),and(from_email.eq.${otherEmail},to_email.eq.${me.email})`);
-      if(error){ showToast('Ошибка: '+error.message); } else { showToast('Удалено'); refreshFriends(); }
-    }
-    async function refreshAll(){
-      await syncProfileToSupabase().catch(()=>{});
-      await refreshUsers();
-      await refreshRequests();
-      await refreshFriends();
-    }
+    /* Sync profile */
+    async function syncProfileToSupabase(){ if(!sbReady()) return; const u=getUser(); if(!u) return; const up=await sb.from('profiles').upsert({ email:u.email, name:u.name||u.email }); if(up.error) console.warn(up.error); }
+  })();
   </script>
-
-  <!-- Helper: SQL to create tables (for Supabase) -->
-  <details style="margin:14px auto; width:min(92vw,900px); text-align:left; background:rgba(0,0,0,.18); padding:10px 14px; border-radius:12px;">
-    <summary>SQL для Supabase (создать таблицы и разрешения) — нажмите, чтобы развернуть</summary>
-    <pre style="white-space:pre-wrap; color:#eaeaea;">
--- Профили
-create table if not exists public.profiles (
-  email text primary key,
-  name text,
-  created_at timestamptz default now()
-);
-
--- Заявки в друзья
-create table if not exists public.friend_requests (
-  id uuid primary key default gen_random_uuid(),
-  from_email text not null references public.profiles(email) on delete cascade,
-  to_email   text not null references public.profiles(email) on delete cascade,
-  status text not null check (status in ('pending','accepted','declined')) default 'pending',
-  created_at timestamptz default now(),
-  unique (from_email, to_email)
-);
-
--- Включаем RLS
-alter table public.profiles enable row level security;
-alter table public.friend_requests enable row level security;
-
--- Политики (демо: открытый доступ для чтения/записи с anon key)
-create policy "profiles_select_all" on public.profiles for select using (true);
-create policy "profiles_upsert_all" on public.profiles for insert with check (true);
-create policy "profiles_update_all" on public.profiles for update using (true) with check (true);
-
-create policy "frequests_select_all" on public.friend_requests for select using (true);
-create policy "frequests_insert_all" on public.friend_requests for insert with check (true);
-create policy "frequests_update_all" on public.friend_requests for update using (true) with check (true);
-create policy "frequests_delete_all" on public.friend_requests for delete using (true);
-    </pre>
-    <div class="mini">Важно: это учебный режим — любой, у кого есть ваш anon‑key, сможет писать в таблицы. Для продакшена настройте строгие RLS-политики (по JWT пользователя).</div>
-  </details>
 </body>
 </html>
