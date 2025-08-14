@@ -40,7 +40,26 @@
       display:block; user-select:none; -webkit-user-drag:none; pointer-events:none;
       box-shadow:none; border-radius:0; transition:none;
     }
-    #bsod{ z-index:10000; background:#0078d7; cursor:none; }
+   #bsod{ z-index:10000; background:#0078d7; cursor:none; }
+
+    /* === Вызов (оверлей) === */
+    #callOverlay{
+      display:none; position:fixed; inset:0; z-index:8000;
+      background:rgba(0,0,0,.6); justify-content:center; align-items:center;
+    }
+    #callBox{text-align:center;}
+    #callBox .call-icon{
+      width:120px; height:120px; border-radius:50%; object-fit:cover;
+      box-shadow:0 0 15px rgba(0,0,0,.5);
+    }
+    .call-actions{ margin-top:25px; display:flex; justify-content:center; gap:40px; }
+    .call-btn{
+      width:70px; height:70px; border-radius:50%; display:flex;
+      align-items:center; justify-content:center; font-size:30px;
+      color:#fff; cursor:pointer;
+    }
+    .call-accept{ background:#1ea94d; }
+    .call-decline{ background:#ff3b30; transform:rotate(135deg); }
 
     /* === Всплывающий чат "Светлана" === */
     #chatWidget{
@@ -126,9 +145,19 @@
     <audio id="screamSound" src="scream.mp3"></audio>
   </div>
 
-  <!-- BSOD -->
-  <div id="bsod" class="overlay" aria-hidden="true" title="Клик — перезагрузка">
+<div id="bsod" class="overlay" aria-hidden="true" title="Клик — перезагрузка">
     <img src="bsod.png" alt="">
+  </div>
+
+  <!-- Оверлей вызова -->
+  <div id="callOverlay" aria-hidden="true">
+    <div id="callBox">
+      <img src="orig.png" alt="Светлана" class="call-icon" onerror="this.onerror=null; this.src='orig.jpg';">
+      <div class="call-actions">
+        <div id="callAccept" class="call-btn call-accept">📞</div>
+        <div id="callDecline" class="call-btn call-decline">📞</div>
+      </div>
+    </div>
   </div>
 
   <!-- Всплывающий чат "Светлана" -->
@@ -197,7 +226,7 @@
       }
     });
 
-    // Логика чата
+     // Логика чата и вызова
     const svOpen=document.getElementById('sv-open');
     const svAd=document.getElementById('sv-ad');
     const svChat=document.getElementById('sv-chat');
@@ -205,8 +234,44 @@
     const svMsgs=document.getElementById('sv-msgs');
     const svInput=document.getElementById('sv-input');
     const svSend=document.getElementById('sv-send');
+    const callOverlay=document.getElementById('callOverlay');
+    const callAccept=document.getElementById('callAccept');
+    const callDecline=document.getElementById('callDecline');
+
+    let ringInterval;
+    function startRing(){
+      try{
+        const ctx=new (window.AudioContext||window.webkitAudioContext)();
+        const beep=()=>{
+          const o=ctx.createOscillator();
+          const g=ctx.createGain();
+          o.type='sine'; o.frequency.value=800;
+          o.connect(g); g.connect(ctx.destination);
+          o.start();
+          g.gain.setValueAtTime(0.2,ctx.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.5);
+          o.stop(ctx.currentTime+0.5);
+        };
+        beep();
+        ringInterval=setInterval(beep,1200);
+      }catch(_){}
+    }
+    function stopRing(){
+      clearInterval(ringInterval);
+      ringInterval=null;
+    }
 
     svOpen.addEventListener('click',()=>{
+      callOverlay.style.display='flex';
+      startRing();
+    });
+    callDecline.addEventListener('click',()=>{
+      callOverlay.style.display='none';
+      stopRing();
+    });
+    callAccept.addEventListener('click',()=>{
+      callOverlay.style.display='none';
+      stopRing();
       svAd.style.display='none';
       svChat.style.display='flex';
       setTimeout(()=>svInput.focus(),50);
@@ -239,3 +304,4 @@
   </script>
 </body>
 </html>
+
