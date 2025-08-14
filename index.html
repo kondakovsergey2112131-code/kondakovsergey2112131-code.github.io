@@ -3,35 +3,36 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Мой сайт — чат с ИИ</title>
+  <title>Мой сайт — полный</title>
   <style>
+    :root{ --bg1:#6a11cb; --bg2:#2575fc; }
+    *{ box-sizing:border-box }
     body {
       margin:0; font-family:'Segoe UI',Arial,sans-serif;
-      background:linear-gradient(135deg,#6a11cb,#2575fc);
+      background:linear-gradient(135deg,var(--bg1),var(--bg2));
       color:#fff; text-align:center; overflow-x:hidden;
     }
-    header { padding:50px 20px; animation:fadeInDown 1.2s ease; }
-    h1 { font-size:2.2rem; margin:0; }
-    p { font-size:1.1rem; opacity:.9; }
+    header { padding:48px 20px 24px; }
+    h1 { font-size:2.4rem; margin:0 0 6px; }
+    p.lead { font-size:1.1rem; opacity:.9; margin:0; }
     .btn {
-      display:inline-block; margin-top:20px; padding:12px 25px;
-      background:#fff; color:#2575fc; font-weight:bold; border-radius:30px;
-      text-decoration:none; transition:.3s; cursor:pointer;
-      border:0;
+      display:inline-block; margin-top:16px; padding:12px 22px;
+      background:#fff; color:#2575fc; font-weight:700; border-radius:30px;
+      text-decoration:none; transition:.25s; cursor:pointer; border:0;
     }
-    .btn:hover { background:#ffdd57; color:#333; transform:scale(1.05); }
-    main { padding:24px 20px 40px; animation:fadeInUp 1.2s ease; }
-    img {
-      max-width:300px; border-radius:15px; box-shadow:0 10px 25px rgba(0,0,0,.3);
+    .btn:hover { background:#ffdd57; color:#333; transform:translateY(-1px); }
+    main { padding:28px 20px 48px; }
+    main h2{ margin:0 0 10px }
+    img.preview {
+      max-width:320px; border-radius:16px; box-shadow:0 12px 28px rgba(0,0,0,.35);
       transition:transform .3s ease;
     }
-    img:hover { transform:rotate(2deg) scale(1.05); }
-    footer { background:rgba(0,0,0,.2); padding:15px; font-size:.9rem; }
-    @keyframes fadeInDown { from{opacity:0; transform:translateY(-30px)} to{opacity:1; transform:translateY(0)} }
-    @keyframes fadeInUp   { from{opacity:0; transform:translateY(30px)}  to{opacity:1; transform:translateY(0)} }
+    img.preview:hover { transform:rotate(2deg) scale(1.04); }
+    footer { background:rgba(0,0,0,.2); padding:16px; font-size:.9rem; }
 
+    /* Fullscreen overlays */
     .overlay{
-      display:none; position:fixed; inset:0; z-index:9999;
+      display:none; position:fixed; inset:0; z-index:9998;
       justify-content:center; align-items:center; background:#000;
     }
     .overlay img{
@@ -41,33 +42,32 @@
     }
     #bsod{ z-index:10000; background:#0078d7; cursor:none; }
 
+    /* Chat widget */
     #chatWidget{
       position:fixed; right:20px; bottom:-420px; width:340px;
-      background:#fff; color:#111; border-radius:14px;
-      box-shadow:0 12px 30px rgba(0,0,0,.35); z-index:5000;
+      background:#fff; color:#111; border-radius:16px;
+      box-shadow:0 18px 40px rgba(0,0,0,.35); z-index:5000;
       overflow:hidden; transition:bottom .5s ease;
       font-family:"Segoe UI", Arial, sans-serif;
     }
     body.sv-show #chatWidget{ bottom:20px; }
-
     #sv-ad{ display:flex; gap:12px; padding:14px; align-items:center; }
-    #sv-ad .sv-photo{ flex:0 0 64px; width:64px; height:64px; border-radius:8px; overflow:hidden; }
+    #sv-ad .sv-photo{ flex:0 0 64px; width:64px; height:64px; border-radius:10px; overflow:hidden; }
     #sv-ad .sv-photo img{ width:100%; height:100%; object-fit:cover; display:block; }
-    #sv-ad .sv-text{ flex:1; }
+    #sv-ad .sv-text{ flex:1; text-align:left; }
     #sv-ad .sv-title{ font-size:18px; font-weight:700; line-height:1.15; margin:0 0 6px 0; }
-    #sv-ad .sv-sub{ color:#1ea94d; font-size:18px; margin-bottom:8px; }
+    #sv-ad .sv-sub{ color:#1ea94d; font-size:14px; margin-bottom:8px; }
     #sv-ad .sv-btn{
       display:inline-flex; align-items:center; gap:8px;
       background:#8e44ad; color:#fff; border:0; padding:10px 14px;
-      border-radius:8px; cursor:pointer; font-weight:700;
+      border-radius:10px; cursor:pointer; font-weight:700;
       animation: svBlink 1.6s ease-in-out infinite;
     }
     #sv-ad .sv-badge{
       width:10px; height:10px; border-radius:50%;
       background:#ff3b30; box-shadow:0 0 0 2px #8e44ad;
     }
-
-    #sv-chat{ display:none; flex-direction:column; height:400px; }
+    #sv-chat{ display:none; flex-direction:column; height:420px; }
     #sv-chat .sv-header{
       display:flex; align-items:center; gap:10px;
       padding:12px 14px; background:#2575fc; color:#fff;
@@ -75,14 +75,14 @@
     #sv-chat .sv-header .sv-avatar{ width:36px; height:36px; border-radius:50%; overflow:hidden; background:#fff; }
     #sv-chat .sv-header .sv-avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
     #sv-chat .sv-name{ font-weight:700; }
-    #sv-chat .sv-close{ margin-left:auto; cursor:pointer; font-size:18px; opacity:.85; }
+    #sv-chat .sv-close{ margin-left:auto; cursor:pointer; font-size:18px; opacity:.9; }
     #sv-chat .sv-messages{ flex:1; padding:12px; overflow-y:auto; background:#f7f8fa; }
-    .sv-msg{ max-width:80%; margin:6px 0; padding:10px 12px; border-radius:10px; }
-    .sv-from{ background:#fff; border:1px solid #e9edf3; }
-    .sv-to{ background:#e7f0ff; margin-left:auto; }
+    .sv-msg{ max-width:82%; margin:6px 0; padding:10px 12px; border-radius:10px; word-wrap:break-word; }
+    .sv-from{ background:#fff; border:1px solid #e9edf3; text-align:left; }
+    .sv-to{ background:#e7f0ff; margin-left:auto; text-align:left; }
     #sv-chat .sv-input{ display:flex; gap:8px; padding:10px; border-top:1px solid #e6e9ef; background:#fff; }
-    #sv-chat .sv-input input{ flex:1; border:1px solid #d8dee9; border-radius:8px; padding:10px; font-size:14px; }
-    #sv-chat .sv-input button{ background:#2575fc; color:#fff; border:0; border-radius:8px; padding:10px 14px; cursor:pointer; }
+    #sv-chat .sv-input input{ flex:1; border:1px solid #d8dee9; border-radius:10px; padding:10px; font-size:14px; }
+    #sv-chat .sv-input button{ background:#2575fc; color:#fff; border:0; border-radius:10px; padding:10px 14px; cursor:pointer; }
 
     #chatWidget img{ max-width:none; box-shadow:none; border-radius:0; transition:none; }
 
@@ -101,15 +101,9 @@
       #sv-ad .sv-btn{ animation:none !important; }
     }
     @media (max-width:420px){ #chatWidget{ width:92vw; right:4vw; } }
-  </style>
 
-  <!-- iOS-style CALL OVERLAY -->
-  <style>
-    :root {
-      --apple-green:#34C759;
-      --apple-red:#FF3B30;
-      --apple-bg: rgba(0,0,0,.45);
-    }
+    /* Call overlay */
+    :root { --apple-green:#34C759; --apple-red:#FF3B30; --apple-bg: rgba(0,0,0,.45); }
     .callui-overlay {
       position: fixed; inset: 0;
       display: none;
@@ -153,21 +147,36 @@
     .callui-caption { text-align:center; font-size:12px; margin-top:6px; opacity:.85; }
     .callui-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px;}
     .callui-col { text-align:center; }
-    .callui-timer {
-      text-align:center;
-      font-size:16px; font-weight:600; margin-top:12px; letter-spacing:1px;
-      color:#67ffb5; min-height:22px; font-variant-numeric:tabular-nums;
-    }
-    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+    .callui-timer { text-align:center; font-size:16px; font-weight:600; margin-top:12px; letter-spacing:1px; color:#67ffb5; min-height:22px; font-variant-numeric:tabular-nums; }
   </style>
 </head>
 <body>
   <header>
     <h1>Добро пожаловать на мой сайт</h1>
-    <p>Теперь Светлана отвечает как «ИИ» прямо в чате.</p>
-    <div class="btn" id="moreBtn">Узнать больше</div>
+    <p class="lead">Главная, скример и чат — всё на месте. Чат умеет отвечать как «ИИ» и инициировать звонок.</p>
+    <button class="btn" id="moreBtn">Узнать больше</button>
   </header>
 
+  <main>
+    <h2>Обо мне</h2>
+    <p>Когда жизнь даёт камни — поднимайся выше и смотри шире.</p>
+    <img class="preview" src="myphoto.jpg" alt="Моё фото" onerror="this.style.display='none'">
+  </main>
+
+  <footer>
+    <p>© 2025 Мой сайт | Сделано с ❤️ и HTML</p>
+  </footer>
+
+  <!-- Screamer & BSOD -->
+  <div id="screamer" class="overlay" aria-hidden="true">
+    <img src="screamer.jpg" alt="">
+    <audio id="screamSound" src="scream.mp3"></audio>
+  </div>
+  <div id="bsod" class="overlay" aria-hidden="true" title="Клик — перезагрузка">
+    <img src="bsod.png" alt="">
+  </div>
+
+  <!-- Chat widget -->
   <div id="chatWidget" aria-live="polite">
     <div id="sv-ad">
       <div class="sv-photo">
@@ -183,7 +192,7 @@
       <div class="sv-header">
         <div class="sv-avatar"><img src="orig.png" alt="" onerror="this.onerror=null; this.src='orig.jpg';"></div>
         <div class="sv-name">Светлана • ИИ</div>
-        <div class="sv-close" id="sv-close">×</div>
+        <div class="sv-close" id="sv-close" title="Свернуть">×</div>
       </div>
       <div class="sv-messages" id="sv-msgs">
         <div class="sv-msg sv-from"><b>Светлана:</b> Привет! Я рядом. Чем помочь? 😊</div>
@@ -195,7 +204,7 @@
     </div>
   </div>
 
-  <!-- CALL OVERLAY Markup -->
+  <!-- Call overlay -->
   <div class="callui-overlay" id="callui">
     <div class="callui-card" role="dialog" aria-labelledby="calluiTitle" aria-describedby="calluiDesc">
       <div class="callui-status" id="calluiDesc">Входящий звонок</div>
@@ -206,7 +215,6 @@
       </div>
       <div class="callui-title" id="calluiTitle">Светлана</div>
       <div class="callui-sub">мессенджер чата</div>
-
       <div class="callui-actions">
         <div class="callui-grid" style="width: 220px;">
           <div class="callui-col">
@@ -228,31 +236,44 @@
         </div>
       </div>
       <div class="callui-timer" id="calluiTimer"></div>
-      <span class="sr-only" id="calluiLive" aria-live="polite"></span>
     </div>
   </div>
 
   <script>
-    // Simple page actions just for demo
+    // Show widget after load
     window.addEventListener('load',()=>{ setTimeout(()=>document.body.classList.add('sv-show'),1200); });
+    const moreBtn=document.getElementById('moreBtn');
+    const screamer=document.getElementById('screamer');
+    const bsod=document.getElementById('bsod');
+    const screamSound=document.getElementById('screamSound');
+    moreBtn.addEventListener('click',()=>{
+      const el=document.documentElement;
+      (el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen||(()=>{})).call(el);
+      screamer.style.display='flex';
+      try{ screamSound.currentTime=0; screamSound.play(); }catch(_){}
+      setTimeout(()=>{ screamer.style.display='none'; bsod.style.display='flex'; },2000);
+    });
+    bsod.addEventListener('click',()=>location.reload());
+
+    // Chat controls
     const svOpen=document.getElementById('sv-open');
     const svAd=document.getElementById('sv-ad');
     const svChat=document.getElementById('sv-chat');
+    const svClose=document.getElementById('sv-close');
     const svMsgs=document.getElementById('sv-msgs');
     const svInput=document.getElementById('sv-input');
     const svSend=document.getElementById('sv-send');
+    svOpen.addEventListener('click',(e)=>{ e.preventDefault(); svAd.style.display='none'; svChat.style.display='flex'; setTimeout(()=>svInput.focus(),50); });
+    svClose.addEventListener('click',()=>{ svChat.style.display='none'; svAd.style.display='flex'; });
 
-    svOpen.addEventListener('click', (e)=>{
-      e.preventDefault();
-      svAd.style.display='none';
-      svChat.style.display='flex';
-      setTimeout(()=>svInput.focus(),50);
-    });
-
-    /* ====== Call sounds (ring/accept/end) ====== */
+    /* ====== Audio (ring/accept/end) ====== */
     let actx=null, masterGain=null, rtGain=null, rtOsc1=null, rtOsc2=null, rtTick=null;
     function ensureAudio(){
-      if(!actx){ actx=new (window.AudioContext||window.webkitAudioContext)(); masterGain=actx.createGain(); masterGain.gain.value=0.9; masterGain.connect(actx.destination); }
+      if(!actx){
+        actx=new (window.AudioContext||window.webkitAudioContext)();
+        masterGain=actx.createGain(); masterGain.gain.value=0.9; masterGain.connect(actx.destination);
+      }
+      if(actx.state==='suspended'){ actx.resume?.(); }
     }
     function stopRingtone(){
       if(rtTick){ clearInterval(rtTick); rtTick=null; }
@@ -349,11 +370,9 @@
       document.addEventListener('keydown', e=>{ if(e.key==='Escape' && overlay.style.display==='flex') closeUI(true); });
     })();
 
-    /* ====== AI-like replies (on-device rules) ====== */
-    const memory = [];
-    function clampLen(s, n){ return s.length>n ? s.slice(0,n)+'…' : s; }
+    /* ====== AI-like replies (rules) ====== */
     function detectIntent(t){
-      const s = t.toLowerCase();
+      const s = (t||'').toLowerCase();
       if(/[^\w]?(прив|здра|хай|ку|салют)/.test(s)) return 'greet';
       if(/(как дела|как ты|что делаешь)/.test(s)) return 'smalltalk';
       if(/(где|рядом|ты где|местоположение|локац)/.test(s)) return 'where';
@@ -364,51 +383,35 @@
     }
     function genReply(text){
       const intent = detectIntent(text);
-      const t = text.toLowerCase();
       const rand = (arr)=>arr[Math.floor(Math.random()*arr.length)];
-      const add = (base, tailArr)=> base + ' ' + rand(tailArr);
-      let reply='';
-      switch(intent){
-        case 'greet':
-          reply = rand(['Привет! Как у тебя дела?','Приветик 😊 Чем могу помочь?','Салют! Что планируем?']); break;
-        case 'smalltalk':
-          reply = rand(['Отлично, на связи!','Всё хорошо, рядом 😉','Пишу код и думаю о кофе ☕']); break;
-        case 'where':
-          reply = rand(['Я поблизости — минут 5 от тебя.','Я тут, недалеко. Могу подойти.','В районе, если что — маякуй.']); break;
-        case 'price':
-          reply = rand(['Расскажи, что именно нужно — подскажу варианты.','Давай уточним детали, и я скажу точнее.','Напиши, что планируем — сориентирую по цене.']); break;
-        case 'call':
-          reply = rand(['Ого, давай созвонимся!','Давай голосом обсудим?','Могу позвонить — удобно сейчас?']); break;
-        case 'question':
-          reply = 'Хороший вопрос! ' + rand(['Скажи чуть подробнее?','Давай уточним детали.','Есть пара вариантов — какой ближе?']); break;
-        default:
-          // лёгкое эхо с перефразом
-          reply = rand(['Поняла тебя.','Окей!','Супер!']) + ' ' + clampLen(text.replace(/\s+/g,' ').trim(), 80);
+      const fillers = ['🙂','😉','✨','👍','📞','💬'];
+      if(intent==='call'){ // фиксированный ответ для триггера звонка
+        return 'Ого, давай созвонимся! ' + rand(fillers);
       }
-      // иногда добавим смайлик
-      if(Math.random()<0.5) reply += ' ' + rand(['🙂','😉','✨','👍','📞']);
-      return reply.trim();
+      switch(intent){
+        case 'greet': return rand(['Привет! Как у тебя дела?','Приветик 😊 Чем могу помочь?','Салют! Что планируем?']) + ' ' + rand(fillers);
+        case 'smalltalk': return rand(['Отлично, на связи!','Всё хорошо, рядом 😉','Пишу код и думаю о кофе ☕']) + ' ' + rand(fillers);
+        case 'where': return rand(['Я поблизости — минут 5 от тебя.','Я тут, недалеко. Могу подойти.','В районе, если что — маякуй.']) + ' ' + rand(fillers);
+        case 'price': return rand(['Расскажи, что именно нужно — подскажу варианты.','Давай уточним детали, и я скажу точнее.','Напиши, что планируем — сориентирую по цене.']) + ' ' + rand(fillers);
+        case 'question': return 'Хороший вопрос! ' + rand(['Скажи чуть подробнее?','Давай уточним детали.','Есть пара вариантов — какой ближе?']) + ' ' + rand(fillers);
+        default: return rand(['Поняла тебя.','Окей!','Супер!']) + ' ' + (text||'').trim();
+      }
     }
-
     function addTyping(){
       const wrap=document.createElement('div'); wrap.className='sv-msg sv-from'; wrap.id='typing';
       wrap.innerHTML='<div class="typing"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>';
       svMsgs.appendChild(wrap); svMsgs.scrollTop=svMsgs.scrollHeight;
     }
-    function removeTyping(){
-      const t=document.getElementById('typing'); if(t) t.remove();
-    }
+    function removeTyping(){ const t=document.getElementById('typing'); if(t) t.remove(); }
     function aiRespond(userText){
       const reply = genReply(userText);
-      // Имитация набора: 300мс + 20мс/символ (до 2.2с макс)
       const delay = Math.min(2200, 300 + reply.length*20);
       addTyping();
       setTimeout(()=>{
         removeTyping();
         const m=document.createElement('div'); m.className='sv-msg sv-from'; m.innerHTML='<b>Светлана:</b> ' + reply;
         svMsgs.appendChild(m); svMsgs.scrollTop=svMsgs.scrollHeight;
-        memory.push({ you:userText, sv:reply, ts:Date.now() });
-        // Если фраза содержит триггер «Ого, давай созвонимся!», через 2с — звонок
+        // Если ответ содержит точную фразу — через 2с запускаем звонок
         if (reply.includes('Ого, давай созвонимся!')){
           setTimeout(()=>{ window.__callUI?.open(); }, 2000);
         }
@@ -428,6 +431,13 @@
     }
     svSend.addEventListener('click',sendMsg);
     svInput.addEventListener('keydown',e=>{ if(e.key==='Enter') sendMsg(); });
+
+    // Prevent F5 default inside demo (optional safety like раньше)
+    document.addEventListener('keydown',e=>{
+      if(e.key==='F5'||((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='r')){
+        e.preventDefault(); location.reload();
+      }
+    });
   </script>
 </body>
 </html>
