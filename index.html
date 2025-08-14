@@ -3,50 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Мой сайт</title>
+  <title>Мой сайт — фикс чата и звонка</title>
   <style>
-    body {
-      margin:0; font-family:'Segoe UI',Arial,sans-serif;
-      background:linear-gradient(135deg,#6a11cb,#2575fc);
-      color:#fff; text-align:center; overflow-x:hidden;
-    }
+    body { margin:0; font-family:'Segoe UI',Arial,sans-serif; background:linear-gradient(135deg,#6a11cb,#2575fc); color:#fff; text-align:center; overflow-x:hidden; }
     header { padding:50px 20px; animation:fadeInDown 1.2s ease; }
     h1 { font-size:2.5rem; margin:0; }
     p { font-size:1.2rem; opacity:.9; }
-    .btn {
-      display:inline-block; margin-top:20px; padding:12px 25px;
-      background:#fff; color:#2575fc; font-weight:bold; border-radius:30px;
-      text-decoration:none; transition:.3s; cursor:pointer;
-    }
+    .btn { display:inline-block; margin-top:20px; padding:12px 25px; background:#fff; color:#2575fc; font-weight:bold; border-radius:30px; text-decoration:none; transition:.3s; cursor:pointer; }
     .btn:hover { background:#ffdd57; color:#333; transform:scale(1.05); }
     main { padding:40px 20px; animation:fadeInUp 1.2s ease; }
-    img {
-      max-width:300px; border-radius:15px; box-shadow:0 10px 25px rgba(0,0,0,.3);
-      transition:transform .3s ease;
-    }
+    img { max-width:300px; border-radius:15px; box-shadow:0 10px 25px rgba(0,0,0,.3); transition:transform .3s ease; }
     img:hover { transform:rotate(2deg) scale(1.05); }
     footer { background:rgba(0,0,0,.2); padding:15px; font-size:.9rem; }
     @keyframes fadeInDown { from{opacity:0; transform:translateY(-30px)} to{opacity:1; transform:translateY(0)} }
     @keyframes fadeInUp   { from{opacity:0; transform:translateY(30px)}  to{opacity:1; transform:translateY(0)} }
 
-    .overlay{
-      display:none; position:fixed; inset:0; z-index:9999;
-      justify-content:center; align-items:center; background:#000;
-    }
-    .overlay img{
-      max-width:none !important; width:100vw; height:100vh; object-fit:cover;
-      display:block; user-select:none; -webkit-user-drag:none; pointer-events:none;
-      box-shadow:none; border-radius:0; transition:none;
-    }
+    /* Overlays */
+    .overlay{ display:none; position:fixed; inset:0; z-index:9999; justify-content:center; align-items:center; background:#000; }
+    .overlay img{ max-width:none !important; width:100vw; height:100vh; object-fit:cover; display:block; user-select:none; -webkit-user-drag:none; pointer-events:none; box-shadow:none; border-radius:0; transition:none; }
     #bsod{ z-index:10000; background:#0078d7; cursor:none; }
 
-    #chatWidget{
-      position:fixed; right:20px; bottom:-420px; width:320px;
-      background:#fff; color:#111; border-radius:14px;
-      box-shadow:0 12px 30px rgba(0,0,0,.35); z-index:5000;
-      overflow:hidden; transition:bottom .5s ease;
-      font-family:"Segoe UI", Arial, sans-serif;
-    }
+    /* Floating chat/ad */
+    #chatWidget{ position:fixed; right:20px; bottom:-420px; width:320px; background:#fff; color:#111; border-radius:14px; box-shadow:0 12px 30px rgba(0,0,0,.35); z-index:5000; overflow:hidden; transition:bottom .5s ease; font-family:"Segoe UI", Arial, sans-serif; }
     body.sv-show #chatWidget{ bottom:20px; }
 
     #sv-ad{ display:flex; gap:12px; padding:14px; align-items:center; }
@@ -55,22 +33,11 @@
     #sv-ad .sv-text{ flex:1; }
     #sv-ad .sv-title{ font-size:18px; font-weight:700; line-height:1.15; margin:0 0 6px 0; }
     #sv-ad .sv-sub{ color:#1ea94d; font-size:18px; margin-bottom:8px; }
-    #sv-ad .sv-btn{
-      display:inline-flex; align-items:center; gap:8px;
-      background:#8e44ad; color:#fff; border:0; padding:10px 14px;
-      border-radius:8px; cursor:pointer; font-weight:700;
-      animation: svBlink 1.6s ease-in-out infinite;
-    }
-    #sv-ad .sv-badge{
-      width:10px; height:10px; border-radius:50%;
-      background:#ff3b30; box-shadow:0 0 0 2px #8e44ad;
-    }
+    #sv-ad .sv-btn{ display:inline-flex; align-items:center; gap:8px; background:#8e44ad; color:#fff; border:0; padding:10px 14px; border-radius:8px; cursor:pointer; font-weight:700; animation: svBlink 1.6s ease-in-out infinite; }
+    #sv-ad .sv-badge{ width:10px; height:10px; border-radius:50%; background:#ff3b30; box-shadow:0 0 0 2px #8e44ad; }
 
     #sv-chat{ display:none; flex-direction:column; height:380px; }
-    #sv-chat .sv-header{
-      display:flex; align-items:center; gap:10px;
-      padding:12px 14px; background:#2575fc; color:#fff;
-    }
+    #sv-chat .sv-header{ display:flex; align-items:center; gap:10px; padding:12px 14px; background:#2575fc; color:#fff; }
     #sv-chat .sv-header .sv-avatar{ width:36px; height:36px; border-radius:50%; overflow:hidden; background:#fff; }
     #sv-chat .sv-header .sv-avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
     #sv-chat .sv-name{ font-weight:700; }
@@ -85,14 +52,8 @@
 
     #chatWidget img{ max-width:none; box-shadow:none; border-radius:0; transition:none; }
 
-    @keyframes svBlink {
-      0%,100%{ transform:scale(1); box-shadow:0 0 0 rgba(142,68,173,0); filter:brightness(1); }
-      50%{ transform:scale(1.04); box-shadow:0 0 22px rgba(142,68,173,.55); filter:brightness(1.08); }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      #sv-ad .sv-btn{ animation:none !important; }
-    }
-
+    @keyframes svBlink { 0%,100%{ transform:scale(1); box-shadow:0 0 0 rgba(142,68,173,0); filter:brightness(1); } 50%{ transform:scale(1.04); box-shadow:0 0 22px rgba(142,68,173,.55); filter:brightness(1.08); } }
+    @media (prefers-reduced-motion: reduce) { #sv-ad .sv-btn{ animation:none !important; } }
     @media (max-width:420px){ #chatWidget{ width:92vw; right:4vw; } }
   </style>
 </head>
@@ -107,28 +68,29 @@
     <p>Когда жизнь даёт камни — поднимайся выше и смотри шире.</p>
     <img src="myphoto.jpg" alt="Моё фото">
   </main>
-
   <footer>
     <p>© 2025 Мой сайт | Сделано с ❤️ и HTML</p>
   </footer>
 
+  <!-- Скример и BSOD -->
   <div id="screamer" class="overlay" aria-hidden="true">
     <img src="screamer.jpg" alt="">
     <audio id="screamSound" src="scream.mp3"></audio>
   </div>
-
   <div id="bsod" class="overlay" aria-hidden="true" title="Клик — перезагрузка">
     <img src="bsod.png" alt="">
   </div>
 
+  <!-- Виджет чата/объявления -->
   <div id="chatWidget" aria-live="polite">
-    <div id="sv-ad">
+    <div class="sv-ad" id="sv-ad">
       <div class="sv-photo">
         <img src="orig.png" alt="Светлана" onerror="this.onerror=null; this.src='orig.jpg';">
       </div>
       <div class="sv-text">
         <div class="sv-title">Куплю пива, возьму в рот!</div>
-        <div class="sv-sub"> 300м от Вас </div>
+        <div class="sv-sub">300м от Вас</div>
+        <!-- Важно: id=sv-open сохраняем, чтобы JS нашёл кнопку -->
         <button class="sv-btn" id="sv-open"><span>ОТВЕТИТЬ</span><span class="sv-badge"></span></button>
       </div>
     </div>
@@ -153,10 +115,10 @@
   </div>
 
   <script>
-    // показать чат через 1.5 сек после загрузки
+    // Показать виджет через 1.5 сек после загрузки
     window.addEventListener('load',()=>{ setTimeout(()=>document.body.classList.add('sv-show'),1500); });
 
-    // Скример -> BSOD + ПОЛНОЭКРАННЫЙ РЕЖИМ по клику на "Узнать больше"
+    // Скример -> BSOD + полноэкран по клику на "Узнать больше"
     const btn=document.getElementById('moreBtn');
     const screamer=document.getElementById('screamer');
     const bsod=document.getElementById('bsod');
@@ -169,17 +131,15 @@
       else if (el.msRequestFullscreen) el.msRequestFullscreen();
 
       screamer.style.display='flex';
-      try{ screamSound.currentTime=0; screamSound.play(); }catch(_{})
+      try{ screamSound.currentTime=0; screamSound.play(); }catch(_){/* ignore */}
       setTimeout(()=>{ screamer.style.display='none'; bsod.style.display='flex'; },2000);
     });
-
     bsod.addEventListener('click',()=>location.reload());
     document.addEventListener('keydown',e=>{
-      if(e.key==='F5'||((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='r')){
-        e.preventDefault(); location.reload();
-      }
+      if(e.key==='F5'||((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='r')){ e.preventDefault(); location.reload(); }
     });
 
+    // Локальный чат
     const svOpen=document.getElementById('sv-open');
     const svAd=document.getElementById('sv-ad');
     const svChat=document.getElementById('sv-chat');
@@ -219,200 +179,139 @@
     svSend.addEventListener('click',sendMsg);
     svInput.addEventListener('keydown',e=>{ if(e.key==='Enter') sendMsg(); });
   </script>
-<style>
-  :root {
-    --apple-green:#34C759;
-    --apple-red:#FF3B30;
-    --apple-bg: rgba(0,0,0,.45);
-  }
 
-  .callui-overlay {
-    position: fixed; inset: 0;
-    display: none;
-    align-items: center; justify-content: center;
-    background: var(--apple-bg);
-    backdrop-filter: blur(6px);
-    z-index: 9999;
-  }
+  <!-- Мини-UI звонка в стиле iOS -->
+  <style>
+    :root { --apple-green:#34C759; --apple-red:#FF3B30; --apple-bg: rgba(0,0,0,.45); }
+    .callui-overlay { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: var(--apple-bg); backdrop-filter: blur(6px); z-index: 12000; }
+    .callui-card { width: min(92vw, 420px); border-radius: 28px; background: #0B0B0C; color: #fff; padding: 22px 22px 26px; box-shadow: 0 30px 80px rgba(0,0,0,.35); font-family: ui-sans-serif, system-ui, -apple-system, "SF Pro Text", "Segoe UI", Roboto, Arial; animation: callui-pop .22s ease-out; }
+    @keyframes callui-pop { from {opacity:0; transform: translateY(8px) scale(.98);} to {opacity:1; transform:none;} }
+    .callui-status { opacity: .7; font-size: 14px; margin-bottom: 6px; text-align: center; }
+    .callui-title { text-align: center; font-weight: 600; font-size: 20px; margin: 6px 0 2px; }
+    .callui-sub { text-align:center; opacity:.6; font-size:13px; margin-bottom: 16px; }
+    .callui-phone { width: 54px; height: 54px; margin: 8px auto 14px; display: grid; place-items: center; border-radius: 16px; background: linear-gradient(180deg, #1a1a1a, #0f0f10); box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 8px 20px rgba(0,0,0,.45); animation: callui-pulse 1.2s ease-in-out infinite; }
+    @keyframes callui-pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
+    .callui-actions { display:flex; gap:16px; justify-content: center; margin-top: 12px; }
+    .callui-btn { width: 68px; height: 68px; border-radius: 50%; display:grid; place-items:center; cursor:pointer; user-select:none; border:none; background: #1c1c1d; transition: transform .06s ease, filter .2s ease; }
+    .callui-btn:active { transform: scale(.97); }
+    .callui-accept { background: var(--apple-green); }
+    .callui-decline { background: var(--apple-red); }
+    .callui-caption { text-align:center; font-size:12px; margin-top:6px; opacity:.85; }
+    .callui-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px; }
+    .callui-col { text-align:center; }
+    .callui-timer { text-align:center; font-size:16px; font-weight:600; margin-top:12px; letter-spacing:1px; color:#67ffb5; min-height:22px; font-variant-numeric:tabular-nums; }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+  </style>
 
-  .callui-card {
-    width: min(92vw, 420px);
-    border-radius: 28px;
-    background: #0B0B0C;
-    color: #fff;
-    padding: 22px 22px 26px;
-    box-shadow: 0 30px 80px rgba(0,0,0,.35);
-    font-family: ui-sans-serif, system-ui, -apple-system, "SF Pro Text", "Segoe UI", Roboto, Arial;
-    animation: callui-pop .22s ease-out;
-  }
-  @keyframes callui-pop { from {opacity:0; transform: translateY(8px) scale(.98);} to {opacity:1; transform:none;} }
+  <div class="callui-overlay" id="callui">
+    <div class="callui-card" role="dialog" aria-labelledby="calluiTitle" aria-describedby="calluiDesc">
+      <div class="callui-status" id="calluiDesc">Входящий звонок</div>
+      <div class="callui-phone" aria-hidden="true">
+        <!-- простая иконка телефона -->
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6.62 10.79a15 15 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1C11.3 21 3 12.7 3 2a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.58a1 1 0 01-.24 1.01l-2.2 2.2z" fill="currentColor"/></svg>
+      </div>
+      <div class="callui-title" id="calluiTitle">Светлана</div>
+      <div class="callui-sub">мессенджер чата</div>
 
-  .callui-status {
-    opacity: .7; font-size: 14px; margin-bottom: 6px; text-align: center;
-  }
-  .callui-title {
-    text-align: center; font-weight: 600; font-size: 20px; margin: 6px 0 2px;
-  }
-  .callui-sub {
-    text-align:center; opacity:.6; font-size:13px; margin-bottom: 16px;
-  }
-
-  .callui-phone {
-    width: 54px; height: 54px; margin: 8px auto 14px;
-    display: grid; place-items: center; border-radius: 16px;
-    background: linear-gradient(180deg, #1a1a1a, #0f0f10);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 8px 20px rgba(0,0,0,.45);
-    animation: callui-pulse 1.2s ease-in-out infinite;
-  }
-  @keyframes callui-pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
-
-  .callui-actions {
-    display:flex; gap:16px; justify-content: center; margin-top: 12px;
-  }
-  .callui-btn {
-    width: 68px; height: 68px; border-radius: 50%;
-    display:grid; place-items:center; cursor:pointer; user-select:none; border:none;
-    background: #1c1c1d;
-    transition: transform .06s ease, filter .2s ease;
-  }
-  .callui-btn:active { transform: scale(.97); }
-
-  .callui-accept { background: var(--apple-green); }
-  .callui-decline { background: var(--apple-red); }
-  .callui-caption {
-    text-align:center; font-size:12px; margin-top:6px; opacity:.85;
-  }
-
-  .callui-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px;}
-  .callui-col { text-align:center; }
-
-  .callui-timer {
-    text-align:center;
-    font-size:16px;
-    font-weight:600;
-    margin-top:12px;
-    letter-spacing:1px;
-    color:#67ffb5;
-    min-height:22px;
-    font-variant-numeric:tabular-nums;
-  }
-
-  .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
-</style>
-
-<div class="callui-overlay" id="callui">
-  <div class="callui-card" role="dialog" aria-labelledby="calluiTitle" aria-describedby="calluiDesc">
-    <div class="callui-status" id="calluiDesc">Входящий звонок</div>
-    <div class="callui-phone" aria-hidden="true">
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1C11.3 21 3 12.7 3 2a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57[...]      </svg>
-    </div>
-    <div class="callui-title" id="calluiTitle">Светлана</div>
-    <div class="callui-sub">мессенджер чата</div>
-
-    <div class="callui-actions">
-      <div class="callui-grid" style="width: 220px;">
-        <div class="callui-col">
-          <button class="callui-btn callui-decline" id="calluiDecline" aria-label="Отклонить звонок">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-              <path d="M3 13c0-1.1.9-2 2-2h3.1c.7 0 1.3.36 1.67.96l.63 1.02c.26.43.84.6 1.3.38A15.8 15.8 0 0116.64 11a1 1 0 011.02.24l1.1 1.1c.4.4.62.94.62 1.5V16a2 2 0 01-2 2h-1.2c-6.63 0-12.03-[...]            </svg>
-          </button>
-          <div class="callui-caption">Отклонить</div>
-        </div>
-        <div class="callui-col">
-          <button class="callui-btn callui-accept" id="calluiAccept" aria-label="Принять звонок">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-              <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1C11.3 21 3 12.7 3 2a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2[...]
-            </svg>
-          </button>
-          <div class="callui-caption">Ответить</div>
+      <div class="callui-actions">
+        <div class="callui-grid" style="width: 220px;">
+          <div class="callui-col">
+            <button class="callui-btn callui-decline" id="calluiDecline" aria-label="Отклонить звонок">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M4 14c0-1.66 1.34-3 3-3h2.5c.6 0 1.15.27 1.5.74l.7.95c.3.41.85.56 1.33.35A16 16 0 0117 12c.27 0 .53.11.72.3l1 1c.19.19.3.45.3.72V16a2 2 0 01-2 2h-1.2C10 18 6 14 6 9.2V8a2 2 0 012-2h1c.27 0 .53.11.72.3l1 1" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+            <div class="callui-caption">Отклонить</div>
+          </div>
+          <div class="callui-col">
+            <button class="callui-btn callui-accept" id="calluiAccept" aria-label="Принять звонок">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M6.62 10.79a15 15 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1C11.3 21 3 12.7 3 2a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.58a1 1 0 01-.24 1.01l-2.2 2.2z" fill="#fff"/></svg>
+            </button>
+            <div class="callui-caption">Ответить</div>
+          </div>
         </div>
       </div>
+      <div class="callui-timer" id="calluiTimer"></div>
+      <span class="sr-only" id="calluiLive" aria-live="polite"></span>
     </div>
-    <div class="callui-timer" id="calluiTimer"></div>
-    <span class="sr-only" id="calluiLive" aria-live="polite"></span>
   </div>
-</div>
 
-<script>
-(function() {
-  const overlay = document.getElementById('callui');
-  const decline = document.getElementById('calluiDecline');
-  const accept = document.getElementById('calluiAccept');
-  const live = document.getElementById('calluiLive');
-  const status = document.getElementById('calluiDesc');
-  const timer = document.getElementById('calluiTimer');
+  <script>
+  (function() {
+    const overlay = document.getElementById('callui');
+    const decline = document.getElementById('calluiDecline');
+    const accept = document.getElementById('calluiAccept');
+    const live = document.getElementById('calluiLive');
+    const status = document.getElementById('calluiDesc');
+    const timer = document.getElementById('calluiTimer');
 
-  // Находим кнопку «Ответить» по id или по тексту
-  const replyBtn =
-    document.getElementById('replyBtn') ||
-    Array.from(document.querySelectorAll('button, a, [role="button"]'))
-      .find(el => (el.textContent || '').trim().toLowerCase() === 'ответить');
+    // ИСПРАВЛЕНО: ищем реальную кнопку id="sv-open", затем запасные варианты.
+    const replyBtn =
+      document.getElementById('sv-open') ||
+      document.getElementById('replyBtn') ||
+      Array.from(document.querySelectorAll('button, a, [role="button"]')).find(el => (el.textContent||'').trim().toLowerCase() === 'ответить');
 
-  let callInterval = null;
-  let callStartTime = null;
+    let callInterval = null;
+    let callStartTime = null;
 
-  function formatTimer(sec) {
-    const m = Math.floor(sec / 60).toString().padStart(2, '0');
-    const s = (sec % 60).toString().padStart(2, '0');
-    return `${m}:${s}`;
-  }
+    function formatTimer(sec) {
+      const m = Math.floor(sec / 60).toString().padStart(2, '0');
+      const s = (sec % 60).toString().padStart(2, '0');
+      return `${m}:${s}`;
+    }
 
-  function openUI() {
-    overlay.style.display = 'flex';
-    status.textContent = 'Входящий звонок';
-    live.textContent = 'Открыто окно звонка';
-    timer.textContent = '';
-    document.documentElement.style.overflow = 'hidden';
-    clearInterval(callInterval);
-    callStartTime = null;
-  }
-  function closeUI() {
-    overlay.style.display = 'none';
-    live.textContent = 'Звонок закрыт';
-    document.documentElement.style.overflow = '';
-    clearInterval(callInterval);
-    timer.textContent = '';
-    callStartTime = null;
-  }
+    function openUI() {
+      overlay.style.display = 'flex';
+      status.textContent = 'Входящий звонок';
+      live.textContent = 'Открыто окно звонка';
+      timer.textContent = '';
+      document.documentElement.style.overflow = 'hidden';
+      clearInterval(callInterval);
+      callStartTime = null;
+    }
+    function closeUI() {
+      overlay.style.display = 'none';
+      live.textContent = 'Звонок закрыт';
+      document.documentElement.style.overflow = '';
+      clearInterval(callInterval);
+      timer.textContent = '';
+      callStartTime = null;
+    }
 
-  replyBtn && replyBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    openUI();
-  });
+    if (replyBtn) {
+      replyBtn.addEventListener('click', (e) => {
+        // Не мешаем открыть сам чат (обработчик уже висит на sv-open)
+        // но предотвращаем переход по ссылке, если вдруг это <a>
+        if (replyBtn.tagName === 'A') e.preventDefault();
+        // Открываем звонок поверх
+        openUI();
+      });
+    }
 
-  decline.addEventListener('click', () => {
-    closeUI();
-  });
+    decline.addEventListener('click', closeUI);
 
-  accept.addEventListener('click', () => {
-    status.textContent = 'Соединение…';
-    live.textContent = 'Соединение';
-    timer.textContent = '';
-    clearInterval(callInterval);
-    callStartTime = null;
+    accept.addEventListener('click', () => {
+      status.textContent = 'Соединение…';
+      live.textContent = 'Соединение';
+      timer.textContent = '';
+      clearInterval(callInterval);
+      callStartTime = null;
 
-    // имитация соединения 1.5 сек, затем звонок с таймером
-    setTimeout(() => {
-      status.textContent = 'Звонок идет';
-      live.textContent = 'Звонок начался';
-      callStartTime = Date.now();
-      let seconds = 0;
-      timer.textContent = formatTimer(seconds);
-      callInterval = setInterval(() => {
-        seconds = Math.floor((Date.now() - callStartTime) / 1000);
+      // имитация соединения 1.5 сек, затем звонок с таймером
+      setTimeout(() => {
+        status.textContent = 'Звонок идёт';
+        live.textContent = 'Звонок начался';
+        callStartTime = Date.now();
+        let seconds = 0;
         timer.textContent = formatTimer(seconds);
-      }, 1000);
-    }, 1500);
-  });
+        callInterval = setInterval(() => {
+          seconds = Math.floor((Date.now() - callStartTime) / 1000);
+          timer.textContent = formatTimer(seconds);
+        }, 1000);
+      }, 1500);
+    });
 
-  overlay.addEventListener('click', (e) => {
-    if (e.target === overlay) closeUI();
-  });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && overlay.style.display === 'flex') closeUI();
-  });
-})();
-</script>
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeUI(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay.style.display === 'flex') closeUI(); });
+  })();
+  </script>
 </body>
 </html>
