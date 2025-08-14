@@ -1,307 +1,302 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Мой сайт</title>
-  <style>
-    body {
-      margin:0; font-family:'Segoe UI',Arial,sans-serif;
-      background:linear-gradient(135deg,#6a11cb,#2575fc);
-      color:#fff; text-align:center; overflow-x:hidden;
-    }
-    header { padding:50px 20px; animation:fadeInDown 1.2s ease; }
-    h1 { font-size:2.5rem; margin:0; }
-    p { font-size:1.2rem; opacity:.9; }
-    .btn {
-      display:inline-block; margin-top:20px; padding:12px 25px;
-      background:#fff; color:#2575fc; font-weight:bold; border-radius:30px;
-      text-decoration:none; transition:.3s; cursor:pointer;
-    }
-    .btn:hover { background:#ffdd57; color:#333; transform:scale(1.05); }
-    main { padding:40px 20px; animation:fadeInUp 1.2s ease; }
-    /* обычные картинки на странице */
-    img {
-      max-width:300px; border-radius:15px; box-shadow:0 10px 25px rgba(0,0,0,.3);
-      transition:transform .3s ease;
-    }
-    img:hover { transform:rotate(2deg) scale(1.05); }
-    footer { background:rgba(0,0,0,.2); padding:15px; font-size:.9rem; }
-    @keyframes fadeInDown { from{opacity:0; transform:translateY(-30px)} to{opacity:1; transform:translateY(0)} }
-    @keyframes fadeInUp   { from{opacity:0; transform:translateY(30px)}  to{opacity:1; transform:translateY(0)} }
-
-    /* === ПОЛНОЭКРАННЫЕ СЛОИ (скример/BSOD) === */
-    .overlay{
-      display:none; position:fixed; inset:0; z-index:9999;
-      justify-content:center; align-items:center; background:#000;
-    }
-    .overlay img{
-      max-width:none !important; width:100vw; height:100vh; object-fit:cover;
-      display:block; user-select:none; -webkit-user-drag:none; pointer-events:none;
-      box-shadow:none; border-radius:0; transition:none;
-    }
-   #bsod{ z-index:10000; background:#0078d7; cursor:none; }
-
-    /* === Вызов (оверлей) === */
-    #callOverlay{
-      display:none; position:fixed; inset:0; z-index:8000;
-      background:rgba(0,0,0,.6); justify-content:center; align-items:center;
-    }
-    #callBox{text-align:center;}
-    #callBox .call-icon{
-      width:120px; height:120px; border-radius:50%; object-fit:cover;
-      box-shadow:0 0 15px rgba(0,0,0,.5);
-    }
-    .call-actions{ margin-top:25px; display:flex; justify-content:center; gap:40px; }
-    .call-btn{
-      width:70px; height:70px; border-radius:50%; display:flex;
-      align-items:center; justify-content:center; font-size:30px;
-      color:#fff; cursor:pointer;
-    }
-    .call-accept{ background:#1ea94d; }
-    .call-decline{ background:#ff3b30; transform:rotate(135deg); }
-
-    /* === Всплывающий чат "Светлана" === */
-    #chatWidget{
-      position:fixed; right:20px; bottom:-420px; width:320px;
-      background:#fff; color:#111; border-radius:14px;
-      box-shadow:0 12px 30px rgba(0,0,0,.35); z-index:5000;
-      overflow:hidden; transition:bottom .5s ease;
-      font-family:"Segoe UI", Arial, sans-serif;
-    }
-    body.sv-show #chatWidget{ bottom:20px; }
-
-    /* Карточка-объявление */
-    #sv-ad{ display:flex; gap:12px; padding:14px; align-items:center; }
-    #sv-ad .sv-photo{ flex:0 0 64px; width:64px; height:64px; border-radius:8px; overflow:hidden; }
-    #sv-ad .sv-photo img{ width:100%; height:100%; object-fit:cover; display:block; }
-    #sv-ad .sv-text{ flex:1; }
-    #sv-ad .sv-title{ font-size:18px; font-weight:700; line-height:1.15; margin:0 0 6px 0; }
-    #sv-ad .sv-sub{ color:#1ea94d; font-size:18px; margin-bottom:8px; } /* увеличил размер текста */
-    #sv-ad .sv-btn{
-      display:inline-flex; align-items:center; gap:8px;
-      background:#8e44ad; color:#fff; border:0; padding:10px 14px;
-      border-radius:8px; cursor:pointer; font-weight:700;
-      animation: svBlink 1.6s ease-in-out infinite; /* мигающая анимация */
-    }
-    #sv-ad .sv-badge{
-      width:10px; height:10px; border-radius:50%;
-      background:#ff3b30; box-shadow:0 0 0 2px #8e44ad;
-    }
-
-    /* Мини-чат */
-    #sv-chat{ display:none; flex-direction:column; height:380px; }
-    #sv-chat .sv-header{
-      display:flex; align-items:center; gap:10px;
-      padding:12px 14px; background:#2575fc; color:#fff;
-    }
-    #sv-chat .sv-header .sv-avatar{ width:36px; height:36px; border-radius:50%; overflow:hidden; background:#fff; }
-    #sv-chat .sv-header .sv-avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
-    #sv-chat .sv-name{ font-weight:700; }
-    #sv-chat .sv-close{ margin-left:auto; cursor:pointer; font-size:18px; opacity:.85; }
-    #sv-chat .sv-messages{ flex:1; padding:12px; overflow-y:auto; background:#f7f8fa; }
-    .sv-msg{ max-width:80%; margin:6px 0; padding:10px 12px; border-radius:10px; }
-    .sv-from{ background:#fff; border:1px solid #e9edf3; }
-    .sv-to{ background:#e7f0ff; margin-left:auto; }
-    #sv-chat .sv-input{ display:flex; gap:8px; padding:10px; border-top:1px solid #e6e9ef; background:#fff; }
-    #sv-chat .sv-input input{ flex:1; border:1px solid #d8dee9; border-radius:8px; padding:10px; font-size:14px; }
-    #sv-chat .sv-input button{ background:#2575fc; color:#fff; border:0; border-radius:8px; padding:10px 14px; cursor:pointer; }
-
-    /* чтобы общие стили img не ломали виджет */
-    #chatWidget img{ max-width:none; box-shadow:none; border-radius:0; transition:none; }
-
-    /* Анимации */
-    @keyframes svBlink {
-      0%,100%{ transform:scale(1); box-shadow:0 0 0 rgba(142,68,173,0); filter:brightness(1); }
-      50%{ transform:scale(1.04); box-shadow:0 0 22px rgba(142,68,173,.55); filter:brightness(1.08); }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      #sv-ad .sv-btn{ animation:none !important; }
-    }
-
-    @media (max-width:420px){ #chatWidget{ width:92vw; right:4vw; } }
-  </style>
-</head>
-<body>
-  <header>
-    <h1>Добро пожаловать на мой сайт</h1>
-    <p>Сделан за неделю — красивый градиент и немного магии 😎</p>
-    <div class="btn" id="moreBtn">Узнать больше</div>
-  </header>
-
-  <main id="about">
-    <h2>Обо мне</h2>
-    <p>Когда жизнь даёт камни — поднимайся выше и смотри шире.</p>
-    <img src="myphoto.jpg" alt="Моё фото">
-  </main>
-
-  <footer>
-    <p>© 2025 Мой сайт | Сделано с ❤️ и HTML</p>
-  </footer>
-
-  <!-- Скример -->
-  <div id="screamer" class="overlay" aria-hidden="true">
-    <img src="screamer.jpg" alt="">
-    <audio id="screamSound" src="scream.mp3"></audio>
-  </div>
-
-<div id="bsod" class="overlay" aria-hidden="true" title="Клик — перезагрузка">
-    <img src="bsod.png" alt="">
-  </div>
-
-  <!-- Оверлей вызова -->
-  <div id="callOverlay" aria-hidden="true">
-    <div id="callBox">
-      <img src="orig.png" alt="Светлана" class="call-icon" onerror="this.onerror=null; this.src='orig.jpg';">
-      <div class="call-actions">
-        <div id="callAccept" class="call-btn call-accept">📞</div>
-        <div id="callDecline" class="call-btn call-decline">📞</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Всплывающий чат "Светлана" -->
-  <div id="chatWidget" aria-live="polite">
-    <!-- Карточка -->
-    <div id="sv-ad">
-      <div class="sv-photo">
-        <img src="orig.png" alt="Светлана" onerror="this.onerror=null; this.src='orig.jpg';">
-      </div>
-      <div class="sv-text">
-        <div class="sv-title">Куплю пива, возьму в рот!</div>
-        <div class="sv-sub"> 300м от Вас </div>
-        <button class="sv-btn" id="sv-open"><span>ОТВЕТИТЬ</span><span class="sv-badge"></span></button>
-      </div>
-    </div>
-
-    <!-- Мини-чат -->
-    <div id="sv-chat">
-      <div class="sv-header">
-        <div class="sv-avatar"><img src="orig.png" alt="" onerror="this.onerror=null; this.src='orig.jpg';"></div>
-        <div class="sv-name">Светлана</div>
-        <div class="sv-close" id="sv-close">×</div>
-      </div>
-      <div class="sv-messages" id="sv-msgs">
-        <div class="sv-msg sv-from"><b>Светлана:</b> Привет! Ты рядом? 🍺</div>
-        <div class="sv-msg sv-from">
-          <b>Светлана:</b><br>
-          <img src="orig.png" alt="Фото" style="max-width:100%;border-radius:8px;margin-top:6px;" onerror="this.onerror=null; this.src='orig.jpg';">
-        </div>
-      </div>
-      <div class="sv-input">
-        <input type="text" id="sv-input" placeholder="Напишите сообщение…">
-        <button id="sv-send">➤</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // показать чат через 1.5 сек после загрузки
-    window.addEventListener('load',()=>{ setTimeout(()=>document.body.classList.add('sv-show'),1500); });
-
-    // Скример -> BSOD + ПОЛНОЭКРАННЫЙ РЕЖИМ по клику на "Узнать больше"
-    const btn=document.getElementById('moreBtn');
-    const screamer=document.getElementById('screamer');
-    const bsod=document.getElementById('bsod');
-    const screamSound=document.getElementById('screamSound');
-
-    btn.addEventListener('click',()=>{
-      // Полноэкранный режим (аналог F11; F12 перехватить нельзя)
-      const el = document.documentElement;
-      if (el.requestFullscreen) el.requestFullscreen();
-      else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-      else if (el.msRequestFullscreen) el.msRequestFullscreen();
-
-      // Скример
-      screamer.style.display='flex';
-      try{ screamSound.currentTime=0; screamSound.play(); }catch(_){}
-      setTimeout(()=>{ screamer.style.display='none'; bsod.style.display='flex'; },2000);
-    });
-
-    // Клик по BSOD — "перезагрузка"
-    bsod.addEventListener('click',()=>location.reload());
-    document.addEventListener('keydown',e=>{
-      if(e.key==='F5'||((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='r')){
-        e.preventDefault(); location.reload();
-      }
-    });
-
-     // Логика чата и вызова
-    const svOpen=document.getElementById('sv-open');
-    const svAd=document.getElementById('sv-ad');
-    const svChat=document.getElementById('sv-chat');
-    const svClose=document.getElementById('sv-close');
-    const svMsgs=document.getElementById('sv-msgs');
-    const svInput=document.getElementById('sv-input');
-    const svSend=document.getElementById('sv-send');
-    const callOverlay=document.getElementById('callOverlay');
-    const callAccept=document.getElementById('callAccept');
-    const callDecline=document.getElementById('callDecline');
-
-    let ringInterval;
-    function startRing(){
-      try{
-        const ctx=new (window.AudioContext||window.webkitAudioContext)();
-        const beep=()=>{
-          const o=ctx.createOscillator();
-          const g=ctx.createGain();
-          o.type='sine'; o.frequency.value=800;
-          o.connect(g); g.connect(ctx.destination);
-          o.start();
-          g.gain.setValueAtTime(0.2,ctx.currentTime);
-          g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.5);
-          o.stop(ctx.currentTime+0.5);
-        };
-        beep();
-        ringInterval=setInterval(beep,1200);
-      }catch(_){}
-    }
-    function stopRing(){
-      clearInterval(ringInterval);
-      ringInterval=null;
-    }
-
-    svOpen.addEventListener('click',()=>{
-      callOverlay.style.display='flex';
-      startRing();
-    });
-    callDecline.addEventListener('click',()=>{
-      callOverlay.style.display='none';
-      stopRing();
-    });
-    callAccept.addEventListener('click',()=>{
-      callOverlay.style.display='none';
-      stopRing();
-      svAd.style.display='none';
-      svChat.style.display='flex';
-      setTimeout(()=>svInput.focus(),50);
-    });
-    svClose.addEventListener('click',()=>{
-      svChat.style.display='none';
-      svAd.style.display='flex';
-    });
-
-    function sendMsg(){
-      const text=svInput.value.trim();
-      if(!text) return;
-      const mine=document.createElement('div');
-      mine.className='sv-msg sv-to';
-      mine.innerHTML=`<b>Вы:</b> ${text}`;
-      svMsgs.appendChild(mine);
-      svInput.value='';
-      svMsgs.scrollTop=svMsgs.scrollHeight;
-
-      setTimeout(()=>{
-        const reply=document.createElement('div');
-        reply.className='sv-msg sv-from';
-        reply.innerHTML=`<b>Светлана:</b> Ого, давай созвонимся!`;
-        svMsgs.appendChild(reply);
-        svMsgs.scrollTop=svMsgs.scrollHeight;
-      },800);
-    }
-    svSend.addEventListener('click',sendMsg);
-    svInput.addEventListener('keydown',e=>{ if(e.key==='Enter') sendMsg(); });
-  </script>
-</body>
-</html>
-
+ (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
+diff --git a/index.html b/index.html
+index 6da74e42d4abf4228d7e1ea1bb7dcec34cf345d7..fb4cd92ed72fdb046bea81bab3a10e30ee445cff 100644
+--- a/index.html
++++ b/index.html
+@@ -18,53 +18,80 @@
+       background:#fff; color:#2575fc; font-weight:bold; border-radius:30px;
+       text-decoration:none; transition:.3s; cursor:pointer;
+     }
+     .btn:hover { background:#ffdd57; color:#333; transform:scale(1.05); }
+     main { padding:40px 20px; animation:fadeInUp 1.2s ease; }
+     /* обычные картинки на странице */
+     img {
+       max-width:300px; border-radius:15px; box-shadow:0 10px 25px rgba(0,0,0,.3);
+       transition:transform .3s ease;
+     }
+     img:hover { transform:rotate(2deg) scale(1.05); }
+     footer { background:rgba(0,0,0,.2); padding:15px; font-size:.9rem; }
+     @keyframes fadeInDown { from{opacity:0; transform:translateY(-30px)} to{opacity:1; transform:translateY(0)} }
+     @keyframes fadeInUp   { from{opacity:0; transform:translateY(30px)}  to{opacity:1; transform:translateY(0)} }
+ 
+     /* === ПОЛНОЭКРАННЫЕ СЛОИ (скример/BSOD) === */
+     .overlay{
+       display:none; position:fixed; inset:0; z-index:9999;
+       justify-content:center; align-items:center; background:#000;
+     }
+     .overlay img{
+       max-width:none !important; width:100vw; height:100vh; object-fit:cover;
+       display:block; user-select:none; -webkit-user-drag:none; pointer-events:none;
+       box-shadow:none; border-radius:0; transition:none;
+     }
+-    #bsod{ z-index:10000; background:#0078d7; cursor:none; }
+-
+-    /* === Всплывающий чат "Светлана" === */
++    #bsod{ z-index:10000; background:#0078d7; cursor:none; }
++
++    /* === Всплывающая вкладка вызова === */
++    #callOverlay{
++      display:none; position:fixed; top:10px; left:0; right:0;
++      z-index:8000; justify-content:center; pointer-events:none;
++    }
++    #callBox{
++      background:#fff; color:#111; border-radius:20px;
++      box-shadow:0 8px 20px rgba(0,0,0,.3); padding:10px 16px;
++      display:flex; align-items:center; gap:12px; pointer-events:auto;
++      transform:translateY(-150%); transition:transform .4s ease;
++    }
++    #callOverlay.show #callBox{ transform:translateY(0); }
++    #callBox .call-icon{
++      width:60px; height:60px; border-radius:50%; object-fit:cover;
++    }
++    #callBox .call-info{ flex:1; text-align:left; }
++    #callBox .call-name{ font-weight:700; }
++    #callBox .call-status{ font-size:0.85rem; opacity:.7; }
++    .call-actions{ display:flex; gap:10px; }
++    .call-btn{
++      width:44px; height:44px; border-radius:50%; display:flex;
++      align-items:center; justify-content:center; font-size:20px;
++      color:#fff; cursor:pointer;
++    }
++    .call-accept{ background:#1ea94d; }
++    .call-decline{ background:#ff3b30; }
++
++    /* === Всплывающий чат "Светлана" === */
+     #chatWidget{
+       position:fixed; right:20px; bottom:-420px; width:320px;
+       background:#fff; color:#111; border-radius:14px;
+       box-shadow:0 12px 30px rgba(0,0,0,.35); z-index:5000;
+       overflow:hidden; transition:bottom .5s ease;
+       font-family:"Segoe UI", Arial, sans-serif;
+     }
+     body.sv-show #chatWidget{ bottom:20px; }
+ 
+     /* Карточка-объявление */
+     #sv-ad{ display:flex; gap:12px; padding:14px; align-items:center; }
+     #sv-ad .sv-photo{ flex:0 0 64px; width:64px; height:64px; border-radius:8px; overflow:hidden; }
+     #sv-ad .sv-photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+     #sv-ad .sv-text{ flex:1; }
+     #sv-ad .sv-title{ font-size:18px; font-weight:700; line-height:1.15; margin:0 0 6px 0; }
+     #sv-ad .sv-sub{ color:#1ea94d; font-size:18px; margin-bottom:8px; } /* увеличил размер текста */
+     #sv-ad .sv-btn{
+       display:inline-flex; align-items:center; gap:8px;
+       background:#8e44ad; color:#fff; border:0; padding:10px 14px;
+       border-radius:8px; cursor:pointer; font-weight:700;
+       animation: svBlink 1.6s ease-in-out infinite; /* мигающая анимация */
+     }
+     #sv-ad .sv-badge{
+       width:10px; height:10px; border-radius:50%;
+       background:#ff3b30; box-shadow:0 0 0 2px #8e44ad;
+diff --git a/index.html b/index.html
+index 6da74e42d4abf4228d7e1ea1bb7dcec34cf345d7..fb4cd92ed72fdb046bea81bab3a10e30ee445cff 100644
+--- a/index.html
++++ b/index.html
+@@ -105,56 +132,71 @@
+ </head>
+ <body>
+   <header>
+     <h1>Добро пожаловать на мой сайт</h1>
+     <p>Сделан за неделю — красивый градиент и немного магии 😎</p>
+     <div class="btn" id="moreBtn">Узнать больше</div>
+   </header>
+ 
+   <main id="about">
+     <h2>Обо мне</h2>
+     <p>Когда жизнь даёт камни — поднимайся выше и смотри шире.</p>
+     <img src="myphoto.jpg" alt="Моё фото">
+   </main>
+ 
+   <footer>
+     <p>© 2025 Мой сайт | Сделано с ❤️ и HTML</p>
+   </footer>
+ 
+   <!-- Скример -->
+   <div id="screamer" class="overlay" aria-hidden="true">
+     <img src="screamer.jpg" alt="">
+     <audio id="screamSound" src="scream.mp3"></audio>
+   </div>
+ 
+   <!-- BSOD -->
+-  <div id="bsod" class="overlay" aria-hidden="true" title="Клик — перезагрузка">
+-    <img src="bsod.png" alt="">
+-  </div>
+-
+-  <!-- Всплывающий чат "Светлана" -->
+-  <div id="chatWidget" aria-live="polite">
++  <div id="bsod" class="overlay" aria-hidden="true" title="Клик — перезагрузка">
++    <img src="bsod.png" alt="">
++  </div>
++
++  <!-- Вкладка вызова -->
++  <div id="callOverlay" aria-hidden="true">
++    <div id="callBox">
++      <img src="orig.png" alt="Светлана" class="call-icon" onerror="this.onerror=null; this.src='orig.jpg';">
++      <div class="call-info">
++        <div class="call-name">Светлана</div>
++        <div class="call-status">входящий звонок…</div>
++      </div>
++      <div class="call-actions">
++        <div id="callDecline" class="call-btn call-decline">✕</div>
++        <div id="callAccept" class="call-btn call-accept">📞</div>
++      </div>
++    </div>
++  </div>
++
++  <!-- Всплывающий чат "Светлана" -->
++  <div id="chatWidget" aria-live="polite">
+     <!-- Карточка -->
+     <div id="sv-ad">
+       <div class="sv-photo">
+         <img src="orig.png" alt="Светлана" onerror="this.onerror=null; this.src='orig.jpg';">
+       </div>
+       <div class="sv-text">
+         <div class="sv-title">Куплю пива, возьму в рот!</div>
+         <div class="sv-sub"> 300м от Вас </div>
+         <button class="sv-btn" id="sv-open"><span>ОТВЕТИТЬ</span><span class="sv-badge"></span></button>
+       </div>
+     </div>
+ 
+     <!-- Мини-чат -->
+     <div id="sv-chat">
+       <div class="sv-header">
+         <div class="sv-avatar"><img src="orig.png" alt="" onerror="this.onerror=null; this.src='orig.jpg';"></div>
+         <div class="sv-name">Светлана</div>
+         <div class="sv-close" id="sv-close">×</div>
+       </div>
+       <div class="sv-messages" id="sv-msgs">
+         <div class="sv-msg sv-from"><b>Светлана:</b> Привет! Ты рядом? 🍺</div>
+         <div class="sv-msg sv-from">
+           <b>Светлана:</b><br>
+           <img src="orig.png" alt="Фото" style="max-width:100%;border-radius:8px;margin-top:6px;" onerror="this.onerror=null; this.src='orig.jpg';">
+         </div>
+diff --git a/index.html b/index.html
+index 6da74e42d4abf4228d7e1ea1bb7dcec34cf345d7..fb4cd92ed72fdb046bea81bab3a10e30ee445cff 100644
+--- a/index.html
++++ b/index.html
+@@ -175,67 +217,105 @@
+     const screamer=document.getElementById('screamer');
+     const bsod=document.getElementById('bsod');
+     const screamSound=document.getElementById('screamSound');
+ 
+     btn.addEventListener('click',()=>{
+       // Полноэкранный режим (аналог F11; F12 перехватить нельзя)
+       const el = document.documentElement;
+       if (el.requestFullscreen) el.requestFullscreen();
+       else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+       else if (el.msRequestFullscreen) el.msRequestFullscreen();
+ 
+       // Скример
+       screamer.style.display='flex';
+       try{ screamSound.currentTime=0; screamSound.play(); }catch(_){}
+       setTimeout(()=>{ screamer.style.display='none'; bsod.style.display='flex'; },2000);
+     });
+ 
+     // Клик по BSOD — "перезагрузка"
+     bsod.addEventListener('click',()=>location.reload());
+     document.addEventListener('keydown',e=>{
+       if(e.key==='F5'||((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='r')){
+         e.preventDefault(); location.reload();
+       }
+     });
+ 
+-    // Логика чата
+-    const svOpen=document.getElementById('sv-open');
+-    const svAd=document.getElementById('sv-ad');
+-    const svChat=document.getElementById('sv-chat');
+-    const svClose=document.getElementById('sv-close');
+-    const svMsgs=document.getElementById('sv-msgs');
+-    const svInput=document.getElementById('sv-input');
+-    const svSend=document.getElementById('sv-send');
+-
+-    svOpen.addEventListener('click',()=>{
+-      svAd.style.display='none';
+-      svChat.style.display='flex';
+-      setTimeout(()=>svInput.focus(),50);
+-    });
+-    svClose.addEventListener('click',()=>{
+-      svChat.style.display='none';
+-      svAd.style.display='flex';
+-    });
++    // Логика чата и вызова
++    const svOpen=document.getElementById('sv-open');
++    const svAd=document.getElementById('sv-ad');
++    const svChat=document.getElementById('sv-chat');
++    const svClose=document.getElementById('sv-close');
++    const svMsgs=document.getElementById('sv-msgs');
++    const svInput=document.getElementById('sv-input');
++    const svSend=document.getElementById('sv-send');
++    const callOverlay=document.getElementById('callOverlay');
++    const callAccept=document.getElementById('callAccept');
++    const callDecline=document.getElementById('callDecline');
++
++    let ringInterval;
++    function startRing(){
++      try{
++        const ctx=new (window.AudioContext||window.webkitAudioContext)();
++        const beep=()=>{
++          const o=ctx.createOscillator();
++          const g=ctx.createGain();
++          o.type='sine'; o.frequency.value=800;
++          o.connect(g); g.connect(ctx.destination);
++          o.start();
++          g.gain.setValueAtTime(0.2,ctx.currentTime);
++          g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.5);
++          o.stop(ctx.currentTime+0.5);
++        };
++        beep();
++        ringInterval=setInterval(beep,1200);
++      }catch(_){}
++    }
++    function stopRing(){
++      clearInterval(ringInterval);
++      ringInterval=null;
++    }
++
++    svOpen.addEventListener('click',()=>{
++      callOverlay.style.display='flex';
++      setTimeout(()=>callOverlay.classList.add('show'),10);
++      startRing();
++    });
++    function hideCall(){
++      callOverlay.classList.remove('show');
++      setTimeout(()=>callOverlay.style.display='none',400);
++      stopRing();
++    }
++    callDecline.addEventListener('click',hideCall);
++    callAccept.addEventListener('click',()=>{
++      hideCall();
++      svAd.style.display='none';
++      svChat.style.display='flex';
++      setTimeout(()=>svInput.focus(),50);
++    });
++    svClose.addEventListener('click',()=>{
++      svChat.style.display='none';
++      svAd.style.display='flex';
++    });
+ 
+     function sendMsg(){
+       const text=svInput.value.trim();
+       if(!text) return;
+       const mine=document.createElement('div');
+       mine.className='sv-msg sv-to';
+       mine.innerHTML=`<b>Вы:</b> ${text}`;
+       svMsgs.appendChild(mine);
+       svInput.value='';
+       svMsgs.scrollTop=svMsgs.scrollHeight;
+ 
+       setTimeout(()=>{
+         const reply=document.createElement('div');
+         reply.className='sv-msg sv-from';
+         reply.innerHTML=`<b>Светлана:</b> Ого, давай созвонимся!`;
+         svMsgs.appendChild(reply);
+         svMsgs.scrollTop=svMsgs.scrollHeight;
+       },800);
+     }
+     svSend.addEventListener('click',sendMsg);
+     svInput.addEventListener('keydown',e=>{ if(e.key==='Enter') sendMsg(); });
+   </script>
+ </body>
+ </html>
+ 
+EOF
+)
