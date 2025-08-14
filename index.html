@@ -795,41 +795,6 @@
   </script>
 
   <!-- Helper: SQL to create tables (for Supabase) -->
-  <details style="margin:14px auto; width:min(92vw,900px); text-align:left; background:rgba(0,0,0,.18); padding:10px 14px; border-radius:12px;">
-    <summary>SQL для Supabase (создать таблицы и разрешения) — нажмите, чтобы развернуть</summary>
-    <pre style="white-space:pre-wrap; color:#eaeaea;">
--- Профили
-create table if not exists public.profiles (
-  email text primary key,
-  name text,
-  created_at timestamptz default now()
-);
-
--- Заявки в друзья
-create table if not exists public.friend_requests (
-  id uuid primary key default gen_random_uuid(),
-  from_email text not null references public.profiles(email) on delete cascade,
-  to_email   text not null references public.profiles(email) on delete cascade,
-  status text not null check (status in ('pending','accepted','declined')) default 'pending',
-  created_at timestamptz default now(),
-  unique (from_email, to_email)
-);
-
--- Включаем RLS
-alter table public.profiles enable row level security;
-alter table public.friend_requests enable row level security;
-
--- Политики (демо: открытый доступ для чтения/записи с anon key)
-create policy "profiles_select_all" on public.profiles for select using (true);
-create policy "profiles_upsert_all" on public.profiles for insert with check (true);
-create policy "profiles_update_all" on public.profiles for update using (true) with check (true);
-
-create policy "frequests_select_all" on public.friend_requests for select using (true);
-create policy "frequests_insert_all" on public.friend_requests for insert with check (true);
-create policy "frequests_update_all" on public.friend_requests for update using (true) with check (true);
-create policy "frequests_delete_all" on public.friend_requests for delete using (true);
-    </pre>
-    <div class="mini">Важно: это учебный режим — любой, у кого есть ваш anon‑key, сможет писать в таблицы. Для продакшена настройте строгие RLS-политики (по JWT пользователя).</div>
-  </details>
+  
 </body>
 </html>
