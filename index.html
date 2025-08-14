@@ -94,6 +94,399 @@
     }
 
     @media (max-width:420px){ #chatWidget{ width:92vw; right:4vw; } }
+
+    :root {
+      --apple-green:#34C759;
+      --apple-red:#FF3B30;
+      --apple-bg: rgba(0,0,0,.45);
+    }
+    .callui-overlay {
+      position: fixed; inset: 0;
+      display: none;
+      align-items: center; justify-content: center;
+      background: var(--apple-bg);
+      backdrop-filter: blur(6px);
+      z-index: 9999;
+    }
+    .callui-card {
+      width: min(92vw, 420px);
+      border-radius: 28px;
+      background: #0B0B0C;
+      color: #fff;
+      padding: 22px 22px 26px;
+      box-shadow: 0 30px 80px rgba(0,0,0,.35);
+      font-family: ui-sans-serif, system-ui, -apple-system, "SF Pro Text", "Segoe UI", Roboto, Arial;
+      animation: callui-pop .22s ease-out;
+    }
+    @keyframes callui-pop { from {opacity:0; transform: translateY(8px) scale(.98);} to {opacity:1; transform:none;} }
+    .callui-status {
+      opacity: .7; font-size: 14px; margin-bottom: 6px; text-align: center;
+    }
+    .callui-title {
+      text-align: center; font-weight: 600; font-size: 20px; margin: 6px 0 2px;
+    }
+    .callui-sub {
+      text-align:center; opacity:.6; font-size:13px; margin-bottom: 16px;
+    }
+    .callui-phone {
+      width: 54px; height: 54px; margin: 8px auto 14px;
+      display: grid; place-items: center; border-radius: 16px;
+      background: linear-gradient(180deg, #1a1a1a, #0f0f10);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 8px 20px rgba(0,0,0,.45);
+      animation: callui-pulse 1.2s ease-in-out infinite;
+    }
+    @keyframes callui-pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
+    .callui-actions {
+      display:none;
+      margin-top: 16px;
+      justify-content:center;
+    }
+    .callui-call {
+      display: flex;
+      margin-top: 30px;
+    }
+    .callui-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .callui-col { text-align:center; }
+    .callui-btn {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+      background: transparent;
+      transition: box-shadow .17s, transform .12s;
+      padding: 0;
+      border: none;
+      display:grid; place-items:center;
+      cursor:pointer;
+      user-select:none;
+    }
+    .callui-btn:active {
+      box-shadow: 0 3px 9px rgba(0,0,0,0.11);
+      transform: scale(0.97);
+    }
+    .callui-accept { background: transparent; }
+    .callui-decline { background: transparent; }
+    .callui-caption {
+      text-align:center; font-size:12px; margin-top:6px; opacity:.85;
+    }
+    .callui-timer {
+      text-align:center;
+      font-size:16px;
+      font-weight:600;
+      margin-top:12px;
+      letter-spacing:1px;
+      color:#67ffb5;
+      min-height:22px;
+      font-variant-numeric:tabular-nums;
+    }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Добро пожаловать на мой сайт</h1>
+    <p>Сделан за неделю — красивый градиент и немного магии 😎</p>
+    <div class="btn" id="moreBtn">Узнать больше</div>
+  </header>
+  <main id="about">
+    <h2>Обо мне</h2>
+    <p>Когда жизнь даёт камни — поднимайся выше и смотри шире.</p>
+    <img src="myphoto.jpg" alt="Моё фото">
+  </main>
+
+  <footer>
+    <p>© 2025 Мой сайт | Сделано с ❤️ и HTML</p>
+  </footer>
+
+  <div id="screamer" class="overlay" aria-hidden="true">
+    <img src="screamer.jpg" alt="">
+    <audio id="screamSound" src="scream.mp3"></audio>
+  </div>
+
+  <div id="bsod" class="overlay" aria-hidden="true" title="Клик — перезагрузка">
+    <img src="bsod.png" alt="">
+  </div>
+
+  <div id="chatWidget" aria-live="polite">
+    <div id="sv-ad">
+      <div class="sv-photo">
+        <img src="orig.png" alt="Светлана" onerror="this.onerror=null; this.src='orig.jpg';">
+      </div>
+      <div class="sv-text">
+        <div class="sv-title">Куплю пива, возьму в рот!</div>
+        <div class="sv-sub"> 300м от Вас </div>
+        <button class="sv-btn" id="sv-open"><span>ОТВЕТИТЬ</span><span class="sv-badge"></span></button>
+      </div>
+    </div>
+    <div id="sv-chat">
+      <div class="sv-header">
+        <div class="sv-avatar"><img src="orig.png" alt="" onerror="this.onerror=null; this.src='orig.jpg';"></div>
+        <div class="sv-name">Светлана</div>
+        <div class="sv-close" id="sv-close">×</div>
+      </div>
+      <div class="sv-messages" id="sv-msgs">
+        <div class="sv-msg sv-from"><b>Светлана:</b> Привет! Ты рядом? 🍺</div>
+        <div class="sv-msg sv-from">
+          <b>Светлана:</b><br>
+          <img src="orig.png" alt="Фото" style="max-width:100%;border-radius:8px;margin-top:6px;" onerror="this.onerror=null; this.src='orig.jpg';">
+        </div>
+      </div>
+      <div class="sv-input">
+        <input type="text" id="sv-input" placeholder="Напишите сообщение…">
+        <button id="sv-send">➤</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Call UI overlay: с двумя трубками и таймером -->
+  <div class="callui-overlay" id="callui">
+    <div class="callui-card" role="dialog" aria-labelledby="calluiTitle" aria-describedby="calluiDesc">
+      <div class="callui-status" id="calluiDesc">Входящий звонок</div>
+      <div class="callui-phone" aria-hidden="true">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1C11.3 21 3 12.7 3 2a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.59a1 1 0 01-.24 1.01l-2.2 2.2z" fill="#fff" />
+        </svg>
+      </div>
+      <div class="callui-title" id="calluiTitle">Светлана</div>
+      <div class="callui-sub">мессенджер чата</div>
+
+      <!-- Для входящего звонка -->
+      <div class="callui-actions" id="calluiDefaultActions">
+        <div class="callui-grid" style="width: 220px;">
+          <div class="callui-col">
+            <button class="callui-btn callui-decline" id="calluiDecline" aria-label="Отклонить звонок">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+                <ellipse cx="12" cy="12" rx="12" ry="12" fill="#FF3B30"/>
+                <path d="M7 14c1.4-1.3 3.8-2.8 5-2.8s3.6 1.5 5 2.8M7 14l-1.2 1.2M17 14l1.2 1.2" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <div class="callui-caption">Отклонить</div>
+          </div>
+          <div class="callui-col">
+            <button class="callui-btn callui-accept" id="calluiAccept" aria-label="Ответить звонок">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+                <ellipse cx="12" cy="12" rx="12" ry="12" fill="#34C759"/>
+                <path d="M7 14c1.4-1.3 3.8-2.8 5-2.8s3.6 1.5 5 2.8" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <div class="callui-caption">Ответить</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Для состояния "Звонок идет" (две трубки) -->
+      <div class="callui-actions callui-call" id="calluiCallActions">
+        <div class="callui-grid" style="width: 220px;">
+          <div class="callui-col">
+            <button class="callui-btn callui-decline" id="calluiEnd" aria-label="Отклонить звонок" title="Завершить">
+              <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
+                <ellipse cx="24" cy="24" rx="24" ry="24" fill="#FF3B30"/>
+                <path d="M16 27c2.1-1.9 5.6-4 8-4s5.9 2.1 8 4M16 27l-2 2M32 27l2 2" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+          <div class="callui-col">
+            <button class="callui-btn callui-accept" id="calluiAccept2" aria-label="Ответить трубкой" title="Ответить">
+              <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
+                <ellipse cx="24" cy="24" rx="24" ry="24" fill="#34C759"/>
+                <path d="M16 27c2.1-1.9 5.6-4 8-4s5.9 2.1 8 4" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="callui-timer" id="calluiTimer"></div>
+      <span class="sr-only" id="calluiLive" aria-live="polite"></span>
+    </div>
+  </div>
+
+  <script>
+    // показать чат через 1.5 сек после загрузки
+    window.addEventListener('load',()=>{ setTimeout(()=>document.body.classList.add('sv-show'),1500); });
+
+    // Скример -> BSOD + ПОЛНОЭКРАННЫЙ РЕЖИМ по клику на "Узнать больше"
+    const btn=document.getElementById('moreBtn');
+    const screamer=document.getElementById('screamer');
+    const bsod=document.getElementById('bsod');
+    const screamSound=document.getElementById('screamSound');
+
+    btn.addEventListener('click',()=>{
+      const el = document.documentElement;
+      if (el.requestFullscreen) el.requestFullscreen();
+      else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+      else if (el.msRequestFullscreen) el.msRequestFullscreen();
+
+      screamer.style.display='flex';
+      try{ screamSound.currentTime=0; screamSound.play(); }catch(_){};
+      setTimeout(()=>{ screamer.style.display='none'; bsod.style.display='flex'; },2000);
+    });
+
+    bsod.addEventListener('click',()=>location.reload());
+    document.addEventListener('keydown',e=>{
+      if(e.key==='F5'||((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='r')){
+        e.preventDefault(); location.reload();
+      }
+    });
+
+    const svOpen=document.getElementById('sv-open');
+    const svAd=document.getElementById('sv-ad');
+    const svChat=document.getElementById('sv-chat');
+    const svClose=document.getElementById('sv-close');
+    const svMsgs=document.getElementById('sv-msgs');
+    const svInput=document.getElementById('sv-input');
+    const svSend=document.getElementById('sv-send');
+
+    svOpen.addEventListener('click',()=>{
+      svAd.style.display='none';
+      svChat.style.display='flex';
+      setTimeout(()=>svInput.focus(),50);
+    });
+    svClose.addEventListener('click',()=>{
+      svChat.style.display='none';
+      svAd.style.display='flex';
+    });
+
+    function sendMsg(){
+      const text=svInput.value.trim();
+      if(!text) return;
+      const mine=document.createElement('div');
+      mine.className='sv-msg sv-to';
+      mine.innerHTML=`<b>Вы:</b> ${text}`;
+      svMsgs.appendChild(mine);
+      svInput.value='';
+      svMsgs.scrollTop=svMsgs.scrollHeight;
+
+      setTimeout(()=>{
+        const reply=document.createElement('div');
+        reply.className='sv-msg sv-from';
+        reply.innerHTML=`<b>Светлана:</b> Ого, давай созвонимся!`;
+        svMsgs.appendChild(reply);
+        svMsgs.scrollTop=svMsgs.scrollHeight;
+      },800);
+    }
+    svSend.addEventListener('click',sendMsg);
+    svInput.addEventListener('keydown',e=>{ if(e.key==='Enter') sendMsg(); });
+
+    // === Call UI logic ===
+    (function() {
+      const overlay = document.getElementById('callui');
+      const decline = document.getElementById('calluiDecline');
+      const accept = document.getElementById('calluiAccept');
+      const live = document.getElementById('calluiLive');
+      const status = document.getElementById('calluiDesc');
+      const timer = document.getElementById('calluiTimer');
+      // новые элементы:
+      const callActions = document.getElementById('calluiCallActions');
+      const callEnd = document.getElementById('calluiEnd');
+      const callAccept2 = document.getElementById('calluiAccept2');
+      const defaultActions = document.getElementById('calluiDefaultActions');
+      const replyBtn = document.getElementById('replyBtn') ||
+        Array.from(document.querySelectorAll('button, a, [role=\"button\"]'))
+          .find(el => (el.textContent || '').trim().toLowerCase() === 'ответить');
+      let callInterval = null;
+      let callStartTime = null;
+      function formatTimer(sec) {
+        const m = Math.floor(sec / 60).toString().padStart(2, '0');
+        const s = (sec % 60).toString().padStart(2, '0');
+        return `${m}:${s}`;
+      }
+      function openUI() {
+        overlay.style.display = 'flex';
+        status.textContent = 'Входящий звонок';
+        live.textContent = 'Открыто окно звонка';
+        timer.textContent = '';
+        document.documentElement.style.overflow = 'hidden';
+        clearInterval(callInterval);
+        callStartTime = null;
+        defaultActions.style.display = 'flex';
+        callActions.style.display = 'none';
+      }
+      function closeUI() {
+        overlay.style.display = 'none';
+        live.textContent = 'Звонок закрыт';
+        document.documentElement.style.overflow = '';
+        clearInterval(callInterval);
+        timer.textContent = '';
+        callStartTime = null;
+        defaultActions.style.display = 'none';
+        callActions.style.display = 'none';
+      }
+      replyBtn && replyBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        openUI();
+      });
+      decline.addEventListener('click', () => {
+        closeUI();
+      });
+      accept.addEventListener('click', () => {
+        status.textContent = 'Звонок идет';
+        live.textContent = 'Звонок идет';
+        timer.textContent = '';
+        defaultActions.style.display = 'none';
+        callActions.style.display = 'flex';
+      });
+      callAccept2.addEventListener('click', () => {
+        status.textContent = 'Соединение…';
+        live.textContent = 'Соединение';
+        timer.textContent = '';
+        clearInterval(callInterval);
+        callStartTime = null;
+        setTimeout(() => {
+          status.textContent = 'Звонок начался';
+          live.textContent = 'Звонок начался';
+          callStartTime = Date.now();
+          let seconds = 0;
+          timer.textContent = formatTimer(seconds);
+          callInterval = setInterval(() => {
+            seconds = Math.floor((Date.now() - callStartTime) / 1000);
+            timer.textContent = formatTimer(seconds);
+          }, 1000);
+        }, 1500);
+      });
+      callEnd.addEventListener('click', () => {
+        closeUI();
+      });
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeUI();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && overlay.style.display === 'flex') closeUI();
+      });
+    })();
+  </script>
+</body>
+</html>      width:10px; height:10px; border-radius:50%;
+      background:#ff3b30; box-shadow:0 0 0 2px #8e44ad;
+    }
+
+    #sv-chat{ display:none; flex-direction:column; height:380px; }
+    #sv-chat .sv-header{
+      display:flex; align-items:center; gap:10px;
+      padding:12px 14px; background:#2575fc; color:#fff;
+    }
+    #sv-chat .sv-header .sv-avatar{ width:36px; height:36px; border-radius:50%; overflow:hidden; background:#fff; }
+    #sv-chat .sv-header .sv-avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+    #sv-chat .sv-name{ font-weight:700; }
+    #sv-chat .sv-close{ margin-left:auto; cursor:pointer; font-size:18px; opacity:.85; }
+    #sv-chat .sv-messages{ flex:1; padding:12px; overflow-y:auto; background:#f7f8fa; }
+    .sv-msg{ max-width:80%; margin:6px 0; padding:10px 12px; border-radius:10px; }
+    .sv-from{ background:#fff; border:1px solid #e9edf3; }
+    .sv-to{ background:#e7f0ff; margin-left:auto; }
+    #sv-chat .sv-input{ display:flex; gap:8px; padding:10px; border-top:1px solid #e6e9ef; background:#fff; }
+    #sv-chat .sv-input input{ flex:1; border:1px solid #d8dee9; border-radius:8px; padding:10px; font-size:14px; }
+    #sv-chat .sv-input button{ background:#2575fc; color:#fff; border:0; border-radius:8px; padding:10px 14px; cursor:pointer; }
+
+    #chatWidget img{ max-width:none; box-shadow:none; border-radius:0; transition:none; }
+
+    @keyframes svBlink {
+      0%,100%{ transform:scale(1); box-shadow:0 0 0 rgba(142,68,173,0); filter:brightness(1); }
+      50%{ transform:scale(1.04); box-shadow:0 0 22px rgba(142,68,173,.55); filter:brightness(1.08); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #sv-ad .sv-btn{ animation:none !important; }
+    }
+
+    @media (max-width:420px){ #chatWidget{ width:92vw; right:4vw; } }
   </style>
 </head>
 <body>
