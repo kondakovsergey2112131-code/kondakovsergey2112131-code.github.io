@@ -102,7 +102,22 @@
     <p>Сделан за неделю — красивый градиент и немного магии 😎</p>
     <div class="btn" id="moreBtn">Узнать больше</div>
   </header>
-
+  <!-- Чёрный квадрат по центру -->
+  <div class="center-black-square"></div>
+  <style>
+    .center-black-square {
+      width: 120px;
+      height: 120px;
+      background: #000;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2000;
+      border-radius: 10px;
+      box-shadow: 0 6px 32px rgba(0,0,0,0.25);
+    }
+  </style>
   <main id="about">
     <h2>Обо мне</h2>
     <p>Когда жизнь даёт камни — поднимайся выше и смотри шире.</p>
@@ -419,3 +434,4 @@
 </script>
 </body>
 </html>
+
