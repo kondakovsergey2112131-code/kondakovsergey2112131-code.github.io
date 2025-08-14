@@ -117,103 +117,22 @@
     .dm-input button:disabled { opacity: .6; cursor: not-allowed; }
 
   
-    /* Users Carousel */
-    .uc{ margin:0 auto; width:min(92vw, 360px); height:220px; position:relative;
-         border-radius:16px; overflow:hidden; box-shadow:0 12px 28px rgba(0,0,0,.35); }
-    .uc-img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity .8s ease; }
-    .uc-img.active{ opacity:1; }
+    /* CSS-only carousel (fade) */
+    .uc{ margin:0 auto; width:min(92vw, 360px); height:220px; position:relative; border-radius:16px; overflow:hidden; box-shadow:0 12px 28px rgba(0,0,0,.35); }
+    .uc-slide{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; animation: ucFade 12s infinite; }
+    .uc-slide:nth-child(1){ animation-delay: 0s; }
+    .uc-slide:nth-child(2){ animation-delay: 4s; }
+    .uc-slide:nth-child(3){ animation-delay: 8s; }
+    @keyframes ucFade{
+      0%   { opacity: 0; }
+      5%   { opacity: 1; }
+      30%  { opacity: 1; }
+      35%  { opacity: 0; }
+      100% { opacity: 0; }
+    }
 
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-  
-  ;(function(){
-    const el = document.getElementById('userCarousel');
-    if(!el) return;
-
-    function parseSources(attr){
-      if(!attr) return [];
-      // Try JSON first
-      try {
-        const arr = JSON.parse(attr);
-        if (Array.isArray(arr)) return arr;
-      } catch(_) {}
-      // Fallback: CSV string "a.jpg, b.jpg, c.png"
-      const raw = String(attr).trim();
-      const cleaned = raw.replace(/^\[|\]$/g, '');
-      const parts = cleaned.split(',').map(s => s.trim().replace(/^['"]|['"]$/g,''));
-      return parts.filter(Boolean);
-    }
-
-    let sources = parseSources(el.getAttribute('data-images') || '');
-
-    // As a second fallback: take any <img data-src="..."> children
-    if(!sources.length){
-      const candidates = Array.from(el.querySelectorAll('img[data-src]')).map(i => i.getAttribute('data-src'));
-      sources = candidates.filter(Boolean);
-    }
-
-    // If still nothing — try to read a single src attr from legacy <img>
-    if(!sources.length){
-      const candidates = Array.from(el.querySelectorAll('img[src]')).map(i => i.getAttribute('src'));
-      sources = candidates.filter(Boolean);
-    }
-
-    // Last fallback: use myphoto.jpg if present
-    if(!sources.length){ sources = ['myphoto.jpg']; }
-
-    // De-dup
-    sources = Array.from(new Set(sources));
-
-    const imgs = [];
-    let finished = 0;
-    const total = sources.length;
-    let hadSuccess = false;
-
-    function done(){
-      finished++;
-      if(finished < total) return;
-      if(!hadSuccess){
-        // Visible fallback with hint
-        const box = document.createElement('div');
-        box.style.position='absolute';
-        box.style.inset='0';
-        box.style.display='grid';
-        box.style.placeItems='center';
-        box.style.background='rgba(0,0,0,.2)';
-        box.style.color='#fff';
-        box.style.font='600 14px/1.3 system-ui, Arial';
-        box.textContent = 'Изображения не найдены. Проверьте имена файлов в data-images.';
-        el.appendChild(box);
-        return;
-      }
-      // Show first
-      let idx = 0;
-      imgs[0].classList.add('active');
-      let timer = null;
-      function next(){
-        imgs[idx].classList.remove('active');
-        idx = (idx + 1) % imgs.length;
-        imgs[idx].classList.add('active');
-      }
-      function start(){ if(!timer){ timer = setInterval(next, 3000); } }
-      function stop(){ if(timer){ clearInterval(timer); timer = null; } }
-      start();
-      el.addEventListener('mouseenter', stop);
-      el.addEventListener('mouseleave', start);
-    }
-
-    sources.forEach(src => {
-      if(!src) { finished++; return; }
-      const img = new Image();
-      img.className = 'uc-img';
-      img.alt = 'Пользователь';
-      img.onload = () => { el.appendChild(img); imgs.push(img); hadSuccess = true; done(); };
-      img.onerror = () => { console.warn('[Carousel] Не удалось загрузить', src); done(); };
-      // Avoid accidental leading/trailing spaces
-      img.src = src.trim();
-    });
-  })();
-</script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
   <header>
@@ -226,12 +145,16 @@
     <span class="hello" id="hello"></span>
   </header>
 
+  
   <main>
-  <h2 style="margin:0 0 10px">Наши пользователи</h2>
-  <div class="uc" id="userCarousel" aria-label="Карусель фото пользователей"
-       data-images=\'["myphoto.jpg","svetlana.jpeg","orig.jpg"]\'>
-  </div>
-</main>
+    <h2 style="margin:0 0 10px">Наши пользователи</h2>
+    <div class="uc" id="userCarousel">
+      <img src="myphoto.jpg" alt="Пользователь 1" class="uc-slide">
+      <img src="svetlana.jpeg" alt="Пользователь 2" class="uc-slide">
+      <img src="orig.jpg" alt="Пользователь 3" class="uc-slide">
+    </div>
+  </main>
+
 
   <footer><p>© 2025</p></footer>
 
