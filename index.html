@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Стабильная версия — чат, регистрация, друзья</title>
+  <title>Добро пожаловать на мой сайт</title>
   <style>
     :root{ --bg1:#6a11cb; --bg2:#2575fc; --muted:#a9b7cc; --card:#0f1322; --border:#2b3963; --ok:#34C759; --err:#FF3B30; }
     *{ box-sizing:border-box }
@@ -111,13 +111,18 @@
 
     /* Error banner */
     .errban{ position:fixed; left:10px; bottom:10px; z-index:99999; background:#7f1d1d; color:#fff; padding:8px 10px; border-radius:8px; font:12px/1.3 monospace; max-width:80vw; display:none; }
+  
+    /* Ensure disabled buttons look clickable enough */
+    #sv-chat .sv-input button:disabled,
+    .dm-input button:disabled { opacity: .6; cursor: not-allowed; }
+
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
   <header>
-    <h1>Стабильная версия</h1>
-    <p class="lead">Чат, звонок, регистрация. Сообщество и сообщения — включаются при настройке Supabase.</p>
+    <h1>Добро пожаловать на мой сайт</h1>
+    <p class="lead">Теперь Светлана отвечает как «ИИ» прямо в чат</p>
     <button class="btn" id="moreBtn">Узнать больше</button>
     <button class="btn ghost" id="authOpen">Войти / Регистрация</button>
     <button class="btn" id="logoutBtn" style="display:none">Выйти</button>
@@ -230,7 +235,7 @@
           </div>
         </div>
       </div>
-    
+      <div class="mini">Чтобы «Пользователи/Друзья/Чат» заработали между разными людьми, вставьте в код ваш <b>SUPABASE_URL</b> и <b>SUPABASE_ANON_KEY</b> (настройки проекта Supabase) и создайте таблицы.</div>
     </div>
   </div>
 
@@ -275,6 +280,14 @@
     const svMsgs=document.getElementById('sv-msgs');
     const svInput=document.getElementById('sv-input');
     const svSend=document.getElementById('sv-send');
+    // --- Force enable & proper type for send buttons ---
+    try {
+      if (svSend) { svSend.setAttribute('type','button'); svSend.disabled = false; }
+    } catch(e){}
+    try {
+      if (dmSend) { dmSend.setAttribute('type','button'); dmSend.disabled = false; }
+    } catch(e){}
+
     svOpen.addEventListener('click',(e)=>{ e.preventDefault(); svAd.style.display='none'; svChat.style.display='flex'; setTimeout(()=>svInput.focus(),50); });
     svClose.addEventListener('click',()=>{ svChat.style.display='none'; svAd.style.display='flex'; });
     function addTyping(){ const w=document.createElement('div'); w.className='sv-msg sv-from'; w.id='typing'; w.innerHTML='<div class="typing"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>'; svMsgs.appendChild(w); svMsgs.scrollTop=svMsgs.scrollHeight; }
@@ -342,8 +355,8 @@
     updateAuthUI();
 
     /* Social / Supabase (safe guards) */
-    const SUPABASE_URL = "https://dreiofxdxmrlrnceguwi.supabase.co"; // вставьте свои при необходимости
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRyZWlvZnhkeG1ybHJuY2VndXdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxNzEyMTksImV4cCI6MjA3MDc0NzIxOX0.PtpqL3YbWoxwbaV3Z93LvnF_R-LlBtzBBePAKVFEw8c";
+    const SUPABASE_URL = "https://YOUR-PROJECT.supabase.co"; // вставьте свои при необходимости
+    const SUPABASE_ANON_KEY = "YOUR-ANON-KEY";
     let sb = null;
     try{
       if(typeof supabase!=='undefined' && SUPABASE_URL.startsWith('http') && SUPABASE_ANON_KEY.length>20){
@@ -359,6 +372,15 @@
     const listUsers=document.getElementById('listUsers'); const listRequests=document.getElementById('listRequests'); const listFriends=document.getElementById('listFriends');
     const hintBox=document.getElementById('hintBox'); const socialStatus=document.getElementById('socialStatus');
     const dmPanel=document.getElementById('dmPanel'); const dmWith=document.getElementById('dmWith'); const dmList=document.getElementById('dmList'); const dmInput=document.getElementById('dmInput'); const dmSend=document.getElementById('dmSend'); const dmBack=document.getElementById('dmBack');
+
+    // --- Force enable & proper type for send buttons ---
+    try {
+      if (svSend) { svSend.setAttribute('type','button'); svSend.disabled = false; }
+    } catch(e){}
+    try {
+      if (dmSend) { dmSend.setAttribute('type','button'); dmSend.disabled = false; }
+    } catch(e){}
+
     socialOpen.addEventListener('click', ()=>{ socialOverlay.style.display='flex'; setTab('users'); refreshAll(); });
     socialClose.addEventListener('click', ()=>{ socialOverlay.style.display='none'; });
     socialOverlay.addEventListener('click', e=>{ if(e.target===socialOverlay) socialOverlay.style.display='none'; });
