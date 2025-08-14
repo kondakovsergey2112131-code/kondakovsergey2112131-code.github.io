@@ -377,7 +377,7 @@
       const u = new SpeechSynthesisUtterance(text);
       u.lang = 'ru-RU';
       u.rate = opts.rate ?? 1;
-      u.pitch = opts.pitch ?? 1.15; // немного выше для женского тембра
+      u.pitch = opts.pitch ?? 1.15;
       u.volume = opts.volume ?? 1;
       const v = pickRussianFemaleVoice();
       if(v) u.voice = v;
@@ -409,7 +409,6 @@
         document.documentElement.style.overflow = 'hidden';
         clearInterval(callInterval);
         callStartTime = null;
-        // запуск рингтона (есть жест пользователя — нажал «ОТВЕТИТЬ»)
         playRingtone();
       }
       function closeUI(playEnd=true) {
@@ -422,14 +421,20 @@
         stopRingtone();
         if(playEnd) blip('down');
       }
+      // Экспортируем наружу, чтобы вызывать из sendMsg()
+      window.__callUI = { open: openUI, close: closeUI };
 
-      // ПРИ НАЖАТИИ «ОТВЕТИТЬ» В ВИДЖЕТЕ — ОТКРЫВАЕМ ОКНО ЗВОНКА
-      svOpen.addEventListener('click', (e)=>{ e.preventDefault(); openUI(); });
+      // Больше НЕ открываем звонок по клику на «ОТВЕТИТЬ» — только чат
+      svOpen.addEventListener('click', (e)=>{
+        e.preventDefault();
+        svAd.style.display='none';
+        svChat.style.display='flex';
+        setTimeout(()=>svInput.focus(),50);
+      });
 
       decline.addEventListener('click', () => { closeUI(true); });
 
       accept.addEventListener('click', async () => {
-        // принять: звук принятия и стоп рингтона
         stopRingtone();
         blip('up');
 
@@ -439,7 +444,6 @@
         clearInterval(callInterval);
         callStartTime = null;
 
-        // имитация соединения 1.2 сек, затем таймер разговора и открытие чата
         setTimeout(async () => {
           status.textContent = 'Звонок идет';
           live.textContent = 'Звонок начался';
@@ -451,11 +455,9 @@
             timer.textContent = formatTimer(seconds);
           }, 1000);
 
-          // Женский голос: фраза после соединения
           await ensureVoicesReady();
           speakRU('Привет, это Светлана. Ты меня слышишь?', { pitch: 1.2, rate: 1.0 });
 
-          // одновременно откроем чат и спрячем рекламный блок
           svAd.style.display='none';
           svChat.style.display='flex';
           setTimeout(()=>svInput.focus(),50);
@@ -482,6 +484,11 @@
         reply.innerHTML=`<b>Светлана:</b> Ого, давай созвонимся!`;
         svMsgs.appendChild(reply);
         svMsgs.scrollTop=svMsgs.scrollHeight;
+
+        // >>> Здесь запускаем входящий звонок <<<
+        if (window.__callUI && typeof window.__callUI.open === 'function') {
+          window.__callUI.open();
+        }
       },800);
     }
     svSend.addEventListener('click',sendMsg);
