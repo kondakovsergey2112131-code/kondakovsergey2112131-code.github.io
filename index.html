@@ -342,8 +342,8 @@
     updateAuthUI();
 
     /* Social / Supabase (safe guards) */
-    const SUPABASE_URL = "https://YOUR-PROJECT.supabase.co"; // вставьте свои при необходимости
-    const SUPABASE_ANON_KEY = "YOUR-ANON-KEY";
+    const SUPABASE_URL = "https://dreiofxdxmrlrnceguwi.supabase.co"; // вставьте свои при необходимости
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRyZWlvZnhkeG1ybHJuY2VndXdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxNzEyMTksImV4cCI6MjA3MDc0NzIxOX0.PtpqL3YbWoxwbaV3Z93LvnF_R-LlBtzBBePAKVFEw8c";
     let sb = null;
     try{
       if(typeof supabase!=='undefined' && SUPABASE_URL.startsWith('http') && SUPABASE_ANON_KEY.length>20){
