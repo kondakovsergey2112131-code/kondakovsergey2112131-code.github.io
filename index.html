@@ -281,11 +281,23 @@
 
     function escapeHtml(s){ return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
+    
     async function fetchMessages(){
       if(!sbReady()) return;
       const me = getMe(); if(!me || !dmOtherEmail) return;
-      // Загружаем сообщения между me.email и dmOtherEmail
-      const filter = `or(and(from_email.eq.${me.email},to_email.eq.${dmOtherEmail}),and(from_email.eq.${dmOtherEmail},to_email.eq.${me.email}))`;
+      const q1 = sb.from('messages').select('id,from_email,to_email,body,created_at')
+                  .eq('from_email', me.email).eq('to_email', dmOtherEmail);
+      const q2 = sb.from('messages').select('id,from_email,to_email,body,created_at')
+                  .eq('from_email', dmOtherEmail).eq('to_email', me.email);
+      const [r1, r2] = await Promise.all([q1, q2]);
+      const err = r1.error || r2.error;
+      if(err){ setStatus('Ошибка загрузки сообщений: ' + err.message); return; }
+      const data = (r1.data||[]).concat(r2.data||[]).sort((a,b)=> new Date(a.created_at)-new Date(b.created_at));
+      dmList.innerHTML = '';
+      data.forEach(m => dmList.appendChild(renderDMItem(m)));
+      dmList.scrollTop = dmList.scrollHeight;
+    }
+,to_email.eq.${dmOtherEmail}),and(from_email.eq.${dmOtherEmail},to_email.eq.${me.email}))`;
       const { data, error } = await sb.from('messages')
         .select('id,from_email,to_email,body,created_at')
         .or(filter)
@@ -316,6 +328,19 @@
     dmSend.addEventListener('click', sendDM);
     dmInput.addEventListener('keydown', e=>{ if(e.key==='Enter'){ sendDM(); } });
 
+  
+    window.addEventListener('error', function(e){
+      try{
+        const box = document.createElement('div');
+        box.style.position='fixed'; box.style.left='10px'; box.style.bottom='10px'; box.style.zIndex='99999';
+        box.style.background='#7f1d1d'; box.style.color='#fff'; box.style.padding='8px 10px'; box.style.borderRadius='8px';
+        box.style.fontFamily='monospace'; box.style.maxWidth='80vw';
+        box.textContent = 'JS error: ' + (e.error && e.error.message ? e.error.message : e.message);
+        document.body.appendChild(box);
+        setTimeout(()=>box.remove(), 6000);
+      }catch(_){}
+    });
+    
   </script>
 </head>
 <body>
@@ -876,11 +901,31 @@
       data.forEach(r=> listRequests.appendChild(renderRequestItem(r)) );
     }
 
+    
     async function refreshFriends(){
       listFriends.innerHTML = '';
       if(!sbReady()) return;
       const me = getMe(); if(!me){ setStatus('Войдите, чтобы видеть друзей'); return; }
-      const { data, error } = await sb.from('friend_requests').select('id,from_email,to_email,status,created_at').eq('status','accepted').or(`from_email.eq.${me.email},to_email.eq.${me.email}`);
+      const q1 = sb.from('friend_requests').select('id,from_email,to_email,status,created_at')
+                  .eq('status','accepted').eq('from_email', me.email);
+      const q2 = sb.from('friend_requests').select('id,from_email,to_email,status,created_at')
+                  .eq('status','accepted').eq('to_email', me.email);
+      const [r1, r2] = await Promise.all([q1, q2]);
+      const err = r1.error || r2.error;
+      if(err){ setStatus('Ошибка: ' + err.message); return; }
+      const rows = (r1.data||[]).concat(r2.data||[]);
+      const others = [];
+      rows.forEach(r=>{
+        const other = r.from_email===me.email ? r.to_email : r.from_email;
+        if(!others.includes(other)) others.push(other);
+      });
+      if(others.length===0){ setStatus('Друзей пока нет'); return; }
+      const { data: profs, error: e2 } = await sb.from('profiles').select('email,name').in('email', others);
+      if(e2){ setStatus('Ошибка: ' + e2.message); return; }
+      profs.forEach(p=> listFriends.appendChild(renderFriendItem(p)) );
+      setStatus('Друзей: '+profs.length);
+    }
+const { data, error } = await sb.from('friend_requests').select('id,from_email,to_email,status,created_at').eq('status','accepted').or(`from_email.eq.${me.email},to_email.eq.${me.email}`);
       if(error){ setStatus('Ошибка: '+error.message); return; }
       // собрать список email друзей
       const others = [];
@@ -897,9 +942,59 @@
 
     
     
+    
     async function sendRequest(toEmail){
       const me = getMe(); if(!me){ openAuth('login'); showToast('Войдите, чтобы добавлять в друзья'); return; }
       if(!sbReady()) return;
+      if(me.email===toEmail){ showToast('Самого себя добавить нельзя'); return; }
+
+      // Проверяем существующую заявку в обе стороны (двумя запросами)
+      const q1 = sb.from('friend_requests').select('id,from_email,to_email,status,created_at')
+                  .eq('from_email', me.email).eq('to_email', toEmail).limit(1);
+      const q2 = sb.from('friend_requests').select('id,from_email,to_email,status,created_at')
+                  .eq('from_email', toEmail).eq('to_email', me.email).limit(1);
+      const [r1, r2] = await Promise.all([q1, q2]);
+      const err = r1.error || r2.error;
+      if(err){ showToast('Ошибка: ' + err.message); return; }
+      const existing = (r1.data||[]).concat(r2.data||[]);
+      if(existing.length){
+        const r = existing[0];
+        if(r.status === 'accepted'){ showToast('Вы уже друзья'); refreshFriends(); return; }
+        if(r.from_email === me.email){
+          if(r.status === 'pending'){ showToast('Заявка уже отправлена'); return; }
+          if(r.status === 'declined'){
+            const { error: eUpd } = await sb.from('friend_requests')
+              .update({ status:'pending', created_at: new Date().toISOString() })
+              .eq('id', r.id);
+            if(eUpd){ showToast('Ошибка: ' + eUpd.message); return; }
+            showToast('Заявка отправлена снова'); refreshRequests(); return;
+          }
+        } else { // входящая
+          if(r.status === 'pending'){ showToast('У вас уже есть входящая заявка — вкладка «Заявки»'); setTab('requests'); refreshRequests(); return; }
+          if(r.status === 'declined'){
+            const { error: eIns } = await sb.from('friend_requests').upsert(
+              { from_email: me.email, to_email: toEmail, status: 'pending' },
+              { onConflict: 'from_email,to_email' }
+            );
+            if(eIns){ showToast('Ошибка: ' + eIns.message); return; }
+            showToast('Заявка отправлена'); refreshRequests(); return;
+          }
+        }
+      }
+
+      // Создать новую (upsert защищает от дублей)
+      const { error } = await sb.from('friend_requests').upsert(
+        { from_email: me.email, to_email: toEmail, status:'pending' },
+        { onConflict: 'from_email,to_email' }
+      );
+      if(error){
+        showToast('Ошибка: ' + error.message);
+      } else {
+        showToast('Заявка отправлена');
+        refreshRequests();
+      }
+    }
+if(!sbReady()) return;
       if(me.email===toEmail){ showToast('Самого себя добавить нельзя'); return; }
 
       // Проверяем существующую заявку в любую сторону
@@ -1037,10 +1132,18 @@ if(!sbReady()) return;
       const { error } = await sb.from('friend_requests').update({ status:'declined' }).eq('id', id);
       if(error){ showToast('Ошибка: '+error.message); } else { showToast('Отклонено'); refreshRequests(); }
     }
+    
     async function removeFriendship(otherEmail){
       if(!sbReady()) return;
       const me = getMe(); if(!me) return;
-      const { error } = await sb.from('friend_requests')
+      // Удалим обе возможные записи accepted (в обе стороны)
+      const d1 = sb.from('friend_requests').delete().eq('status','accepted').eq('from_email', me.email).eq('to_email', otherEmail);
+      const d2 = sb.from('friend_requests').delete().eq('status','accepted').eq('from_email', otherEmail).eq('to_email', me.email);
+      const [r1, r2] = await Promise.all([d1, d2]);
+      const err = r1.error || r2.error;
+      if(err){ showToast('Ошибка: ' + err.message); } else { showToast('Удалено'); refreshFriends(); }
+    }
+= await sb.from('friend_requests')
         .delete()
         .eq('status','accepted')
         .or(`and(from_email.eq.${me.email},to_email.eq.${otherEmail}),and(from_email.eq.${otherEmail},to_email.eq.${me.email})`);
