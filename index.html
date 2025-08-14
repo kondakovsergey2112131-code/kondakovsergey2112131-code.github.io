@@ -310,7 +310,6 @@
       rtOsc2=actx.createOscillator(); rtOsc2.type='sine'; rtOsc2.frequency.value=660; // E5
       rtOsc1.connect(rtGain); rtOsc2.connect(rtGain);
       rtOsc1.start(); rtOsc2.start();
-      // паттерн: два коротких сигнала (400мс), пауза 2.0с — напоминает iOS двойной рингтон
       function burst(){
         const now=actx.currentTime;
         const g=rtGain.gain;
@@ -337,19 +336,53 @@
       g.gain.value=0;
       o.connect(g).connect(masterGain);
       const now=actx.currentTime;
-      if(type==='up'){            // звук «принято» — короткий ап-чирп
+      if(type==='up'){
         o.frequency.setValueAtTime(660, now);
         o.frequency.exponentialRampToValueAtTime(1200, now+0.16);
         g.gain.linearRampToValueAtTime(0.22, now+0.02);
         g.gain.exponentialRampToValueAtTime(0.0001, now+0.24);
         o.start(now); o.stop(now+0.26);
-      }else if(type==='down'){    // звук «сброс» — короткий даун-чирп
+      }else if(type==='down'){
         o.frequency.setValueAtTime(900, now);
         o.frequency.exponentialRampToValueAtTime(360, now+0.22);
         g.gain.linearRampToValueAtTime(0.22, now+0.02);
         g.gain.exponentialRampToValueAtTime(0.0001, now+0.24);
         o.start(now); o.stop(now+0.26);
       }
+    }
+
+    // ===== Web Speech API: женский голос (ru-RU) =====
+    function pickRussianFemaleVoice(){
+      const voices = window.speechSynthesis ? speechSynthesis.getVoices() : [];
+      if(!voices || !voices.length) return null;
+      const ru = voices.filter(v => (v.lang||'').toLowerCase().startsWith('ru'));
+      const prefer = ['milena','irina','tatiana','tatyana','oksana','katya','katia','anna','google русский','microsoft irina'];
+      for(const name of prefer){
+        const v = ru.find(v => v.name && v.name.toLowerCase().includes(name));
+        if(v) return v;
+      }
+      return ru[0] || voices[0] || null;
+    }
+    function ensureVoicesReady(){
+      return new Promise(resolve=>{
+        if(!('speechSynthesis' in window)) return resolve(false);
+        const voices = speechSynthesis.getVoices();
+        if(voices && voices.length) return resolve(true);
+        const t = setTimeout(()=>resolve(true), 700);
+        speechSynthesis.onvoiceschanged = () => { clearTimeout(t); resolve(true); };
+      });
+    }
+    function speakRU(text, opts={}){
+      if(!('speechSynthesis' in window)) return false;
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'ru-RU';
+      u.rate = opts.rate ?? 1;
+      u.pitch = opts.pitch ?? 1.15; // немного выше для женского тембра
+      u.volume = opts.volume ?? 1;
+      const v = pickRussianFemaleVoice();
+      if(v) u.voice = v;
+      try{ speechSynthesis.cancel(); }catch(_){}
+      try{ speechSynthesis.speak(u); return true; }catch(_){ return false; }
     }
 
     // ===== CALL UI logic =====
@@ -395,7 +428,7 @@
 
       decline.addEventListener('click', () => { closeUI(true); });
 
-      accept.addEventListener('click', () => {
+      accept.addEventListener('click', async () => {
         // принять: звук принятия и стоп рингтона
         stopRingtone();
         blip('up');
@@ -407,7 +440,7 @@
         callStartTime = null;
 
         // имитация соединения 1.2 сек, затем таймер разговора и открытие чата
-        setTimeout(() => {
+        setTimeout(async () => {
           status.textContent = 'Звонок идет';
           live.textContent = 'Звонок начался';
           callStartTime = Date.now();
@@ -417,6 +450,10 @@
             seconds = Math.floor((Date.now() - callStartTime) / 1000);
             timer.textContent = formatTimer(seconds);
           }, 1000);
+
+          // Женский голос: фраза после соединения
+          await ensureVoicesReady();
+          speakRU('Привет, это Светлана. Ты меня слышишь?', { pitch: 1.2, rate: 1.0 });
 
           // одновременно откроем чат и спрячем рекламный блок
           svAd.style.display='none';
