@@ -167,6 +167,41 @@
       border-color: #e0e5ef !important;
     }
 
+  
+    /* === High-contrast buttons for both themes === */
+    html[data-theme="light"] .btn {
+      background: #ffffff !important;
+      color: #2575fc !important;
+      border: 1px solid #d0dcf0 !important;
+      box-shadow: 0 2px 8px rgba(16, 24, 40, .06) !important;
+    }
+    html[data-theme="light"] .btn:hover {
+      background: #f7faff !important;
+    }
+    html[data-theme="light"] .btn.ghost {
+      background: #f1f5ff !important;
+      color: #21314f !important;
+      border: 1px solid #ccd6f6 !important;
+    }
+
+    html[data-theme="dark"] .btn {
+      background: #2b3a61 !important;
+      color: #ffffff !important;
+      border: 1px solid #3c4d7e !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .35) !important;
+    }
+    html[data-theme="dark"] .btn:hover {
+      background: #334474 !important;
+    }
+    html[data-theme="dark"] .btn.ghost {
+      background: rgba(255,255,255,.12) !important;
+      color: #ffffff !important;
+      border: 1px solid rgba(255,255,255,.28) !important;
+    }
+
+    /* Make links inside header clear too (if any) */
+    header a.btn { text-decoration: none !important; }
+
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
