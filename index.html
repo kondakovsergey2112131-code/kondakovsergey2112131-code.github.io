@@ -117,48 +117,102 @@
     .dm-input button:disabled { opacity: .6; cursor: not-allowed; }
 
   
-    
-    /* CSS-only carousel (fade) — FIXED for 4 slides, no overlap */
-    .uc{
-      margin:0 auto;
-      width:min(92vw, 480px);
-      aspect-ratio: 3 / 2;             /* keeps nice proportion */
-      position:relative;
-      border-radius:16px;
-      overflow:hidden;
-      box-shadow:0 12px 28px rgba(0,0,0,.35);
-      background:#0f1322;
-    }
-    .uc-slide{
-      position:absolute;
-      inset:0;
-      width:100%;
-      height:100%;
-      object-fit:contain;               /* show whole photo */
-      background:#0b1022;               /* letterbox fill */
-      opacity:0;
-      animation: ucFade 16s infinite;   /* 4 slides x 4s */
-    }
-    .uc-slide:nth-child(1){ animation-delay: 0s;  }
-    .uc-slide:nth-child(2){ animation-delay: 4s;  }
-    .uc-slide:nth-child(3){ animation-delay: 8s;  }
-    .uc-slide:nth-child(4){ animation-delay: 12s; }
-
+    /* CSS-only carousel (fade) */
+    .uc{ margin:0 auto; width:min(92vw, 360px); height:220px; position:relative; border-radius:16px; overflow:hidden; box-shadow:0 12px 28px rgba(0,0,0,.35); }
+    .uc-slide{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; animation: ucFade 12s infinite; }
+    .uc-slide:nth-child(1){ animation-delay: 0s; }
+    .uc-slide:nth-child(2){ animation-delay: 4s; }
+    .uc-slide:nth-child(3){ animation-delay: 8s; }
     @keyframes ucFade{
       0%   { opacity: 0; }
       5%   { opacity: 1; }
-      25%  { opacity: 1; }
-      30%  { opacity: 0; }
-      100% { opacity: 0; }
-    }
-5%   { opacity: 1; }
       30%  { opacity: 1; }
       35%  { opacity: 0; }
       100% { opacity: 0; }
     }
 
+  
+    /* === THEME SWITCHER === */
+    :root{
+      --c-text: #0b1220;
+      --c-bg:   #f5f7fb;
+      --c-card: #ffffff;
+      --c-muted:#5b6b86;
+      --c-border:#e0e5ef;
+      --c-accent:#2575fc;
+      --c-btn-text:#ffffff;
+    }
+    html[data-theme="dark"]{
+      --c-text: #e8eef4;
+      --c-bg:   #0a0f1e;
+      --c-card: #0f1322;
+      --c-muted:#9fb0c8;
+      --c-border:#243054;
+      --c-accent:#4f75ff;
+      --c-btn-text:#ffffff;
+    }
+    html, body { color: var(--c-text); background: var(--c-bg); }
+    html[data-theme="dark"] body {
+      background: radial-gradient(1000px 600px at 10% -10%, #0b1a44, transparent),
+                  radial-gradient(1200px 800px at 100% 0%, #151c35, transparent),
+                  var(--c-bg);
+    }
+    header .btn { background:#fff; color:var(--c-accent); }
+    .btn.ghost { background: rgba(255,255,255,.12); color: #fff; border:1px solid rgba(255,255,255,.3); }
+    html[data-theme="light"] .btn.ghost { background:#eef2ff; color:#21314f; border-color:#d7def0; }
+    /* Common cards */
+    .auth-card, .social-card, .callui-card, #chatWidget, .toast, .dm-panel, .social-col, .social-item, #sv-chat {
+      background: var(--c-card);
+      color: var(--c-text);
+      border-color: var(--c-border);
+    }
+    .social-item { border:1px solid var(--c-border); }
+    .sv-from { background: var(--c-card); border:1px solid var(--c-border); color: var(--c-text); }
+    .sv-to   { background: #e7f0ff; border:1px solid #d7e2ff; color:#102; }
+    html[data-theme="dark"] .sv-to { background:#1b2b52; border-color:#223a72; color:#e8eef4; }
+    input, .sv-input input { background: #fff; color: #0b1220; border:1px solid var(--c-border); }
+    html[data-theme="dark"] input, html[data-theme="dark"] .sv-input input { background:#131a2d; color:#e8eef4; border-color:#243054; }
+
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+    // === Theme toggle ===
+    (function(){
+      const btn = document.getElementById('themeToggle');
+      if(!btn) return;
+      function label(){
+        const t = document.documentElement.getAttribute('data-theme') || 'light';
+        btn.textContent = (t==='dark' ? '☀️ Светлая тема' : '🌙 Тёмная тема');
+      }
+      btn.addEventListener('click', ()=>{
+        const cur = document.documentElement.getAttribute('data-theme') || 'light';
+        const next = cur==='dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('site_theme', next);
+          const meta = document.querySelector('meta[name="color-scheme"]');
+          if(meta) meta.setAttribute('content', next==='dark' ? 'dark light' : 'light dark');
+        } catch(e){}
+        label();
+      });
+      label();
+    })();
+
+</script>
+
+  <script>
+  (function(){
+    try{
+      var saved = localStorage.getItem('site_theme'); // 'light' | 'dark' | null
+      var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var theme = saved || (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      var meta = document.querySelector('meta[name="color-scheme"]');
+      if(!meta){ meta = document.createElement('meta'); meta.setAttribute('name','color-scheme'); document.head.appendChild(meta); }
+      meta.setAttribute('content', theme==='dark' ? 'dark light' : 'light dark');
+    }catch(e){}
+  })();
+  </script>
+
 </head>
 <body>
   <header>
@@ -169,6 +223,8 @@
     <button class="btn" id="logoutBtn" style="display:none">Выйти</button>
     <button class="btn ghost" id="socialOpen">Сообщество 👥</button>
     <span class="hello" id="hello"></span>
+  
+    <button class="btn ghost" id="themeToggle" title="Сменить тему">🌙 Тема</button>
   </header>
 
   
@@ -404,8 +460,8 @@
     updateAuthUI();
 
     /* Social / Supabase (safe guards) */
-    const SUPABASE_URL = "https://dreiofxdxmrlrnceguwi.supabase.co"; // вставьте свои при необходимости
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRyZWlvZnhkeG1ybHJuY2VndXdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUxNzEyMTksImV4cCI6MjA3MDc0NzIxOX0.PtpqL3YbWoxwbaV3Z93LvnF_R-LlBtzBBePAKVFEw8c";
+    const SUPABASE_URL = "https://YOUR-PROJECT.supabase.co"; // вставьте свои при необходимости
+    const SUPABASE_ANON_KEY = "YOUR-ANON-KEY";
     let sb = null;
     try{
       if(typeof supabase!=='undefined' && SUPABASE_URL.startsWith('http') && SUPABASE_ANON_KEY.length>20){
