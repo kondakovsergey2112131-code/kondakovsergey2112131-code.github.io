@@ -132,76 +132,47 @@
     }
 
   
-    /* === THEME SWITCHER === */
-    :root{
-      --c-text: #0b1220;
-      --c-bg:   #f5f7fb;
-      --c-card: #ffffff;
-      --c-muted:#5b6b86;
-      --c-border:#e0e5ef;
-      --c-accent:#2575fc;
-      --c-btn-text:#ffffff;
+    /* === THEME OVERRIDES (robust) === */
+    html[data-theme="light"] body {
+      background: #f5f7fb !important;
+      color: #0b1220 !important;
     }
-    html[data-theme="dark"]{
-      --c-text: #e8eef4;
-      --c-bg:   #0a0f1e;
-      --c-card: #0f1322;
-      --c-muted:#9fb0c8;
-      --c-border:#243054;
-      --c-accent:#4f75ff;
-      --c-btn-text:#ffffff;
-    }
-    html, body { color: var(--c-text); background: var(--c-bg); }
     html[data-theme="dark"] body {
-      background: radial-gradient(1000px 600px at 10% -10%, #0b1a44, transparent),
-                  radial-gradient(1200px 800px at 100% 0%, #151c35, transparent),
-                  var(--c-bg);
+      background: #0a0f1e !important;
+      color: #e8eef4 !important;
     }
-    header .btn { background:#fff; color:var(--c-accent); }
-    .btn.ghost { background: rgba(255,255,255,.12); color: #fff; border:1px solid rgba(255,255,255,.3); }
-    html[data-theme="light"] .btn.ghost { background:#eef2ff; color:#21314f; border-color:#d7def0; }
-    /* Common cards */
-    .auth-card, .social-card, .callui-card, #chatWidget, .toast, .dm-panel, .social-col, .social-item, #sv-chat {
-      background: var(--c-card);
-      color: var(--c-text);
-      border-color: var(--c-border);
+    /* common cards */
+    html[data-theme="dark"] .auth-card,
+    html[data-theme="dark"] .social-card,
+    html[data-theme="dark"] #chatWidget,
+    html[data-theme="dark"] .toast,
+    html[data-theme="dark"] .dm-panel,
+    html[data-theme="dark"] .social-col,
+    html[data-theme="dark"] .social-item,
+    html[data-theme="dark"] #sv-chat {
+      background: #0f1322 !important;
+      color: #e8eef4 !important;
+      border-color: #243054 !important;
     }
-    .social-item { border:1px solid var(--c-border); }
-    .sv-from { background: var(--c-card); border:1px solid var(--c-border); color: var(--c-text); }
-    .sv-to   { background: #e7f0ff; border:1px solid #d7e2ff; color:#102; }
-    html[data-theme="dark"] .sv-to { background:#1b2b52; border-color:#223a72; color:#e8eef4; }
-    input, .sv-input input { background: #fff; color: #0b1220; border:1px solid var(--c-border); }
-    html[data-theme="dark"] input, html[data-theme="dark"] .sv-input input { background:#131a2d; color:#e8eef4; border-color:#243054; }
+    html[data-theme="light"] .auth-card,
+    html[data-theme="light"] .social-card,
+    html[data-theme="light"] #chatWidget,
+    html[data-theme="light"] .toast,
+    html[data-theme="light"] .dm-panel,
+    html[data-theme="light"] .social-col,
+    html[data-theme="light"] .social-item,
+    html[data-theme="light"] #sv-chat {
+      background: #ffffff !important;
+      color: #0b1220 !important;
+      border-color: #e0e5ef !important;
+    }
 
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-    // === Theme toggle ===
-    (function(){
-      const btn = document.getElementById('themeToggle');
-      if(!btn) return;
-      function label(){
-        const t = document.documentElement.getAttribute('data-theme') || 'light';
-        btn.textContent = (t==='dark' ? '☀️ Светлая тема' : '🌙 Тёмная тема');
-      }
-      btn.addEventListener('click', ()=>{
-        const cur = document.documentElement.getAttribute('data-theme') || 'light';
-        const next = cur==='dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
-        try {
-          localStorage.setItem('site_theme', next);
-          const meta = document.querySelector('meta[name="color-scheme"]');
-          if(meta) meta.setAttribute('content', next==='dark' ? 'dark light' : 'light dark');
-        } catch(e){}
-        label();
-      });
-      label();
-    })();
-
-</script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
   (function(){
-    try{
+    try {
       var saved = localStorage.getItem('site_theme'); // 'light' | 'dark' | null
       var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
       var theme = saved || (prefersDark ? 'dark' : 'light');
@@ -209,7 +180,7 @@
       var meta = document.querySelector('meta[name="color-scheme"]');
       if(!meta){ meta = document.createElement('meta'); meta.setAttribute('name','color-scheme'); document.head.appendChild(meta); }
       meta.setAttribute('content', theme==='dark' ? 'dark light' : 'light dark');
-    }catch(e){}
+    } catch(e){}
   })();
   </script>
 
@@ -222,9 +193,34 @@
     <button class="btn ghost" id="authOpen">Войти / Регистрация</button>
     <button class="btn" id="logoutBtn" style="display:none">Выйти</button>
     <button class="btn ghost" id="socialOpen">Сообщество 👥</button>
+
+    <button class="btn ghost" id="themeToggle" title="Сменить тему" onclick="toggleTheme(this)">🌙 Тёмная тема</button>
+    <script>
+      function toggleTheme(btn){
+        try {
+          var cur = document.documentElement.getAttribute('data-theme') || 'light';
+          var next = cur === 'dark' ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', next);
+          try { localStorage.setItem('site_theme', next); } catch(e){}
+          try {
+            var meta = document.querySelector('meta[name=\"color-scheme\"]');
+            if(!meta){ meta = document.createElement('meta'); meta.setAttribute('name','color-scheme'); document.head.appendChild(meta); }
+            meta.setAttribute('content', next==='dark' ? 'dark light' : 'light dark');
+          } catch(e){}
+          if(btn){ btn.textContent = (next==='dark' ? '☀️ Светлая тема' : '🌙 Тёмная тема'); }
+        } catch(e){ console && console.warn && console.warn(e); }
+      }
+      // Set initial label once DOM is ready (even if other scripts fail)
+      document.addEventListener('DOMContentLoaded', function(){
+        var btn = document.getElementById('themeToggle');
+        if(btn){
+          var t = document.documentElement.getAttribute('data-theme') || 'light';
+          btn.textContent = (t==='dark' ? '☀️ Светлая тема' : '🌙 Тёмная тема');
+        }
+      });
+    </script>
+
     <span class="hello" id="hello"></span>
-  
-    <button class="btn ghost" id="themeToggle" title="Сменить тему">🌙 Тема</button>
   </header>
 
   
