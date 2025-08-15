@@ -202,6 +202,22 @@
     /* Make links inside header clear too (if any) */
     header a.btn { text-decoration: none !important; }
 
+  
+    /* === Carousel shrink-to-fit (no upscale) === */
+    .uc-slide{
+      /* Keep animation/timing from earlier rules; only override sizing/position */
+      position: absolute !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      width: auto !important;
+      height: auto !important;
+      max-width: 100% !important;
+      max-height: 100% !important;
+      object-fit: contain !important;   /* safety */
+      background: #0b1022;              /* letterbox fill */
+    }
+
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
